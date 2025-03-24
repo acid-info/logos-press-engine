@@ -15,6 +15,13 @@ import ReactPlayer from 'react-player'
 import { LPE } from '../../types/lpe.types'
 import { ArticleImageBlockWrapper } from './Article.ImageBlockWrapper'
 
+function addTargetBlank(html: string) {
+  return html.replace(
+    /<a\s+(?![^>]*target=)/gi,
+    '<a target="_blank" rel="noopener noreferrer" ',
+  )
+}
+
 export const RenderArticleBlock = ({
   block,
   headingElementsRef,
@@ -77,7 +84,7 @@ export const RenderArticleBlock = ({
                   ${extractAttributeFromHTML(block.html, 'style', '')}
                 `}
                 dangerouslySetInnerHTML={{
-                  __html: extractInnerHtml(block.html),
+                  __html: extractInnerHtml(addTargetBlank(block.html)),
                 }}
               />
             )
