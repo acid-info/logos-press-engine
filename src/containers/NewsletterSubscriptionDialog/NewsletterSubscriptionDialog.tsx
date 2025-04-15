@@ -59,6 +59,8 @@ export default function NewsletterSubscriptionDialog({
       } else if (email === 'errortest@errortest.com') {
         setErrorMessage(defaultErrorMessage)
       } else {
+        const NEWSLETTER_ID = '679a07eedeb47200012eebc5'
+
         const res = await fetch(
           `https://odoo.logos.co/website_mass_mailing/subscribe_ghost`,
           {
@@ -73,7 +75,7 @@ export default function NewsletterSubscriptionDialog({
                 email: email,
                 type: 'logos',
                 subscription_type: 'email',
-                newsletter: '675af2e4deb47200012e22c4',
+                newsletter: NEWSLETTER_ID,
               },
             }),
           },
