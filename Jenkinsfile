@@ -89,7 +89,7 @@ pipeline {
       when { expression { params.IMAGE_TAG != '' } }
       steps { script {
         withDockerRegistry([
-          credentialsId: 'harbor-acid-info-private-robot', url: 'https://${DOCKER_REGISTRY}'
+          credentialsId: 'harbor-acid-info-private-robot', url: "https://${DOCKER_REGISTRY}"
         ]) {
           image.push(params.IMAGE_TAG)
         }
