@@ -1,4 +1,5 @@
 import { Head, Html, Main, NextScript } from 'next/document'
+import Script from 'next/script'
 import { defaultThemeState } from '../states/themeState'
 
 const fathom = 'DFOUG'
@@ -30,6 +31,13 @@ export default function Document() {
       </Head>
 
       <body>
+        <Script
+          strategy="afterInteractive"
+          src="https://umami.bi.status.im/script.js"
+          data-website-id="6f59ea55-4079-4093-bfa2-a56eee2ff1ac"
+          data-domains="press.logos.co"
+          data-exclude-hash="true"
+        />
         <Main />
         <NextScript />
       </body>
