@@ -16,6 +16,7 @@ export const AuthorsConfig = {
 }
 
 export const NavLinksItems = [
+  { label: 'Learn', href: '/search?type=article&topic=Learn' },
   { label: 'Articles', href: '/search?type=article' },
   { label: 'Podcasts', href: getPostLink('podcast') },
   { label: 'About', href: '/about' },
