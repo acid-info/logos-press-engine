@@ -16,6 +16,7 @@ export const AuthorsConfig = {
 }
 
 export const NavLinksItems = [
+  { label: 'Logos', href: 'https://logos.co/', target: '_blank' },
   { label: 'Learn', href: '/search?type=article&topic=Learn' },
   { label: 'Articles', href: '/search?type=article' },
   { label: 'Podcasts', href: getPostLink('podcast') },

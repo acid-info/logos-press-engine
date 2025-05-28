@@ -6,7 +6,11 @@ import { useRouter } from 'next/router'
 import { lsdUtils } from '../../utils/lsd.utils'
 
 interface Props {
-  links: { href: string; label: string }[]
+  links: {
+    href: string
+    label: string
+    target?: string
+  }[]
 }
 
 export const NavbarLinks = ({ links }: Props) => {
@@ -20,6 +24,7 @@ export const NavbarLinks = ({ links }: Props) => {
           key={idx}
           href={link.href}
           className={clsx(pathname === link.href && 'active')}
+          target={link?.target || '_self'}
         >
           <Typography variant="label1" component="span">
             {link.label}
