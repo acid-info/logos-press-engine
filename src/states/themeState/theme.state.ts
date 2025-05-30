@@ -12,6 +12,17 @@ export const defaultThemeState: ThemeState = {
   genericFontFamily: 'sans-serif',
 }
 
+if (typeof window !== 'undefined') {
+  try {
+    const stored = localStorage.getItem('theme')
+    if (stored) {
+      JSON.parse(stored)
+    }
+  } catch {
+    localStorage.removeItem('theme')
+  }
+}
+
 const themeState =
   typeof window === 'undefined'
     ? hookstate(defaultThemeState)
