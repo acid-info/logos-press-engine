@@ -1,5 +1,5 @@
 import { useIsMobile } from '@/utils/ui.utils'
-import { Button, ChevronRightIcon, Typography } from '@acid-info/lsd-react'
+import { ChevronRightIcon, Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import React, { useEffect, useMemo } from 'react'
 import { Grid, GridItem } from '../../components/Grid/Grid'
@@ -104,15 +104,11 @@ export const HomePage: React.FC<HomePageProps> = ({
             <PostsGrid
               shows={shows}
               posts={secondFeaturedPosts}
-              pattern={[{ cols: 2, size: 'large' }]}
+              pattern={[{ cols: 1, size: 'large' }]}
               breakpoints={[
                 {
                   breakpoint: 'xs',
                   pattern: [{ cols: 2, size: 'small' }],
-                },
-                {
-                  breakpoint: 'md',
-                  pattern: [{ cols: 2, size: 'large' }],
                 },
               ]}
             />
@@ -186,56 +182,6 @@ export const HomePage: React.FC<HomePageProps> = ({
           <ShowMoreTagsButton onClick={handleTagsLimit}>
             See {tagsLimit === TAGS_MOBILE_LIMIT ? 'more' : 'less'} tags
           </ShowMoreTagsButton>
-          <AllPosts title="All posts">
-            <PostsGrid
-              shows={shows}
-              pattern={[{ cols: 4, size: 'small' }]}
-              breakpoints={[
-                {
-                  breakpoint: 'xs',
-                  pattern: [
-                    {
-                      cols: 1,
-                      size: 'small',
-                    },
-                  ],
-                },
-                {
-                  breakpoint: 'sm',
-                  pattern: [
-                    {
-                      cols: 2,
-                      size: 'small',
-                    },
-                  ],
-                },
-                {
-                  breakpoint: 'md',
-                  pattern: [
-                    {
-                      cols: 4,
-                      size: 'small',
-                    },
-                  ],
-                },
-              ]}
-              posts={query.posts}
-            />
-          </AllPosts>
-
-          {query.hasNextPage && (
-            <div className="load-more">
-              <Button
-                onClick={() => query.fetchNextPage()}
-                size="large"
-                disabled={query.isLoading}
-              >
-                <Typography variant="label1">
-                  {query.isFetchingNextPage ? 'Loading...' : 'See more posts'}
-                </Typography>
-              </Button>
-            </div>
-          )}
         </BrowseAll>
       </Container>
     </Root>
@@ -290,14 +236,6 @@ const BrowseAll = styled(Section)`
     & > div:first-of-type {
       padding: var(--lsd-spacing-24) 0;
     }
-  }
-`
-
-const AllPosts = styled(Section)`
-  margin-top: var(--lsd-spacing-64);
-
-  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
-    margin-top: var(--lsd-spacing-40);
   }
 `
 
