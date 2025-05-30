@@ -18,7 +18,7 @@ export const FooterSectionContainer = styled.div`
   position: relative;
   flex-direction: column;
   padding: 16px 0;
-  margin: 200px auto;
+  margin: 312px auto;
 
   @media (max-width: ${uiConfigs.maxContainerWidth + 32}px) {
     margin-inline: 16px;
