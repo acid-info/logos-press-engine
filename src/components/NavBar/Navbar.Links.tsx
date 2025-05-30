@@ -4,12 +4,14 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { lsdUtils } from '../../utils/lsd.utils'
+import { ArrowUpRightIcon } from '../Icons/ArrowUpRightIcon'
 
 interface Props {
   links: {
     href: string
     label: string
     target?: string
+    isExternal?: boolean
   }[]
 }
 
@@ -26,9 +28,12 @@ export const NavbarLinks = ({ links }: Props) => {
           className={clsx(pathname === link.href && 'active')}
           target={link?.target || '_self'}
         >
-          <Typography variant="label1" component="span">
-            {link.label}
-          </Typography>
+          <LinkContent>
+            <Typography variant="label1" component="span">
+              {link.label}
+            </Typography>
+            {link.isExternal && <ArrowUpRightIcon />}
+          </LinkContent>
         </Link>
       ))}
     </Container>
@@ -61,4 +66,10 @@ const Container = styled.div`
     gap: 0;
     height: 100%;
   }
+`
+
+const LinkContent = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 5px;
 `
