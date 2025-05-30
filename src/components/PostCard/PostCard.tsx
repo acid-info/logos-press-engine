@@ -5,7 +5,6 @@ import {
 } from '@/components/PostCard/PostCard.ShowDetails'
 import { PostCardSubTitle } from '@/components/PostCard/PostCard.Subtitle'
 import { PostCardTitle } from '@/components/PostCard/PostCard.Title'
-import { Tags } from '@/components/Tags'
 import { Theme } from '@acid-info/lsd-react'
 import { CommonProps } from '@acid-info/lsd-react/dist/utils/useCommonProps'
 import { css } from '@emotion/react'
@@ -44,6 +43,7 @@ export type PostCardProps = CommonProps &
     applySizeStyles?: boolean
     displayPodcastShow?: boolean
     displayYear?: boolean
+    isHoverable?: boolean
   }
 
 export const PostCard = (_props: PostCardProps) => {
@@ -56,7 +56,6 @@ export const PostCard = (_props: PostCardProps) => {
       subtitle,
       authors,
       slug,
-      tags = [],
       podcastShowDetails,
     },
     size = 'small',
@@ -64,6 +63,7 @@ export const PostCard = (_props: PostCardProps) => {
     applySizeStyles = true,
     displayPodcastShow = true,
     displayYear = true,
+    isHoverable = false,
     ...props
   } = _props
 
@@ -84,20 +84,20 @@ export const PostCard = (_props: PostCardProps) => {
     <div className="post-card__cover-image"></div>
   )
 
-  const authorsElement = authors && authors.length > 0 && (
-    <div className="post-card__authors">
-      <Authors authors={authors} separator={false} />
-    </div>
-  )
+  const authorsLabelElement = contentType === 'article' &&
+    authors &&
+    authors.length > 0 && (
+      <div className="post-card__authors-label">
+        <Authors authors={authors} separator={false} />
+      </div>
+    )
 
-  const labelElement = (
+  const metaLabelElement = (
     <PostCardLabel
       contentType={contentType}
       displayYear={displayYear}
       date={date}
-    >
-      {contentType === 'article' && authorsElement}
-    </PostCardLabel>
+    />
   )
 
   const titleElement = <PostCardTitle href={link}>{title}</PostCardTitle>
@@ -115,10 +115,6 @@ export const PostCard = (_props: PostCardProps) => {
     />
   )
 
-  const tagsElement = tags.length > 0 && (
-    <Tags className="post-card__tags" tags={tags} />
-  )
-
   return (
     <Container
       className={clsx(
@@ -127,13 +123,15 @@ export const PostCard = (_props: PostCardProps) => {
         coverImageElement && 'post-card--with-image',
         props.className,
         `post-card--${contentType}`,
+        isHoverable && 'post-card--is-hoverable',
       )}
     >
       {coverImageElement}
       {titleElement}
-      {labelElement}
+      {authorsLabelElement}
       {subtitleElement}
       {showElement}
+      {metaLabelElement}
     </Container>
   )
 }
@@ -287,9 +285,9 @@ PostCard.styles = {
       'info image'
       'info image'
       'info image'
-      '. image';
+      'meta image';
     gap: 0 var(--lsd-spacing-64);
-    padding: var(--lsd-spacing-24) 0;
+    padding: var(--lsd-spacing-24);
 
     .post-card__title-text {
       ${lsdUtils.typography('h1')}
@@ -325,8 +323,8 @@ PostCard.styles = {
     }
 
     .post-card__label {
-      grid-area: info;
-      grid-row: auto;
+      grid-area: meta;
+      align-self: end;
       * {
         ${lsdUtils.typography('subtitle2')}
       }
@@ -337,7 +335,7 @@ PostCard.styles = {
       grid-row: auto;
     }
 
-    .post-card__authors,
+    .post-card__authors-label,
     .post-card__show-details {
       grid-area: info;
       grid-row: auto;
@@ -462,17 +460,25 @@ const Container = styled.div<Pick<PostCardProps, 'size'>>`
     word-break: break-word;
   }
 
-  .post-card__label {
+  .post-card__authors-label {
     margin-top: var(--lsd-spacing-16);
+
+    p.lsd-typography {
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
   }
 
   .post-card__show-details {
     margin-top: var(--lsd-spacing-16);
   }
 
-  ${(props) => lsdUtils.breakpoint(props.theme, 'md', 'down')} {
-    .post-card__label {
-      margin-top: var(--lsd-spacing-8);
+  &.post-card--is-hoverable:hover {
+    background-color: rgb(var(--lsd-theme-primary));
+    * {
+      color: rgb(var(--lsd-theme-secondary));
+      border-color: rgb(var(--lsd-theme-secondary));
+      fill: rgb(var(--lsd-theme-secondary));
     }
   }
 

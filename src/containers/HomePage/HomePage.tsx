@@ -85,6 +85,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div>
           <FeaturedFirst>
             <PostsGrid
+              isHoverable
               shows={shows}
               posts={[firstFeaturedPost]}
               pattern={[{ cols: 1, size: 'large' }]}

@@ -14,6 +14,7 @@ export type PostsGridProps = Partial<React.ComponentProps<typeof Container>> & {
   posts?: LPE.Post.Document[]
   displayPodcastShow?: boolean
   displayYear?: boolean
+  isHoverable?: boolean
 }
 
 export const PostsGrid: React.FC<PostsGridProps> = ({
@@ -25,6 +26,7 @@ export const PostsGrid: React.FC<PostsGridProps> = ({
   horizontal = false,
   displayPodcastShow = true,
   displayYear = true,
+  isHoverable = false,
   ...props
 }) => {
   const theme = useTheme()
@@ -81,6 +83,7 @@ export const PostsGrid: React.FC<PostsGridProps> = ({
               appearance={{
                 loadDelay: loadingDelayEffectIndexes[index] * 100,
               }}
+              isHoverable={isHoverable}
             />
           </div>
         ))}
