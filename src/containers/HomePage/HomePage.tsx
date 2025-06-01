@@ -103,6 +103,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           </FeaturedFirst>
           <FeaturedSecond>
             <PostsGrid
+              isHoverable
               shows={shows}
               posts={secondFeaturedPosts}
               pattern={[{ cols: 1, size: 'large' }]}
@@ -114,44 +115,6 @@ export const HomePage: React.FC<HomePageProps> = ({
               ]}
             />
           </FeaturedSecond>
-          <Section title="Latest posts" bordered={highlighted.length > 0}>
-            <PostsGrid
-              shows={shows}
-              pattern={[{ cols: 4, size: 'small' }]}
-              breakpoints={[
-                {
-                  breakpoint: 'xs',
-                  pattern: [
-                    {
-                      cols: 1,
-                      size: 'small',
-                    },
-                  ],
-                },
-                {
-                  breakpoint: 'sm',
-                  pattern: [
-                    {
-                      cols: 2,
-                      size: 'small',
-                    },
-                  ],
-                },
-                {
-                  breakpoint: 'md',
-                  pattern: [
-                    {
-                      cols: 4,
-                      size: 'small',
-                    },
-                  ],
-                },
-              ]}
-              posts={query.posts
-                .filter((post) => !post.highlighted)
-                .slice(0, 8)}
-            />
-          </Section>
         </div>
 
         <PodcastShowsPreview data={{ shows }} />
