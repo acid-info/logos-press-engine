@@ -86,6 +86,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           <FeaturedFirst>
             <PostsGrid
               isHoverable
+              isSubtitleVisible={false}
               shows={shows}
               posts={[firstFeaturedPost]}
               pattern={[{ cols: 1, size: 'large' }]}
@@ -94,23 +95,20 @@ export const HomePage: React.FC<HomePageProps> = ({
                   breakpoint: 'xs',
                   pattern: [{ cols: 1, size: 'small' }],
                 },
-                {
-                  breakpoint: 'md',
-                  pattern: [{ cols: 1, size: 'large' }],
-                },
               ]}
             />
           </FeaturedFirst>
           <FeaturedSecond>
             <PostsGrid
               isHoverable
+              isSubtitleVisible={false}
               shows={shows}
               posts={secondFeaturedPosts}
               pattern={[{ cols: 1, size: 'large' }]}
               breakpoints={[
                 {
                   breakpoint: 'xs',
-                  pattern: [{ cols: 2, size: 'small' }],
+                  pattern: [{ cols: 1, size: 'small' }],
                 },
               ]}
             />
@@ -188,11 +186,7 @@ const Container = styled.div`
 
   display: flex;
   flex-direction: column;
-  gap: var(--lsd-spacing-120) 0;
-
-  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
-    gap: var(--lsd-spacing-80) 0;
-  }
+  gap: 200px;
 `
 
 const BrowseAll = styled(Section)`
@@ -233,6 +227,28 @@ const ShowMoreTagsButton = styled.div`
 `
 
 const FeaturedFirst = styled.div`
+  .post-card {
+    padding-bottom: 0 !important;
+  }
+
+  .post-card__label *,
+  .post-card__authors-label * {
+    font-size: 12px !important;
+    line-height: 16px !important;
+  }
+
+  .post-card__authors-label {
+    margin-top: var(--lsd-spacing-4) !important;
+  }
+
+  .post-card__label {
+    margin-top: var(--lsd-spacing-32) !important;
+  }
+
+  .post-card__title-text {
+    margin-top: var(--lsd-spacing-8);
+  }
+
   ${(props) => lsdUtils.breakpoint(props.theme, 'sm', 'up')} {
     .post-card {
       gap: 0 var(--lsd-spacing-16) !important;
@@ -242,13 +258,9 @@ const FeaturedFirst = styled.div`
       margin-top: var(--lsd-spacing-32) !important;
     }
 
-    .post-card__title h3 {
-      font-size: var(--lsd-h2-fontSize) !important;
-      line-height: var(--lsd-h2-lineHeight) !important;
-    }
-
-    .post-card__subtitle {
-      margin-top: var(--lsd-spacing-16) !important;
+    .post-card__title-text {
+      font-size: 40px !important;
+      line-height: 48px !important;
     }
 
     .post-card-wrapper > div {
@@ -258,44 +270,63 @@ const FeaturedFirst = styled.div`
 `
 
 const FeaturedSecond = styled.div`
-  margin-bottom: var(--lsd-spacing-64);
-
   .post-card {
-    gap: 0 var(--lsd-spacing-16) !important;
+    gap: var(--lsd-spacing-16) !important;
   }
 
   .post-card__title-text {
-    font-size: var(--lsd-h4-fontSize) !important;
-    line-height: var(--lsd-h4-lineHeight) !important;
+    font-size: 32px !important;
+    line-height: 40px !important;
   }
 
-  .post-card__label {
-    margin-top: var(--lsd-spacing-16) !important;
-  }
-
-  .post-card__label * {
-    font-size: var(--lsd-subtitle4-fontSize) !important;
-    line-height: var(--lsd-subtitle4-lineHeight) !important;
-  }
-
-  .post-card__subtitle {
-    margin-top: var(--lsd-spacing-16) !important;
-    font-size: var(--lsd-subtitle4-fontSize) !important;
-    font-weight: var(--lsd-subtitle4-fontWeight) !important;
-    line-height: var(--lsd-subtitle4-lineHeight) !important;
+  .post-card__label *,
+  .post-card__authors-label * {
+    font-size: 12px !important;
+    line-height: 16px !important;
   }
 
   .post-card-wrapper {
     border-top: 1px solid rgb(var(--lsd-border-primary));
   }
 
+  .post-card__cover-image-wrapper {
+    display: flex;
+    justify-content: flex-end;
+
+    .post-card__cover-image {
+      display: block;
+      width: calc(2 / 3 * 100%) !important;
+    }
+  }
+
   ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
     margin-top: var(--lsd-spacing-40);
-    margin-bottom: var(--lsd-spacing-80);
+
+    .post-card {
+      gap: 0 !important;
+      padding-bottom: 0 !important;
+      height: 100%;
+    }
 
     .row {
       margin-right: -16px;
       padding-right: 16px;
+      gap: var(--lsd-spacing-16);
+      padding-bottom: var(--lsd-spacing-8);
+    }
+
+    .post-card__title-text {
+      font-size: 1.25rem !important;
+      line-height: 1.75rem !important;
+      margin-top: var(--lsd-spacing-8);
+    }
+
+    .post-card__authors-label {
+      margin-top: var(--lsd-spacing-4) !important;
+    }
+
+    .post-card__label {
+      margin-top: var(--lsd-spacing-32) !important;
     }
 
     .post-card-wrapper {
@@ -303,6 +334,15 @@ const FeaturedSecond = styled.div`
 
       & > div {
         width: 327px;
+      }
+    }
+
+    .post-card__cover-image-wrapper {
+      display: flex;
+      justify-content: flex-end;
+
+      .post-card__cover-image {
+        width: 100% !important;
       }
     }
 
