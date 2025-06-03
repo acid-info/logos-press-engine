@@ -227,26 +227,28 @@ const ShowMoreTagsButton = styled.div`
 `
 
 const FeaturedFirst = styled.div`
-  .post-card {
-    padding-bottom: 0 !important;
-  }
+  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
+    .post-card {
+      padding-bottom: 0 !important;
+    }
 
-  .post-card__label *,
-  .post-card__authors-label * {
-    font-size: 12px !important;
-    line-height: 16px !important;
-  }
+    .post-card__label *,
+    .post-card__authors-label * {
+      font-size: 12px !important;
+      line-height: 16px !important;
+    }
 
-  .post-card__authors-label {
-    margin-top: var(--lsd-spacing-4) !important;
-  }
+    .post-card__authors-label {
+      margin-top: var(--lsd-spacing-4) !important;
+    }
 
-  .post-card__label {
-    margin-top: var(--lsd-spacing-32) !important;
-  }
+    .post-card__label {
+      margin-top: var(--lsd-spacing-32) !important;
+    }
 
-  .post-card__title-text {
-    margin-top: var(--lsd-spacing-8);
+    .post-card__title-text {
+      margin-top: var(--lsd-spacing-8);
+    }
   }
 
   ${(props) => lsdUtils.breakpoint(props.theme, 'sm', 'up')} {
