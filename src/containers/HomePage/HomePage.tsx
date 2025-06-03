@@ -4,6 +4,7 @@ import styled from '@emotion/styled'
 import React, { useEffect, useMemo } from 'react'
 import { Grid, GridItem } from '../../components/Grid/Grid'
 import { Hero } from '../../components/Hero'
+import { PodcastShowInfo } from '../../components/PodcastShowInfo'
 import { PostsGrid } from '../../components/PostsGrid'
 import { Section } from '../../components/Section/Section'
 import { TagCard } from '../../components/TagCard'
@@ -13,7 +14,6 @@ import { ApiPaginatedPayload } from '../../types/data.types'
 import { LPE } from '../../types/lpe.types'
 import { lsdUtils } from '../../utils/lsd.utils'
 import { formatTagText } from '../../utils/string.utils'
-import { PodcastShowsPreview } from '../PodcastShowsPreview'
 
 export type HomePageProps = React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement>,
@@ -29,6 +29,45 @@ export type HomePageProps = React.DetailedHTMLProps<
 
 const TAGS_DESKTOP_LIMIT = 12
 const TAGS_MOBILE_LIMIT = 6
+
+const POSTS_GRID_CONFIG = {
+  pattern: [{ cols: 1, size: 'large' as const }],
+  breakpoints: [
+    {
+      breakpoint: 'xs' as const,
+      pattern: [{ cols: 1, size: 'small' as const }],
+    },
+  ],
+  isHoverable: true,
+  isSubtitleVisible: false,
+}
+
+const sortByDateDesc = <
+  T extends { publishedAt?: string | null; modifiedAt?: string | null },
+>(
+  items: T[],
+): T[] =>
+  items.sort((a, b) => {
+    const aDate = new Date(a.publishedAt || a.modifiedAt || 0).getTime()
+    const bDate = new Date(b.publishedAt || b.modifiedAt || 0).getTime()
+    return bDate - aDate
+  })
+
+const FeaturedContent: React.FC<{
+  posts: LPE.Post.Document[]
+  shows: LPE.Podcast.Show[]
+  variant: 'first' | 'second'
+}> = ({ posts, shows, variant }) => {
+  if (!posts.length) return null
+
+  const StyledWrapper = variant === 'first' ? FeaturedFirst : FeaturedSecond
+
+  return (
+    <StyledWrapper>
+      <PostsGrid {...POSTS_GRID_CONFIG} shows={shows} posts={posts} />
+    </StyledWrapper>
+  )
+}
 
 export const HomePage: React.FC<HomePageProps> = ({
   data,
@@ -65,16 +104,26 @@ export const HomePage: React.FC<HomePageProps> = ({
     }
   }
 
-  const firstFeaturedPost =
-    highlighted.sort(
-      (a, b) =>
-        new Date(b.publishedAt as string).getTime() -
-        new Date(a.publishedAt as string).getTime(),
-    )[0] ?? highlighted[0]
+  const allEpisodes = useMemo(() => {
+    return shows.flatMap((show) =>
+      (show.episodes || []).map((episode) => ({
+        ...episode,
+        show: show,
+      })),
+    )
+  }, [shows])
 
-  const secondFeaturedPosts = highlighted.filter(
-    (post) => post.id !== firstFeaturedPost?.id,
-  ) ?? [highlighted[1], highlighted[2]]
+  const sortedEpisodes = useMemo(
+    () => sortByDateDesc(allEpisodes).slice(0, 5),
+    [allEpisodes],
+  )
+  const sortedHighlighted = useMemo(
+    () => sortByDateDesc(highlighted).slice(0, 5),
+    [highlighted],
+  )
+
+  const [firstFeaturedPost, ...secondFeaturedPosts] = sortedHighlighted
+  const [featuredEpisode, ...remainingEpisodes] = sortedEpisodes
 
   return (
     <Root {...props}>
@@ -83,39 +132,45 @@ export const HomePage: React.FC<HomePageProps> = ({
       </HeroContainer>
       <Container>
         <div>
-          <FeaturedFirst>
-            <PostsGrid
-              isHoverable
-              isSubtitleVisible={false}
-              shows={shows}
-              posts={[firstFeaturedPost]}
-              pattern={[{ cols: 1, size: 'large' }]}
-              breakpoints={[
-                {
-                  breakpoint: 'xs',
-                  pattern: [{ cols: 1, size: 'small' }],
-                },
-              ]}
-            />
-          </FeaturedFirst>
-          <FeaturedSecond>
-            <PostsGrid
-              isHoverable
-              isSubtitleVisible={false}
-              shows={shows}
-              posts={secondFeaturedPosts}
-              pattern={[{ cols: 1, size: 'large' }]}
-              breakpoints={[
-                {
-                  breakpoint: 'xs',
-                  pattern: [{ cols: 1, size: 'small' }],
-                },
-              ]}
-            />
-          </FeaturedSecond>
+          <FeaturedContent
+            posts={[firstFeaturedPost]}
+            shows={shows}
+            variant="first"
+          />
+          <FeaturedContent
+            posts={secondFeaturedPosts}
+            shows={shows}
+            variant="second"
+          />
         </div>
 
-        <PodcastShowsPreview data={{ shows }} />
+        <div>
+          <PodcastsSection>
+            <div className="podcasts__header">
+              <Typography component="h2" variant="h2">
+                Podcasts
+              </Typography>
+            </div>
+            <div className="podcasts__all-shows-info">
+              {shows.slice(0, 2).map((show) => (
+                <PodcastShowInfo key={show.id} show={show} />
+              ))}
+            </div>
+          </PodcastsSection>
+
+          <div>
+            <FeaturedContent
+              posts={[featuredEpisode]}
+              shows={shows}
+              variant="first"
+            />
+            <FeaturedContent
+              posts={remainingEpisodes}
+              shows={shows}
+              variant="second"
+            />
+          </div>
+        </div>
 
         <BrowseAll title="Browse all" size="large">
           <TagsTitle>
@@ -351,6 +406,33 @@ const FeaturedSecond = styled.div`
     & > div > div {
       display: flex !important;
       overflow-x: auto !important;
+    }
+  }
+`
+
+const PodcastsSection = styled.div`
+  .podcasts__header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .podcasts__all-shows-info {
+    display: flex;
+    flex-direction: row;
+    gap: var(--lsd-spacing-16);
+    margin-top: var(--lsd-spacing-24);
+    margin-bottom: 120px;
+  }
+
+  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
+    .podcasts__header {
+      border-bottom: none;
+
+      h2 {
+        ${lsdUtils.typography('h3')}
+      }
     }
   }
 `
