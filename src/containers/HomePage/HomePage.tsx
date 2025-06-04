@@ -158,7 +158,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
           </PodcastsSection>
 
-          <div>
+          <PodcastsContent>
             <FeaturedContent
               posts={[featuredEpisode]}
               shows={shows}
@@ -169,7 +169,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               shows={shows}
               variant="second"
             />
-          </div>
+          </PodcastsContent>
         </div>
 
         <BrowseAll title="Browse all" size="large">
@@ -434,5 +434,11 @@ const PodcastsSection = styled.div`
         ${lsdUtils.typography('h3')}
       }
     }
+  }
+`
+
+const PodcastsContent = styled.div`
+  .post-card-wrapper {
+    border-top: 1px solid rgb(var(--lsd-border-primary));
   }
 `
