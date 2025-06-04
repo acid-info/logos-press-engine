@@ -16,4 +16,8 @@ const Container = styled.div`
   & > *:not(:first-child) {
     margin-top: var(--lsd-spacing-16);
   }
+
+  .row {
+    gap: var(--lsd-spacing-16);
+  }
 `

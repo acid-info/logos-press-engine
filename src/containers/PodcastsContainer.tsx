@@ -36,7 +36,7 @@ const PodcastsContainer = (props: Props) => {
 
         <Episodes>
           <PodcastSection title="Latest episodes">
-            <PostsGrid
+            <FeaturedPostsGrid
               posts={highlightPosts}
               shows={shows}
               pattern={[{ cols: 2, size: 'medium' }]}
@@ -51,7 +51,7 @@ const PodcastsContainer = (props: Props) => {
                 },
               ]}
             />
-            <PostsGrid
+            <SecondaryPostsGrid
               shows={shows}
               bordered={false}
               posts={latestPosts.slice(0, 4)}
@@ -83,6 +83,34 @@ const PodcastsGrid = styled(Grid)`
   ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
     padding-top: var(--lsd-spacing-8);
   }
+`
+
+const postCardContentStyles = `
+  .post-card__content {
+    h3 {
+      margin-top: var(--lsd-spacing-8);
+    }
+
+    .post-card__label {
+      margin-top: var(--lsd-spacing-32) !important;
+    }
+  }
+`
+
+const FeaturedPostsGrid = styled(PostsGrid)`
+  ${postCardContentStyles}
+
+  .post-card__content {
+    order: 2;
+  }
+
+  .post-card__cover-image-wrapper {
+    order: 1;
+  }
+`
+
+const SecondaryPostsGrid = styled(PostsGrid)`
+  ${postCardContentStyles}
 `
 
 const Episodes = styled.div`
