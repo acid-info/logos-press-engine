@@ -365,12 +365,6 @@ PostCard.styles = {
       ${PostCardShowDetails.styles.large(theme)}
     }
 
-    &:not(.post-card--with-image) {
-    }
-
-    &.post-card__search-explore {
-    }
-
     &.post-card__search-result {
       padding: 0;
       gap: 0 var(--lsd-spacing-96);
