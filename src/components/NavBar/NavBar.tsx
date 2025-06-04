@@ -10,9 +10,7 @@ import {
   IconButton,
   MenuIcon,
   SearchIcon,
-  Typography,
 } from '@acid-info/lsd-react'
-import { css } from '@emotion/react'
 import styled from '@emotion/styled'
 import clsx from 'clsx'
 import Link from 'next/link'
@@ -69,6 +67,7 @@ export default function NavBar({ defaultState }: NavBarProps) {
   const buttons = (
     <>
       <Buttons>
+        <SubscribeButton />
         <ThemeSwitch
           toggle={themeState.toggleMode}
           mode={themeState.get().mode}
@@ -93,19 +92,10 @@ export default function NavBar({ defaultState }: NavBarProps) {
         <Buttons mobile>{searchButton}</Buttons>
         <NavLinksContainer>
           <NavbarLinks links={NavLinksItems} />
-          <SubscribeButton />
         </NavLinksContainer>
         <Centered>
           <Logo href="/">
-            <LogosIcon color="primary" />
-            <PressLogoType
-              variant="h4"
-              component="span"
-              genericFontFamily="serif"
-              display={state.showTitle.get() || showMobileMenu}
-            >
-              {state.title.get()}
-            </PressLogoType>
+            <LogosIcon color="primary" width="48px" height="48px" />
           </Logo>
         </Centered>
         <ControlsContainer>
@@ -119,19 +109,6 @@ export default function NavBar({ defaultState }: NavBarProps) {
     </Container>
   )
 }
-
-const PressLogoType = styled(Typography)<{ display: boolean }>`
-  text-transform: uppercase;
-  ${(props) =>
-    !props.display &&
-    css`
-      display: none;
-    `}
-
-  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'down')} {
-    display: none;
-  }
-`
 
 const SocialMediaKitContainer = styled.div`
   ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'down')} {
@@ -169,6 +146,11 @@ const Buttons = styled.div<{ mobile?: boolean }>`
     :last-of-type {
       margin-left: -1px;
     }
+  }
+
+  .lsd-button {
+    height: 28px;
+    margin-right: var(--lsd-spacing-16);
   }
 
   ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
