@@ -9,7 +9,6 @@ import { PostsGrid } from '../../components/PostsGrid'
 import { Section } from '../../components/Section/Section'
 import { TagCard } from '../../components/TagCard'
 import { uiConfigs } from '../../configs/ui.configs'
-import { useRecentPosts } from '../../queries/useRecentPosts.query'
 import { ApiPaginatedPayload } from '../../types/data.types'
 import { LPE } from '../../types/lpe.types'
 import { lsdUtils } from '../../utils/lsd.utils'
@@ -29,6 +28,9 @@ export type HomePageProps = React.DetailedHTMLProps<
 
 const TAGS_DESKTOP_LIMIT = 12
 const TAGS_MOBILE_LIMIT = 6
+const FEATURED_ARTICLES_LIMIT = 4
+const FEATURED_EPISODES_LIMIT = 4
+const PODCAST_SHOWS_INFO_DISPLAY_LIMIT = 2
 
 const POSTS_GRID_CONFIG = {
   pattern: [{ cols: 1, size: 'large' as const }],
@@ -75,7 +77,6 @@ export const HomePage: React.FC<HomePageProps> = ({
   data: { highlighted = [], shows = [], tags: _tags = [], latest },
   ...props
 }) => {
-  const query = useRecentPosts({ initialData: latest, limit: 12 })
   const tags = useMemo(
     () =>
       _tags
@@ -115,11 +116,11 @@ export const HomePage: React.FC<HomePageProps> = ({
   }, [shows])
 
   const sortedEpisodes = useMemo(
-    () => sortByDateDesc(allEpisodes).slice(0, 5),
+    () => sortByDateDesc(allEpisodes).slice(0, FEATURED_EPISODES_LIMIT),
     [allEpisodes],
   )
   const sortedHighlighted = useMemo(
-    () => sortByDateDesc(highlighted).slice(0, 5),
+    () => sortByDateDesc(highlighted).slice(0, FEATURED_ARTICLES_LIMIT),
     [highlighted],
   )
 
@@ -153,7 +154,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               </Typography>
             </div>
             <div className="podcasts__all-shows-info">
-              {shows.slice(0, 2).map((show) => (
+              {shows.slice(0, PODCAST_SHOWS_INFO_DISPLAY_LIMIT).map((show) => (
                 <PodcastShowInfo key={show.id} show={show} />
               ))}
             </div>
