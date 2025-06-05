@@ -1,10 +1,10 @@
 import { Grid, GridItem } from '@/components/Grid/Grid'
 import PodcastsLists from '@/components/Podcasts/Podcasts.Lists'
 import styled from '@emotion/styled'
-import { PodcastSection } from '../components/Podcasts/Podcast.Section'
-import { PostsGrid } from '../components/PostsGrid'
-import { LPE } from '../types/lpe.types'
-import { lsdUtils } from '../utils/lsd.utils'
+import { PodcastSection } from '../../components/Podcasts/Podcast.Section'
+import { LPE } from '../../types/lpe.types'
+import { lsdUtils } from '../../utils/lsd.utils'
+import { FeaturedPostsGrid, SecondaryPostsGrid } from './Podcasts.styles'
 
 interface Props {
   shows: LPE.Podcast.Show[]
@@ -83,34 +83,6 @@ const PodcastsGrid = styled(Grid)`
   ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
     padding-top: var(--lsd-spacing-8);
   }
-`
-
-const postCardContentStyles = `
-  .post-card__content {
-    h3 {
-      margin-top: var(--lsd-spacing-8);
-    }
-
-    .post-card__label {
-      margin-top: var(--lsd-spacing-32) !important;
-    }
-  }
-`
-
-const FeaturedPostsGrid = styled(PostsGrid)`
-  ${postCardContentStyles}
-
-  .post-card__content {
-    order: 2;
-  }
-
-  .post-card__cover-image-wrapper {
-    order: 1;
-  }
-`
-
-const SecondaryPostsGrid = styled(PostsGrid)`
-  ${postCardContentStyles}
 `
 
 const Episodes = styled.div`

@@ -1,5 +1,5 @@
 import { SEO } from '@/components/SEO'
-import PodcastShowContainer from '@/containers/PodcastShowContainer'
+import PodcastShowContainer from '@/containers/Podcasts/PodcastShowContainer'
 import { LPERssFeed } from '@/services/rss.service'
 import { GetStaticPropsContext } from 'next'
 import { useRouter } from 'next/router'
