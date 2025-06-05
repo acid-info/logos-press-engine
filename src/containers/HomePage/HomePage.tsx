@@ -40,6 +40,7 @@ const POSTS_GRID_CONFIG = {
   ],
   isHoverable: true,
   isSubtitleVisible: false,
+  isClickable: true,
 }
 
 const sortByDateDesc = <

@@ -10,6 +10,7 @@ import { CommonProps } from '@acid-info/lsd-react/dist/utils/useCommonProps'
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
 import clsx from 'clsx'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 import { LPE } from '../../types/lpe.types'
 import { lsdUtils } from '../../utils/lsd.utils'
@@ -45,6 +46,7 @@ export type PostCardProps = CommonProps &
     displayYear?: boolean
     isHoverable?: boolean
     isSubtitleVisible?: boolean
+    isClickable?: boolean
   }
 
 export const PostCard = (_props: PostCardProps) => {
@@ -66,8 +68,11 @@ export const PostCard = (_props: PostCardProps) => {
     displayYear = true,
     isHoverable = false,
     isSubtitleVisible = true,
+    isClickable = false,
     ...props
   } = _props
+
+  const router = useRouter()
 
   const link = getPostLink(contentType, {
     showSlug: podcastShowDetails?.slug,
@@ -119,6 +124,8 @@ export const PostCard = (_props: PostCardProps) => {
 
   return (
     <Container
+      onClick={isClickable ? () => router.push(link) : undefined}
+      isClickable={isClickable}
       className={clsx(
         'post-card',
         applySizeStyles && applySizeStyles && `post-card--${size}`,
@@ -451,11 +458,26 @@ PostCard.styles = {
     }
   `,
 }
-
-const Container = styled.div<Pick<PostCardProps, 'size'>>`
+const Container = styled.div<Pick<PostCardProps, 'size' | 'isClickable'>>`
   display: flex;
   flex-direction: column;
-  position: 'relative';
+  position: relative;
+
+  ${({ isClickable }) =>
+    isClickable &&
+    css`
+      cursor: pointer;
+
+      &,
+      &:link,
+      &:visited,
+      &:hover,
+      &:active,
+      &:focus {
+        text-decoration: none;
+        color: inherit;
+      }
+    `}
 
   .post-card__title {
     text-decoration: none;

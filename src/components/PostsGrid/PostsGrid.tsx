@@ -16,6 +16,7 @@ export type PostsGridProps = Partial<React.ComponentProps<typeof Container>> & {
   displayYear?: boolean
   isHoverable?: boolean
   isSubtitleVisible?: boolean
+  isClickable?: boolean
 }
 
 export const PostsGrid: React.FC<PostsGridProps> = ({
@@ -29,6 +30,7 @@ export const PostsGrid: React.FC<PostsGridProps> = ({
   displayYear = true,
   isHoverable = false,
   isSubtitleVisible = true,
+  isClickable = false,
   ...props
 }) => {
   const theme = useTheme()
@@ -87,6 +89,7 @@ export const PostsGrid: React.FC<PostsGridProps> = ({
               }}
               isHoverable={isHoverable}
               isSubtitleVisible={isSubtitleVisible}
+              isClickable={isClickable}
             />
           </div>
         ))}
