@@ -90,6 +90,11 @@ const CustomLink = styled(Link)<CustomLinkProps>`
       display: flex;
       gap: 12px;
       align-items: center;
+      cursor: pointer;
+
+      label {
+        cursor: pointer;
+      }
     }
 
     &__logo {
