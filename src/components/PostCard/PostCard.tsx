@@ -233,7 +233,7 @@ PostCard.styles = {
 
     .post-card__cover-image {
       & > div {
-        padding-top: calc(9 / 16 * 100%) !important;
+        padding-top: calc(9 / 16 * 100%);
 
         & > div {
           width: 100%;
@@ -281,7 +281,7 @@ PostCard.styles = {
 
     .post-card__cover-image {
       & > div {
-        padding-top: calc(9 / 16 * 100%) !important;
+        padding-top: calc(9 / 16 * 100%);
 
         & > div {
           width: 100%;
@@ -328,7 +328,7 @@ PostCard.styles = {
       width: 100%;
 
       & > div {
-        padding-top: calc(9 / 16 * 100%) !important;
+        padding-top: calc(9 / 16 * 100%);
 
         & > div {
           width: 100%;
@@ -439,7 +439,7 @@ PostCard.styles = {
           grid-row: 1 / 2;
 
           & > div {
-            padding-top: calc(9 / 16 * 94px) !important;
+            padding-top: calc(9 / 16 * 94px);
 
             & > div {
               width: 94px;

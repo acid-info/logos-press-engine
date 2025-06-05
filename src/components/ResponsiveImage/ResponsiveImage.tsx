@@ -49,10 +49,9 @@ export const ResponsiveImage = ({
   return (
     <Container
       className={`${fill ? 'fill' : ''} ${className || ''}`}
-      style={{
-        paddingTop: height ? 0 : `calc(${data.height / data.width} * 100%)`,
-        height: height || 'auto',
-      }}
+      $height_={height}
+      $imageWidth={data.width}
+      $imageHeight={data.height}
     >
       <div className="comment">
         <img
@@ -70,12 +69,23 @@ export const ResponsiveImage = ({
   )
 }
 
-const Container = styled.div`
+type ContainerProps = {
+  $height_?: number | string | null
+  $imageWidth: number
+  $imageHeight: number
+}
+
+const Container = styled('div')<ContainerProps>`
   position: relative;
   width: 100%;
   overflow: hidden;
   filter: grayscale(100%);
   transition: filter 0.1s ease-in-out;
+  height: ${(props) => props.$height_ || 'auto'};
+  padding-top: ${(props) =>
+    props.$height_
+      ? 0
+      : `calc(${props.$imageHeight / props.$imageWidth} * 100%)`};
 
   :hover {
     filter: grayscale(0%);

@@ -308,6 +308,14 @@ const FeaturedFirst = styled.div`
     }
   }
 
+  ${(props) => lsdUtils.breakpoint(props.theme, 'lg', 'up')} {
+    .post-card__cover-image {
+      & > div {
+        padding-top: 379px !important;
+      }
+    }
+  }
+
   ${(props) => lsdUtils.breakpoint(props.theme, 'sm', 'up')} {
     .post-card {
       gap: 0 var(--lsd-spacing-16) !important;
@@ -355,6 +363,14 @@ const FeaturedSecond = styled.div`
     .post-card__cover-image {
       display: block;
       width: calc(2 / 3 * 100%) !important;
+    }
+  }
+
+  ${(props) => lsdUtils.breakpoint(props.theme, 'lg', 'up')} {
+    .post-card__cover-image {
+      & > div {
+        padding-top: 241px !important;
+      }
     }
   }
 
