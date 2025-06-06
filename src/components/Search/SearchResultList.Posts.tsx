@@ -12,7 +12,7 @@ export const SearchResultListPosts = ({ posts, shows }: Props) => {
       {posts.map((post, index) => {
         const data = PostCard.toData(post.data, shows)
         return (
-          <PostCard
+          <StyledPostCard
             data={{
               ...data,
               authors: [],
@@ -32,4 +32,10 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: var(--lsd-spacing-40);
+`
+
+const StyledPostCard = styled(PostCard)`
+  .post-card__content {
+    flex: 2 !important;
+  }
 `

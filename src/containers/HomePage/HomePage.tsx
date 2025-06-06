@@ -1,19 +1,18 @@
 import { useIsMobile } from '@/utils/ui.utils'
-import { Button, ChevronRightIcon, Typography } from '@acid-info/lsd-react'
+import { ChevronRightIcon, Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import React, { useEffect, useMemo } from 'react'
 import { Grid, GridItem } from '../../components/Grid/Grid'
 import { Hero } from '../../components/Hero'
+import { PodcastShowInfo } from '../../components/PodcastShowInfo'
 import { PostsGrid } from '../../components/PostsGrid'
 import { Section } from '../../components/Section/Section'
 import { TagCard } from '../../components/TagCard'
 import { uiConfigs } from '../../configs/ui.configs'
-import { useRecentPosts } from '../../queries/useRecentPosts.query'
 import { ApiPaginatedPayload } from '../../types/data.types'
 import { LPE } from '../../types/lpe.types'
 import { lsdUtils } from '../../utils/lsd.utils'
 import { formatTagText } from '../../utils/string.utils'
-import { PodcastShowsPreview } from '../PodcastShowsPreview'
 
 export type HomePageProps = React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement>,
@@ -29,13 +28,55 @@ export type HomePageProps = React.DetailedHTMLProps<
 
 const TAGS_DESKTOP_LIMIT = 12
 const TAGS_MOBILE_LIMIT = 6
+const FEATURED_ARTICLES_LIMIT = 4
+const FEATURED_EPISODES_LIMIT = 4
+const PODCAST_SHOWS_INFO_DISPLAY_LIMIT = 2
+
+const POSTS_GRID_CONFIG = {
+  pattern: [{ cols: 1, size: 'large' as const }],
+  breakpoints: [
+    {
+      breakpoint: 'xs' as const,
+      pattern: [{ cols: 1, size: 'small' as const }],
+    },
+  ],
+  isHoverable: true,
+  isSubtitleVisible: false,
+  isClickable: true,
+}
+
+const sortByDateDesc = <
+  T extends { publishedAt?: string | null; modifiedAt?: string | null },
+>(
+  items: T[],
+): T[] =>
+  items.sort((a, b) => {
+    const aDate = new Date(a.publishedAt || a.modifiedAt || 0).getTime()
+    const bDate = new Date(b.publishedAt || b.modifiedAt || 0).getTime()
+    return bDate - aDate
+  })
+
+const FeaturedContent: React.FC<{
+  posts: LPE.Post.Document[]
+  shows: LPE.Podcast.Show[]
+  variant: 'first' | 'second'
+}> = ({ posts, shows, variant }) => {
+  if (!posts.length) return null
+
+  const StyledWrapper = variant === 'first' ? FeaturedFirst : FeaturedSecond
+
+  return (
+    <StyledWrapper>
+      <PostsGrid {...POSTS_GRID_CONFIG} shows={shows} posts={posts} />
+    </StyledWrapper>
+  )
+}
 
 export const HomePage: React.FC<HomePageProps> = ({
   data,
   data: { highlighted = [], shows = [], tags: _tags = [], latest },
   ...props
 }) => {
-  const query = useRecentPosts({ initialData: latest, limit: 12 })
   const tags = useMemo(
     () =>
       _tags
@@ -65,16 +106,26 @@ export const HomePage: React.FC<HomePageProps> = ({
     }
   }
 
-  const firstFeaturedPost =
-    highlighted.sort(
-      (a, b) =>
-        new Date(b.publishedAt as string).getTime() -
-        new Date(a.publishedAt as string).getTime(),
-    )[0] ?? highlighted[0]
+  const allEpisodes = useMemo(() => {
+    return shows.flatMap((show) =>
+      (show.episodes || []).map((episode) => ({
+        ...episode,
+        show: show,
+      })),
+    )
+  }, [shows])
 
-  const secondFeaturedPosts = highlighted.filter(
-    (post) => post.id !== firstFeaturedPost?.id,
-  ) ?? [highlighted[1], highlighted[2]]
+  const sortedEpisodes = useMemo(
+    () => sortByDateDesc(allEpisodes).slice(0, FEATURED_EPISODES_LIMIT),
+    [allEpisodes],
+  )
+  const sortedHighlighted = useMemo(
+    () => sortByDateDesc(highlighted).slice(0, FEATURED_ARTICLES_LIMIT),
+    [highlighted],
+  )
+
+  const [firstFeaturedPost, ...secondFeaturedPosts] = sortedHighlighted
+  const [featuredEpisode, ...remainingEpisodes] = sortedEpisodes
 
   return (
     <Root {...props}>
@@ -83,81 +134,45 @@ export const HomePage: React.FC<HomePageProps> = ({
       </HeroContainer>
       <Container>
         <div>
-          <FeaturedFirst>
-            <PostsGrid
-              shows={shows}
-              posts={[firstFeaturedPost]}
-              pattern={[{ cols: 1, size: 'large' }]}
-              breakpoints={[
-                {
-                  breakpoint: 'xs',
-                  pattern: [{ cols: 1, size: 'small' }],
-                },
-                {
-                  breakpoint: 'md',
-                  pattern: [{ cols: 1, size: 'large' }],
-                },
-              ]}
-            />
-          </FeaturedFirst>
-          <FeaturedSecond>
-            <PostsGrid
-              shows={shows}
-              posts={secondFeaturedPosts}
-              pattern={[{ cols: 2, size: 'large' }]}
-              breakpoints={[
-                {
-                  breakpoint: 'xs',
-                  pattern: [{ cols: 2, size: 'small' }],
-                },
-                {
-                  breakpoint: 'md',
-                  pattern: [{ cols: 2, size: 'large' }],
-                },
-              ]}
-            />
-          </FeaturedSecond>
-          <Section title="Latest posts" bordered={highlighted.length > 0}>
-            <PostsGrid
-              shows={shows}
-              pattern={[{ cols: 4, size: 'small' }]}
-              breakpoints={[
-                {
-                  breakpoint: 'xs',
-                  pattern: [
-                    {
-                      cols: 1,
-                      size: 'small',
-                    },
-                  ],
-                },
-                {
-                  breakpoint: 'sm',
-                  pattern: [
-                    {
-                      cols: 2,
-                      size: 'small',
-                    },
-                  ],
-                },
-                {
-                  breakpoint: 'md',
-                  pattern: [
-                    {
-                      cols: 4,
-                      size: 'small',
-                    },
-                  ],
-                },
-              ]}
-              posts={query.posts
-                .filter((post) => !post.highlighted)
-                .slice(0, 8)}
-            />
-          </Section>
+          <FeaturedContent
+            posts={[firstFeaturedPost]}
+            shows={shows}
+            variant="first"
+          />
+          <FeaturedContent
+            posts={secondFeaturedPosts}
+            shows={shows}
+            variant="second"
+          />
         </div>
 
-        <PodcastShowsPreview data={{ shows }} />
+        <div>
+          <PodcastsSection>
+            <div className="podcasts__header">
+              <Typography component="h2" variant="h2">
+                Podcasts
+              </Typography>
+            </div>
+            <div className="podcasts__all-shows-info">
+              {shows.slice(0, PODCAST_SHOWS_INFO_DISPLAY_LIMIT).map((show) => (
+                <PodcastShowInfo key={show.id} show={show} />
+              ))}
+            </div>
+          </PodcastsSection>
+
+          <PodcastsContent>
+            <FeaturedContent
+              posts={[featuredEpisode]}
+              shows={shows}
+              variant="first"
+            />
+            <FeaturedContent
+              posts={remainingEpisodes}
+              shows={shows}
+              variant="second"
+            />
+          </PodcastsContent>
+        </div>
 
         <BrowseAll title="Browse all" size="large">
           <TagsTitle>
@@ -186,56 +201,6 @@ export const HomePage: React.FC<HomePageProps> = ({
           <ShowMoreTagsButton onClick={handleTagsLimit}>
             See {tagsLimit === TAGS_MOBILE_LIMIT ? 'more' : 'less'} tags
           </ShowMoreTagsButton>
-          <AllPosts title="All posts">
-            <PostsGrid
-              shows={shows}
-              pattern={[{ cols: 4, size: 'small' }]}
-              breakpoints={[
-                {
-                  breakpoint: 'xs',
-                  pattern: [
-                    {
-                      cols: 1,
-                      size: 'small',
-                    },
-                  ],
-                },
-                {
-                  breakpoint: 'sm',
-                  pattern: [
-                    {
-                      cols: 2,
-                      size: 'small',
-                    },
-                  ],
-                },
-                {
-                  breakpoint: 'md',
-                  pattern: [
-                    {
-                      cols: 4,
-                      size: 'small',
-                    },
-                  ],
-                },
-              ]}
-              posts={query.posts}
-            />
-          </AllPosts>
-
-          {query.hasNextPage && (
-            <div className="load-more">
-              <Button
-                onClick={() => query.fetchNextPage()}
-                size="large"
-                disabled={query.isLoading}
-              >
-                <Typography variant="label1">
-                  {query.isFetchingNextPage ? 'Loading...' : 'See more posts'}
-                </Typography>
-              </Button>
-            </div>
-          )}
         </BrowseAll>
       </Container>
     </Root>
@@ -278,11 +243,7 @@ const Container = styled.div`
 
   display: flex;
   flex-direction: column;
-  gap: var(--lsd-spacing-120) 0;
-
-  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
-    gap: var(--lsd-spacing-80) 0;
-  }
+  gap: 200px;
 `
 
 const BrowseAll = styled(Section)`
@@ -290,14 +251,6 @@ const BrowseAll = styled(Section)`
     & > div:first-of-type {
       padding: var(--lsd-spacing-24) 0;
     }
-  }
-`
-
-const AllPosts = styled(Section)`
-  margin-top: var(--lsd-spacing-64);
-
-  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
-    margin-top: var(--lsd-spacing-40);
   }
 `
 
@@ -331,6 +284,38 @@ const ShowMoreTagsButton = styled.div`
 `
 
 const FeaturedFirst = styled.div`
+  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
+    .post-card {
+      padding-bottom: 0 !important;
+    }
+
+    .post-card__label *,
+    .post-card__authors-label * {
+      font-size: 12px !important;
+      line-height: 16px !important;
+    }
+
+    .post-card__authors-label {
+      margin-top: var(--lsd-spacing-4) !important;
+    }
+
+    .post-card__label {
+      margin-top: var(--lsd-spacing-32) !important;
+    }
+
+    .post-card__title-text {
+      margin-top: var(--lsd-spacing-8);
+    }
+  }
+
+  ${(props) => lsdUtils.breakpoint(props.theme, 'lg', 'up')} {
+    .post-card__cover-image {
+      & > div {
+        padding-top: 379px !important;
+      }
+    }
+  }
+
   ${(props) => lsdUtils.breakpoint(props.theme, 'sm', 'up')} {
     .post-card {
       gap: 0 var(--lsd-spacing-16) !important;
@@ -340,13 +325,9 @@ const FeaturedFirst = styled.div`
       margin-top: var(--lsd-spacing-32) !important;
     }
 
-    .post-card__title h3 {
-      font-size: var(--lsd-h2-fontSize) !important;
-      line-height: var(--lsd-h2-lineHeight) !important;
-    }
-
-    .post-card__subtitle {
-      margin-top: var(--lsd-spacing-16) !important;
+    .post-card__title-text {
+      font-size: 40px !important;
+      line-height: 48px !important;
     }
 
     .post-card-wrapper > div {
@@ -356,44 +337,71 @@ const FeaturedFirst = styled.div`
 `
 
 const FeaturedSecond = styled.div`
-  margin-bottom: var(--lsd-spacing-64);
-
   .post-card {
-    gap: 0 var(--lsd-spacing-16) !important;
+    gap: var(--lsd-spacing-16) !important;
   }
 
   .post-card__title-text {
-    font-size: var(--lsd-h4-fontSize) !important;
-    line-height: var(--lsd-h4-lineHeight) !important;
+    font-size: 32px !important;
+    line-height: 40px !important;
   }
 
-  .post-card__label {
-    margin-top: var(--lsd-spacing-16) !important;
-  }
-
-  .post-card__label * {
-    font-size: var(--lsd-subtitle4-fontSize) !important;
-    line-height: var(--lsd-subtitle4-lineHeight) !important;
-  }
-
-  .post-card__subtitle {
-    margin-top: var(--lsd-spacing-16) !important;
-    font-size: var(--lsd-subtitle4-fontSize) !important;
-    font-weight: var(--lsd-subtitle4-fontWeight) !important;
-    line-height: var(--lsd-subtitle4-lineHeight) !important;
+  .post-card__label *,
+  .post-card__authors-label * {
+    font-size: 12px !important;
+    line-height: 16px !important;
   }
 
   .post-card-wrapper {
     border-top: 1px solid rgb(var(--lsd-border-primary));
   }
 
+  .post-card__cover-image-wrapper {
+    display: flex;
+    justify-content: flex-end;
+
+    .post-card__cover-image {
+      display: block;
+      width: calc(2 / 3 * 100%) !important;
+    }
+  }
+
+  ${(props) => lsdUtils.breakpoint(props.theme, 'lg', 'up')} {
+    .post-card__cover-image {
+      & > div {
+        padding-top: 241px !important;
+      }
+    }
+  }
+
   ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
     margin-top: var(--lsd-spacing-40);
-    margin-bottom: var(--lsd-spacing-80);
+
+    .post-card {
+      gap: 0 !important;
+      padding-bottom: 0 !important;
+      height: 100%;
+    }
 
     .row {
       margin-right: -16px;
       padding-right: 16px;
+      gap: var(--lsd-spacing-16);
+      padding-bottom: var(--lsd-spacing-8);
+    }
+
+    .post-card__title-text {
+      font-size: 1.25rem !important;
+      line-height: 1.75rem !important;
+      margin-top: var(--lsd-spacing-8);
+    }
+
+    .post-card__authors-label {
+      margin-top: var(--lsd-spacing-4) !important;
+    }
+
+    .post-card__label {
+      margin-top: var(--lsd-spacing-32) !important;
     }
 
     .post-card-wrapper {
@@ -404,9 +412,51 @@ const FeaturedSecond = styled.div`
       }
     }
 
+    .post-card__cover-image-wrapper {
+      display: flex;
+      justify-content: flex-end;
+
+      .post-card__cover-image {
+        width: 100% !important;
+      }
+    }
+
     & > div > div {
       display: flex !important;
       overflow-x: auto !important;
     }
+  }
+`
+
+const PodcastsSection = styled.div`
+  .podcasts__header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .podcasts__all-shows-info {
+    display: flex;
+    flex-direction: row;
+    gap: var(--lsd-spacing-16);
+    margin-top: var(--lsd-spacing-24);
+    margin-bottom: 120px;
+  }
+
+  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
+    .podcasts__header {
+      border-bottom: none;
+
+      h2 {
+        ${lsdUtils.typography('h3')}
+      }
+    }
+  }
+`
+
+const PodcastsContent = styled.div`
+  .post-card-wrapper {
+    border-top: 1px solid rgb(var(--lsd-border-primary));
   }
 `

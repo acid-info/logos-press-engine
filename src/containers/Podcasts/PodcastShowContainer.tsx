@@ -2,12 +2,12 @@ import { Grid, GridItem } from '@/components/Grid/Grid'
 import PodcastShowCard from '@/components/Podcasts/PodcastShowCard'
 import { Button } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
-import { PodcastSection } from '../components/Podcasts/Podcast.Section'
-import { PostsGrid } from '../components/PostsGrid'
-import { useRecentEpisodes } from '../queries/useRecentEpisodes.query'
-import { ApiPaginatedPayload } from '../types/data.types'
-import { LPE } from '../types/lpe.types'
-import { lsdUtils } from '../utils/lsd.utils'
+import { PodcastSection } from '../../components/Podcasts/Podcast.Section'
+import { useRecentEpisodes } from '../../queries/useRecentEpisodes.query'
+import { ApiPaginatedPayload } from '../../types/data.types'
+import { LPE } from '../../types/lpe.types'
+import { lsdUtils } from '../../utils/lsd.utils'
+import { FeaturedPostsGrid, SecondaryPostsGrid } from './Podcasts.styles'
 
 interface Props {
   show: LPE.Podcast.Show
@@ -39,7 +39,7 @@ const PodcastShowContainer = (props: Props) => {
         <PodcastsBodyContainer>
           <CustomPodcastShowCard show={show} />
           <PodcastSection title="Latest episodes">
-            <PostsGrid
+            <FeaturedPostsGrid
               shows={[show]}
               posts={highlightedPosts}
               pattern={[
@@ -60,7 +60,7 @@ const PodcastShowContainer = (props: Props) => {
                 },
               ]}
             />
-            <PostsGrid
+            <SecondaryPostsGrid
               shows={[show]}
               posts={latestPosts}
               pattern={[

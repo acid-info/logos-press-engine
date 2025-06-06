@@ -1,5 +1,5 @@
 import { SEO } from '@/components/SEO'
-import PodcastsContainer from '@/containers/PodcastsContainer'
+import PodcastsContainer from '@/containers/Podcasts/PodcastsContainer'
 import { GetStaticPropsContext } from 'next'
 import { ReactNode } from 'react'
 import { DefaultLayout } from '../../layouts/DefaultLayout'

@@ -44,11 +44,11 @@ export const Hero: React.FC<HeroProps> = ({ ...props }) => {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: var(--lsd-spacing-8) 0;
+  gap: 16px 0;
   align-items: center;
 
   position: relative;
-  padding: var(--lsd-spacing-40) 0 var(--lsd-spacing-64);
+  padding: 84px 0 108px;
 
   ${(props) => lsdUtils.breakpoint(props.theme, 'sm', 'down')} {
     padding: 8px 16px 32px 16px;

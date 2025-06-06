@@ -1,10 +1,10 @@
 import { Grid, GridItem } from '@/components/Grid/Grid'
 import PodcastsLists from '@/components/Podcasts/Podcasts.Lists'
 import styled from '@emotion/styled'
-import { PodcastSection } from '../components/Podcasts/Podcast.Section'
-import { PostsGrid } from '../components/PostsGrid'
-import { LPE } from '../types/lpe.types'
-import { lsdUtils } from '../utils/lsd.utils'
+import { PodcastSection } from '../../components/Podcasts/Podcast.Section'
+import { LPE } from '../../types/lpe.types'
+import { lsdUtils } from '../../utils/lsd.utils'
+import { FeaturedPostsGrid, SecondaryPostsGrid } from './Podcasts.styles'
 
 interface Props {
   shows: LPE.Podcast.Show[]
@@ -36,7 +36,7 @@ const PodcastsContainer = (props: Props) => {
 
         <Episodes>
           <PodcastSection title="Latest episodes">
-            <PostsGrid
+            <FeaturedPostsGrid
               posts={highlightPosts}
               shows={shows}
               pattern={[{ cols: 2, size: 'medium' }]}
@@ -51,7 +51,7 @@ const PodcastsContainer = (props: Props) => {
                 },
               ]}
             />
-            <PostsGrid
+            <SecondaryPostsGrid
               shows={shows}
               bordered={false}
               posts={latestPosts.slice(0, 4)}

@@ -14,6 +14,9 @@ export type PostsGridProps = Partial<React.ComponentProps<typeof Container>> & {
   posts?: LPE.Post.Document[]
   displayPodcastShow?: boolean
   displayYear?: boolean
+  isHoverable?: boolean
+  isSubtitleVisible?: boolean
+  isClickable?: boolean
 }
 
 export const PostsGrid: React.FC<PostsGridProps> = ({
@@ -25,6 +28,9 @@ export const PostsGrid: React.FC<PostsGridProps> = ({
   horizontal = false,
   displayPodcastShow = true,
   displayYear = true,
+  isHoverable = false,
+  isSubtitleVisible = true,
+  isClickable = false,
   ...props
 }) => {
   const theme = useTheme()
@@ -81,6 +87,9 @@ export const PostsGrid: React.FC<PostsGridProps> = ({
               appearance={{
                 loadDelay: loadingDelayEffectIndexes[index] * 100,
               }}
+              isHoverable={isHoverable}
+              isSubtitleVisible={isSubtitleVisible}
+              isClickable={isClickable}
             />
           </div>
         ))}
@@ -292,7 +301,6 @@ const Container = styled.div<{
   ${(props) => css`
     > .row {
       display: grid;
-      gap: var(--lsd-spacing-16);
     }
 
     ${lsdUtils

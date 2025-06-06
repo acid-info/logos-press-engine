@@ -5,12 +5,12 @@ import {
 } from '@/components/PostCard/PostCard.ShowDetails'
 import { PostCardSubTitle } from '@/components/PostCard/PostCard.Subtitle'
 import { PostCardTitle } from '@/components/PostCard/PostCard.Title'
-import { Tags } from '@/components/Tags'
 import { Theme } from '@acid-info/lsd-react'
 import { CommonProps } from '@acid-info/lsd-react/dist/utils/useCommonProps'
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
 import clsx from 'clsx'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 import { LPE } from '../../types/lpe.types'
 import { lsdUtils } from '../../utils/lsd.utils'
@@ -44,6 +44,9 @@ export type PostCardProps = CommonProps &
     applySizeStyles?: boolean
     displayPodcastShow?: boolean
     displayYear?: boolean
+    isHoverable?: boolean
+    isSubtitleVisible?: boolean
+    isClickable?: boolean
   }
 
 export const PostCard = (_props: PostCardProps) => {
@@ -56,7 +59,6 @@ export const PostCard = (_props: PostCardProps) => {
       subtitle,
       authors,
       slug,
-      tags = [],
       podcastShowDetails,
     },
     size = 'small',
@@ -64,8 +66,13 @@ export const PostCard = (_props: PostCardProps) => {
     applySizeStyles = true,
     displayPodcastShow = true,
     displayYear = true,
+    isHoverable = false,
+    isSubtitleVisible = true,
+    isClickable = false,
     ...props
   } = _props
+
+  const router = useRouter()
 
   const link = getPostLink(contentType, {
     showSlug: podcastShowDetails?.slug,
@@ -84,25 +91,25 @@ export const PostCard = (_props: PostCardProps) => {
     <div className="post-card__cover-image"></div>
   )
 
-  const authorsElement = authors && authors.length > 0 && (
-    <div className="post-card__authors">
-      <Authors authors={authors} separator={false} />
-    </div>
-  )
+  const authorsLabelElement = contentType === 'article' &&
+    authors &&
+    authors.length > 0 && (
+      <div className="post-card__authors-label">
+        <Authors authors={authors} separator={false} />
+      </div>
+    )
 
-  const labelElement = (
+  const metaLabelElement = (
     <PostCardLabel
       contentType={contentType}
       displayYear={displayYear}
       date={date}
-    >
-      {contentType === 'article' && authorsElement}
-    </PostCardLabel>
+    />
   )
 
   const titleElement = <PostCardTitle href={link}>{title}</PostCardTitle>
 
-  const subtitleElement = subtitle && (
+  const subtitleElement = subtitle && isSubtitleVisible && (
     <PostCardSubTitle>{subtitle}</PostCardSubTitle>
   )
 
@@ -115,25 +122,27 @@ export const PostCard = (_props: PostCardProps) => {
     />
   )
 
-  const tagsElement = tags.length > 0 && (
-    <Tags className="post-card__tags" tags={tags} />
-  )
-
   return (
     <Container
+      onClick={isClickable ? () => router.push(link) : undefined}
+      isClickable={isClickable}
       className={clsx(
         'post-card',
         applySizeStyles && applySizeStyles && `post-card--${size}`,
         coverImageElement && 'post-card--with-image',
         props.className,
         `post-card--${contentType}`,
+        isHoverable && 'post-card--is-hoverable',
       )}
     >
-      {coverImageElement}
-      {titleElement}
-      {labelElement}
-      {subtitleElement}
-      {showElement}
+      <div className="post-card__content">
+        {titleElement}
+        {authorsLabelElement}
+        {subtitleElement}
+        {showElement}
+        {metaLabelElement}
+      </div>
+      <div className="post-card__cover-image-wrapper">{coverImageElement}</div>
     </Container>
   )
 }
@@ -178,6 +187,14 @@ PostCard.styles = {
   small: (theme: Theme) => css`
     padding-bottom: var(--lsd-spacing-8);
 
+    .post-card__content {
+      order: 2;
+    }
+
+    .post-card__cover-image-wrapper {
+      order: 1;
+    }
+
     .post-card__title {
       margin-top: var(--lsd-spacing-16);
     }
@@ -216,7 +233,7 @@ PostCard.styles = {
 
     .post-card__cover-image {
       & > div {
-        padding-top: calc(9 / 16 * 100%) !important;
+        padding-top: calc(9 / 16 * 100%);
 
         & > div {
           width: 100%;
@@ -264,7 +281,7 @@ PostCard.styles = {
 
     .post-card__cover-image {
       & > div {
-        padding-top: calc(9 / 16 * 100%) !important;
+        padding-top: calc(9 / 16 * 100%);
 
         & > div {
           width: 100%;
@@ -281,15 +298,18 @@ PostCard.styles = {
     }
   `,
   large: (theme: Theme) => css`
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-areas:
-      'info image'
-      'info image'
-      'info image'
-      '. image';
-    gap: 0 var(--lsd-spacing-64);
-    padding: var(--lsd-spacing-24) 0;
+    display: flex;
+    flex-direction: row;
+    gap: var(--lsd-spacing-64);
+    padding: var(--lsd-spacing-24);
+
+    .post-card__content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      flex: 1;
+    }
 
     .post-card__title-text {
       ${lsdUtils.typography('h1')}
@@ -305,10 +325,10 @@ PostCard.styles = {
     }
 
     .post-card__cover-image {
-      grid-area: image;
+      width: 100%;
 
       & > div {
-        padding-top: calc(9 / 16 * 100%) !important;
+        padding-top: calc(9 / 16 * 100%);
 
         & > div {
           width: 100%;
@@ -325,8 +345,8 @@ PostCard.styles = {
     }
 
     .post-card__label {
-      grid-area: info;
-      grid-row: auto;
+      margin-top: auto;
+
       * {
         ${lsdUtils.typography('subtitle2')}
       }
@@ -337,7 +357,7 @@ PostCard.styles = {
       grid-row: auto;
     }
 
-    .post-card__authors,
+    .post-card__authors-label,
     .post-card__show-details {
       grid-area: info;
       grid-row: auto;
@@ -350,12 +370,6 @@ PostCard.styles = {
 
     .post-card__show-details {
       ${PostCardShowDetails.styles.large(theme)}
-    }
-
-    &:not(.post-card--with-image) {
-    }
-
-    &.post-card__search-explore {
     }
 
     &.post-card__search-result {
@@ -425,7 +439,7 @@ PostCard.styles = {
           grid-row: 1 / 2;
 
           & > div {
-            padding-top: calc(9 / 16 * 94px) !important;
+            padding-top: calc(9 / 16 * 94px);
 
             & > div {
               width: 94px;
@@ -444,11 +458,26 @@ PostCard.styles = {
     }
   `,
 }
-
-const Container = styled.div<Pick<PostCardProps, 'size'>>`
+const Container = styled.div<Pick<PostCardProps, 'size' | 'isClickable'>>`
   display: flex;
   flex-direction: column;
-  position: 'relative';
+  position: relative;
+
+  ${({ isClickable }) =>
+    isClickable &&
+    css`
+      cursor: pointer;
+
+      &,
+      &:link,
+      &:visited,
+      &:hover,
+      &:active,
+      &:focus {
+        text-decoration: none;
+        color: inherit;
+      }
+    `}
 
   .post-card__title {
     text-decoration: none;
@@ -462,17 +491,30 @@ const Container = styled.div<Pick<PostCardProps, 'size'>>`
     word-break: break-word;
   }
 
-  .post-card__label {
+  .post-card__authors-label {
     margin-top: var(--lsd-spacing-16);
+
+    p.lsd-typography {
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
   }
 
   .post-card__show-details {
     margin-top: var(--lsd-spacing-16);
   }
 
-  ${(props) => lsdUtils.breakpoint(props.theme, 'md', 'down')} {
-    .post-card__label {
-      margin-top: var(--lsd-spacing-8);
+  .post-card__cover-image-wrapper {
+    width: 100%;
+    flex: 1;
+  }
+
+  &.post-card--is-hoverable:hover {
+    background-color: rgb(var(--lsd-theme-primary));
+    * {
+      color: rgb(var(--lsd-theme-secondary));
+      border-color: rgb(var(--lsd-theme-secondary));
+      fill: rgb(var(--lsd-theme-secondary));
     }
   }
 
