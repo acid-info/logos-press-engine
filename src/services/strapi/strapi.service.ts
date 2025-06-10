@@ -368,18 +368,6 @@ export class StrapiService {
       return posts.data
     })
 
-  getHighlightedPosts = async () =>
-    this.handleRequest(async () => {
-      const posts = await this.getPosts({
-        limit: 10,
-        highlighted: 'only',
-        parseContent: false,
-        published: true,
-      })
-
-      return posts.data.data
-    })
-
   getLatestEpisodes = async ({
     showSlug,
     limit = 10,
