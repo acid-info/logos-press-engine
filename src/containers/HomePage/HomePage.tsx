@@ -9,7 +9,6 @@ import { PostsGrid } from '../../components/PostsGrid'
 import { Section } from '../../components/Section/Section'
 import { TagCard } from '../../components/TagCard'
 import { uiConfigs } from '../../configs/ui.configs'
-import { ApiPaginatedPayload } from '../../types/data.types'
 import { LPE } from '../../types/lpe.types'
 import { lsdUtils } from '../../utils/lsd.utils'
 import { formatTagText } from '../../utils/string.utils'
@@ -21,15 +20,13 @@ export type HomePageProps = React.DetailedHTMLProps<
   data: {
     tags: LPE.Tag.Document[]
     shows: LPE.Podcast.Show[]
-    latest: ApiPaginatedPayload<LPE.Post.Document[]>
-    highlighted: LPE.Post.Document[]
+    articles: LPE.Post.Document[]
+    episodes: LPE.Post.Document[]
   }
 }
 
 const TAGS_DESKTOP_LIMIT = 12
 const TAGS_MOBILE_LIMIT = 6
-const FEATURED_ARTICLES_LIMIT = 4
-const FEATURED_EPISODES_LIMIT = 4
 const PODCAST_SHOWS_INFO_DISPLAY_LIMIT = 2
 
 const POSTS_GRID_CONFIG = {
@@ -44,17 +41,6 @@ const POSTS_GRID_CONFIG = {
   isSubtitleVisible: false,
   isClickable: true,
 }
-
-const sortByDateDesc = <
-  T extends { publishedAt?: string | null; modifiedAt?: string | null },
->(
-  items: T[],
-): T[] =>
-  items.sort((a, b) => {
-    const aDate = new Date(a.publishedAt || a.modifiedAt || 0).getTime()
-    const bDate = new Date(b.publishedAt || b.modifiedAt || 0).getTime()
-    return bDate - aDate
-  })
 
 const FeaturedContent: React.FC<{
   posts: LPE.Post.Document[]
@@ -74,7 +60,7 @@ const FeaturedContent: React.FC<{
 
 export const HomePage: React.FC<HomePageProps> = ({
   data,
-  data: { highlighted = [], shows = [], tags: _tags = [], latest },
+  data: { articles = [], shows = [], tags: _tags = [], episodes = [] },
   ...props
 }) => {
   const tags = useMemo(
@@ -106,26 +92,8 @@ export const HomePage: React.FC<HomePageProps> = ({
     }
   }
 
-  const allEpisodes = useMemo(() => {
-    return shows.flatMap((show) =>
-      (show.episodes || []).map((episode) => ({
-        ...episode,
-        show: show,
-      })),
-    )
-  }, [shows])
-
-  const sortedEpisodes = useMemo(
-    () => sortByDateDesc(allEpisodes).slice(0, FEATURED_EPISODES_LIMIT),
-    [allEpisodes],
-  )
-  const sortedHighlighted = useMemo(
-    () => sortByDateDesc(highlighted).slice(0, FEATURED_ARTICLES_LIMIT),
-    [highlighted],
-  )
-
-  const [firstFeaturedPost, ...secondFeaturedPosts] = sortedHighlighted
-  const [featuredEpisode, ...remainingEpisodes] = sortedEpisodes
+  const [firstFeaturedPost, ...secondFeaturedPosts] = articles
+  const [featuredEpisode, ...remainingEpisodes] = episodes
 
   return (
     <Root {...props}>
