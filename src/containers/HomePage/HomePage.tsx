@@ -1,17 +1,12 @@
-import { useIsMobile } from '@/utils/ui.utils'
-import { ChevronRightIcon, Typography } from '@acid-info/lsd-react'
+import { Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
-import React, { useEffect, useMemo } from 'react'
-import { Grid, GridItem } from '../../components/Grid/Grid'
+import React from 'react'
 import { Hero } from '../../components/Hero'
 import { PodcastShowInfo } from '../../components/PodcastShowInfo'
 import { PostsGrid } from '../../components/PostsGrid'
-import { Section } from '../../components/Section/Section'
-import { TagCard } from '../../components/TagCard'
 import { uiConfigs } from '../../configs/ui.configs'
 import { LPE } from '../../types/lpe.types'
 import { lsdUtils } from '../../utils/lsd.utils'
-import { formatTagText } from '../../utils/string.utils'
 
 export type HomePageProps = React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement>,
@@ -25,8 +20,6 @@ export type HomePageProps = React.DetailedHTMLProps<
   }
 }
 
-const TAGS_DESKTOP_LIMIT = 12
-const TAGS_MOBILE_LIMIT = 6
 const PODCAST_SHOWS_INFO_DISPLAY_LIMIT = 2
 
 const POSTS_GRID_CONFIG = {
@@ -63,35 +56,6 @@ export const HomePage: React.FC<HomePageProps> = ({
   data: { articles = [], shows = [], tags: _tags = [], episodes = [] },
   ...props
 }) => {
-  const tags = useMemo(
-    () =>
-      _tags
-        .filter((t) => !!t.postsCount && t.postsCount > 0)
-        .sort((a, b) => (a.postsCount! > b.postsCount! ? -1 : 1)),
-    [_tags],
-  )
-  const isMobile = useIsMobile()
-
-  const [tagsLimit, setTagsLimit] = React.useState(
-    isMobile ? TAGS_MOBILE_LIMIT : TAGS_DESKTOP_LIMIT,
-  )
-
-  useEffect(() => {
-    setTagsLimit(isMobile ? TAGS_MOBILE_LIMIT : TAGS_DESKTOP_LIMIT)
-  }, [isMobile])
-
-  const handleTagsLimit = () => {
-    if (isMobile) {
-      setTagsLimit(
-        tagsLimit === TAGS_MOBILE_LIMIT ? tags?.length : TAGS_MOBILE_LIMIT,
-      )
-    } else {
-      setTagsLimit(
-        tagsLimit === TAGS_DESKTOP_LIMIT ? tags?.length : TAGS_DESKTOP_LIMIT,
-      )
-    }
-  }
-
   const [firstFeaturedPost, ...secondFeaturedPosts] = articles
   const [featuredEpisode, ...remainingEpisodes] = episodes
 
@@ -141,35 +105,6 @@ export const HomePage: React.FC<HomePageProps> = ({
             />
           </PodcastsContent>
         </div>
-
-        <BrowseAll title="Browse all" size="large">
-          <TagsTitle>
-            <Typography component="h2" variant="body1">
-              Tags
-            </Typography>
-            <ChevronRightIcon />
-            <span onClick={handleTagsLimit}>
-              {tagsLimit === TAGS_DESKTOP_LIMIT ||
-              tagsLimit === TAGS_MOBILE_LIMIT
-                ? 'See all'
-                : 'See less'}
-            </span>
-          </TagsTitle>
-          <Grid xs={{ cols: 1 }} sm={{ cols: 4 }}>
-            {tags?.slice(0, tagsLimit)?.map((tag) => (
-              <GridItem key={tag.name} cols={1}>
-                <TagCard
-                  href={`/search?topic=${tag.name}`}
-                  name={formatTagText(tag.name)}
-                  count={tag.postsCount}
-                />
-              </GridItem>
-            ))}
-          </Grid>
-          <ShowMoreTagsButton onClick={handleTagsLimit}>
-            See {tagsLimit === TAGS_MOBILE_LIMIT ? 'more' : 'less'} tags
-          </ShowMoreTagsButton>
-        </BrowseAll>
       </Container>
     </Root>
   )
@@ -212,43 +147,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 200px;
-`
-
-const BrowseAll = styled(Section)`
-  & > .section__content {
-    & > div:first-of-type {
-      padding: var(--lsd-spacing-24) 0;
-    }
-  }
-`
-
-const TagsTitle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: var(--lsd-spacing-8);
-
-  span {
-    cursor: pointer;
-    color: var(--lsd-color-primary);
-    text-decoration: underline;
-  }
-`
-
-const ShowMoreTagsButton = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 40px;
-  border: 1px solid rgb(var(--lsd-border-primary));
-  margin-top: 40px;
-  height: 56px;
-  box-sizing: border-box;
-
-  margin-bottom: 66px;
-
-  ${(props) => lsdUtils.breakpoint(props.theme, 'sm', 'up')} {
-    display: none;
-  }
 `
 
 const FeaturedFirst = styled.div`
