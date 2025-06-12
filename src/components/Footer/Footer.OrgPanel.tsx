@@ -31,6 +31,7 @@ export const FooterOrgPanel = () => {
 }
 
 const Wrapper = styled.div`
+  margin-top: 50px;
   display: flex;
   align-items: baseline;
   border-top: 1px solid rgb(var(--lsd-theme-primary));
@@ -38,6 +39,7 @@ const Wrapper = styled.div`
 
   ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'down')} {
     flex-direction: column;
+    margin-top: 72px;
   }
 `
 
@@ -45,6 +47,7 @@ const Group = styled.div`
   display: flex;
   flex-direction: row;
   gap: 8px;
+  flex-wrap: wrap;
 `
 
 const Links = styled(FooterSection)`
