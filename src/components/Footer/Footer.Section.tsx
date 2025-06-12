@@ -23,4 +23,8 @@ export const FooterSectionContainer = styled.div`
   @media (max-width: ${uiConfigs.maxContainerWidth + 32}px) {
     margin-inline: 16px;
   }
+
+  ${(props) => lsdUtils.breakpoint(props.theme, 'md', 'down')} {
+    padding-bottom: 50px;
+  }
 `

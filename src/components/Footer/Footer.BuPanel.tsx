@@ -58,8 +58,9 @@ export const FooterBuPanel = () => {
 }
 
 const BusinessUnits = styled.div`
-  margin-top: 50px;
+  margin-top: 96px;
   padding-top: 16px;
+  padding-bottom: 18px;
   border-top: 1px solid rgb(var(--lsd-border-primary));
 
   display: flex;
@@ -67,7 +68,6 @@ const BusinessUnits = styled.div`
 
   ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'down')} {
     flex-direction: column;
-    margin-top: 72px;
   }
 `
 
