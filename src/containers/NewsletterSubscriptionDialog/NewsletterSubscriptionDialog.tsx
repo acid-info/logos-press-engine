@@ -51,7 +51,6 @@ export default function NewsletterSubscriptionDialog({
     setSuccessMessage('')
 
     try {
-      // const firstName = e.currentTarget.firstName.value || ''
       const email = e.currentTarget.email.value
 
       if (email === 'successtest@successtest.com') {
@@ -59,7 +58,7 @@ export default function NewsletterSubscriptionDialog({
       } else if (email === 'errortest@errortest.com') {
         setErrorMessage(defaultErrorMessage)
       } else {
-        const NEWSLETTER_ID = '679a07eedeb47200012eebc5'
+        const NEWSLETTER_ID = '6835cf08531d570001068824'
 
         const res = await fetch(
           `https://odoo.logos.co/website_mass_mailing/subscribe_ghost`,
