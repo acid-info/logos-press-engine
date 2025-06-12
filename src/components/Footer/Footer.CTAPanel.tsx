@@ -27,7 +27,7 @@ export const FooterCTAPanel = () => {
         >
           Freedom needs builders
         </CTATypography>
-        <StyledLink href="https://discord.gg/logosnetwork" target="_blank">
+        <StyledLink href="https://discord.gg/logosnetwork">
           <CTAButton>
             <Typography variant="body1">Get Involved</Typography>
           </CTAButton>
