@@ -28,5 +28,28 @@ export default function Footer() {
 const ScrollToTop = styled(Button)`
   width: fit-content;
   position: absolute;
-  bottom: 16px;
+  bottom: 34px;
+  left: 0;
+
+  span {
+    font-size: 0.75rem;
+    font-weight: var(--lsd-label2-fontWeight);
+    line-height: 1.25rem;
+  }
+
+  @media only screen and (min-width: 576px) {
+    left: 16px;
+
+    span {
+      line-height: 1.25rem;
+    }
+  }
+
+  @media only screen and (min-width: 997px) {
+    left: unset;
+
+    span {
+      line-height: var(--lsd-label2-lineHeight);
+    }
+  }
 `

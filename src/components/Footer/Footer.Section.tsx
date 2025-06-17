@@ -1,15 +1,14 @@
 import { uiConfigs } from '@/configs/ui.configs'
 import styled from '@emotion/styled'
-import { lsdUtils } from '../../utils/lsd.utils'
 
 export const FooterSection = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  width: 50%;
+  width: 100%;
 
-  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'down')} {
-    width: 100%;
+  @media only screen and (min-width: 768px) {
+    width: 50%;
   }
 `
 
@@ -17,14 +16,16 @@ export const FooterSectionContainer = styled.div`
   display: flex;
   position: relative;
   flex-direction: column;
-  padding: 16px 0;
+  padding: 16px 0 40px 0;
   margin: 312px auto;
+  margin-inline: 16px;
+  gap: 96px;
 
-  @media (max-width: ${uiConfigs.maxContainerWidth + 32}px) {
-    margin-inline: 16px;
+  @media only screen and (min-width: 1200px) {
+    padding-bottom: 0;
   }
 
-  ${(props) => lsdUtils.breakpoint(props.theme, 'md', 'down')} {
-    padding-bottom: 50px;
+  @media only screen and (min-width: ${uiConfigs.maxContainerWidth + 33}px) {
+    margin-inline: auto;
   }
 `

@@ -63,7 +63,7 @@ export const FooterLinksItems: {
           key: 'blog',
         },
         {
-          label: 'Work with us',
+          label: 'Work With Us',
           href: 'https://job-boards.greenhouse.io/logos',
           key: 'work-with-us',
         },

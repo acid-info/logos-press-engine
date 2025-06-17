@@ -3,7 +3,6 @@ import { Button, TextField, Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import Link from 'next/link'
 import { useState } from 'react'
-import { lsdUtils } from '../../utils/lsd.utils'
 
 export const FooterCTAPanel = () => {
   const [email, setEmail] = useState('')
@@ -24,6 +23,7 @@ export const FooterCTAPanel = () => {
           component="h3"
           variant="h3"
           genericFontFamily="sans-serif"
+          className="mobile-extra-margin"
         >
           Freedom needs builders
         </CTATypography>
@@ -54,7 +54,11 @@ export const FooterCTAPanel = () => {
                 required: true,
               }}
             />
-            <CTAButton type="submit" disabled={isSubmitting}>
+            <CTAButton
+              type="submit"
+              disabled={isSubmitting}
+              className="subscribe"
+            >
               <Typography variant="body1">
                 {isSubmitting
                   ? 'Subscribing...'
@@ -74,14 +78,18 @@ export const FooterCTAPanel = () => {
 
 const Wrapper = styled.div`
   width: 100%;
-  margin-top: 50px;
   display: flex;
-  gap: 1rem;
-  padding-bottom: 70px;
+  flex-direction: column;
+  gap: 98px;
 
-  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'down')} {
-    flex-direction: column;
-    margin-top: 72px;
+  @media only screen and (min-width: 768px) {
+    flex-direction: row;
+    margin-top: 50px;
+    gap: 1rem;
+  }
+
+  @media only screen and (min-width: 576px) {
+    gap: 1rem;
   }
 `
 
@@ -89,13 +97,29 @@ const CTASection = styled.form`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 24px;
   border-top: 1px solid rgb(var(--lsd-theme-primary));
-  padding-top: 16px;
+  padding-top: 24px;
+
+  @media only screen and (min-width: 576px) {
+    gap: 32px;
+  }
 `
 
 const CTATypography = styled(Typography)`
   font-weight: 300;
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+
+  &.mobile-extra-margin {
+    margin-bottom: 8px;
+  }
+
+  @media only screen and (min-width: 576px) {
+    &.mobile-extra-margin {
+      margin-bottom: unset;
+    }
+  }
 `
 
 const Bottom = styled.div`
@@ -110,7 +134,13 @@ const StyledLink = styled(Link)`
 
 const ActionsContainer = styled.div`
   display: flex;
-  gap: 16px;
+  flex-direction: column;
+  gap: 40px;
+
+  @media only screen and (min-width: 576px) {
+    flex-direction: row;
+    gap: 16px;
+  }
 `
 
 const StyledTextField = styled(TextField)`
@@ -123,7 +153,30 @@ const StyledTextField = styled(TextField)`
 
 const CTAButton = styled(Button)`
   height: 40px;
-  min-width: 146px;
+  min-width: 160px;
+
+  &.subscribe {
+    min-width: 146px;
+    max-width: 146px;
+  }
+
+  span {
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+  }
+
+  @media only screen and (min-width: 576px) {
+    &.subscribe {
+      max-width: unset;
+    }
+  }
+
+  @media only screen and (min-width: 997px) {
+    span {
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
+  }
 `
 
 const Message = styled(Typography)`
