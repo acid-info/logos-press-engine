@@ -1,7 +1,6 @@
 import { useNewsletterSubscription } from '@/hooks/useNewsletterSubscription'
 import { Button, TextField, Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
-import Link from 'next/link'
 import { useState } from 'react'
 
 export const FooterCTAPanel = () => {
@@ -14,6 +13,8 @@ export const FooterCTAPanel = () => {
   const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     await subscribe(email, NEWSLETTER_ID)
+    // @ts-ignore
+    window.umami.track('subscribe', { source: 'footer' })
   }
 
   return (
@@ -27,11 +28,27 @@ export const FooterCTAPanel = () => {
         >
           Freedom needs builders
         </CTATypography>
-        <StyledLink href="https://discord.gg/logosnetwork">
-          <CTAButton>
-            <Typography variant="body1">Get Involved</Typography>
-          </CTAButton>
-        </StyledLink>
+        <HiddenLink
+          id="discord-link"
+          href="https://discord.gg/logosnetwork"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-umami-event="get-involved"
+          data-umami-event-source="footer"
+        >
+          Get Involved
+        </HiddenLink>
+        <CTAButton
+          type="button"
+          onClick={() => {
+            const link = document.getElementById(
+              'discord-link',
+            ) as HTMLAnchorElement
+            link?.click()
+          }}
+        >
+          <Typography variant="body1">Get Involved</Typography>
+        </CTAButton>
       </CTASection>
       <CTASection onSubmit={handleSubscribe}>
         <CTATypography
@@ -128,8 +145,17 @@ const Bottom = styled.div`
   gap: 12px;
 `
 
-const StyledLink = styled(Link)`
-  width: fit-content;
+const HiddenLink = styled.a`
+  /* Visually hidden but accessible to screen readers and SEO */
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
 `
 
 const ActionsContainer = styled.div`
@@ -153,7 +179,7 @@ const StyledTextField = styled(TextField)`
 
 const CTAButton = styled(Button)`
   height: 40px;
-  min-width: 160px;
+  width: 160px;
 
   &.subscribe {
     min-width: 146px;
