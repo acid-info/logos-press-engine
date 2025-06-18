@@ -2,7 +2,7 @@
 import { Breakpoints, Theme, useTheme } from '@acid-info/lsd-react'
 import { SerializedStyles, css } from '@emotion/react'
 import styled from '@emotion/styled'
-import React, { useMemo } from 'react'
+import React, { forwardRef, useMemo } from 'react'
 import { LPE } from '../../types/lpe.types'
 import { chunkArray, shuffleArray } from '../../utils/array.utils'
 import { lsdUtils } from '../../utils/lsd.utils'
@@ -19,84 +19,91 @@ export type PostsGridProps = Partial<React.ComponentProps<typeof Container>> & {
   isClickable?: boolean
 }
 
-export const PostsGrid: React.FC<PostsGridProps> = ({
-  posts = [],
-  shows = [],
-  pattern = [],
-  breakpoints = [],
-  bordered = false,
-  horizontal = false,
-  displayPodcastShow = true,
-  displayYear = true,
-  isHoverable = false,
-  isSubtitleVisible = true,
-  isClickable = false,
-  ...props
-}) => {
-  const theme = useTheme()
+export const PostsGrid = forwardRef<HTMLDivElement, PostsGridProps>(
+  (
+    {
+      posts = [],
+      shows = [],
+      pattern = [],
+      breakpoints = [],
+      bordered = false,
+      horizontal = false,
+      displayPodcastShow = true,
+      displayYear = true,
+      isHoverable = false,
+      isSubtitleVisible = true,
+      isClickable = false,
+      ...props
+    },
+    ref,
+  ) => {
+    const theme = useTheme()
 
-  const items = useMemo(() => {
-    const cols = pattern.map((p) => p.cols)
-    const chunked = chunkArray(posts, ...cols)
+    const items = useMemo(() => {
+      const cols = pattern.map((p) => p.cols)
+      const chunked = chunkArray(posts, ...cols)
 
-    return chunked
-      .map((posts, i) =>
-        posts.map((post) => ({
-          post,
-          size: pattern[i % pattern.length]?.size,
-        })),
-      )
-      .flat()
-  }, [pattern, posts])
+      return chunked
+        .map((posts, i) =>
+          posts.map((post) => ({
+            post,
+            size: pattern[i % pattern.length]?.size,
+          })),
+        )
+        .flat()
+    }, [pattern, posts])
 
-  const postCardStyles = useMemo(
-    () => ({
-      xxsmall: PostCard.styles.xxsmall(theme),
-      xsmall: PostCard.styles.xsmall(theme),
-      small: PostCard.styles.small(theme),
-      medium: PostCard.styles.medium(theme),
-      large: PostCard.styles.large(theme),
-    }),
-    [theme],
-  )
+    const postCardStyles = useMemo(
+      () => ({
+        xxsmall: PostCard.styles.xxsmall(theme),
+        xsmall: PostCard.styles.xsmall(theme),
+        small: PostCard.styles.small(theme),
+        medium: PostCard.styles.medium(theme),
+        large: PostCard.styles.large(theme),
+      }),
+      [theme],
+    )
 
-  const loadingDelayEffectIndexes = useMemo(() => {
-    return shuffleArray(items.map((_, i) => i))
-  }, [items])
+    const loadingDelayEffectIndexes = useMemo(() => {
+      return shuffleArray(items.map((_, i) => i))
+    }, [items])
 
-  return (
-    <Container
-      {...props}
-      pattern={pattern}
-      breakpoints={breakpoints}
-      bordered={bordered}
-      horizontal={horizontal}
-      postCardStyles={postCardStyles}
-    >
-      <div className="row">
-        {items.map(({ post, size }, index) => (
-          <div key={post.id} className="post-card-wrapper">
-            <PostCard
-              size={size as any}
-              applySizeStyles={false}
-              className="post-card"
-              contentType={post.type}
-              displayYear={displayYear}
-              displayPodcastShow={displayPodcastShow}
-              data={PostCard.toData(post, shows)}
-              appearance={{
-                loadDelay: loadingDelayEffectIndexes[index] * 100,
-              }}
-              isHoverable={isHoverable}
-              isSubtitleVisible={isSubtitleVisible}
-              isClickable={isClickable}
-            />
-          </div>
-        ))}
-      </div>
-    </Container>
-  )
-}
+    return (
+      <Container
+        {...props}
+        pattern={pattern}
+        breakpoints={breakpoints}
+        bordered={bordered}
+        horizontal={horizontal}
+        postCardStyles={postCardStyles}
+      >
+        <div className="row" ref={ref}>
+          {items.map(({ post, size }, index) => (
+            <div key={post.id} className="post-card-wrapper">
+              <PostCard
+                size={size as any}
+                applySizeStyles={false}
+                className="post-card"
+                contentType={post.type}
+                displayYear={displayYear}
+                displayPodcastShow={displayPodcastShow}
+                data={PostCard.toData(post, shows)}
+                appearance={{
+                  loadDelay: loadingDelayEffectIndexes[index] * 100,
+                }}
+                isHoverable={isHoverable}
+                isSubtitleVisible={isSubtitleVisible}
+                isClickable={isClickable}
+              />
+            </div>
+          ))}
+        </div>
+      </Container>
+    )
+  },
+)
+
+PostsGrid.displayName = 'PostsGrid'
 
 type Pattern = {
   cols: number

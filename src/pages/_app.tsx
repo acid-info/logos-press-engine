@@ -1,8 +1,8 @@
 import { GlobalAudioPlayer } from '@/components/GlobalAudioPlayer'
 import { ProgressBar } from '@/components/ProgressBar/ProgressBar'
 import { uiConfigs } from '@/configs/ui.configs'
+import useFathomAnalytics from '@/hooks/useFathomAnalytics'
 import { DefaultLayout } from '@/layouts/DefaultLayout'
-import useFathomAnalytics from '@/utils/useFathomAnalytics'
 import { css, Global } from '@emotion/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { NextComponentType, NextPageContext } from 'next'
@@ -10,7 +10,7 @@ import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { ReactNode } from 'react'
 import { LSDThemeProvider } from '../containers/LSDThemeProvider'
-import { useHydrated } from '../utils/useHydrated.util'
+import { useHydrated } from '../hooks/useHydrated.util'
 
 type NextLayoutComponentType<P = {}> = NextComponentType<
   NextPageContext,
