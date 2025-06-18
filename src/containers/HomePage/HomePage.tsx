@@ -2,11 +2,12 @@ import { Enum_Post_Type } from '@/lib/strapi/strapi.generated'
 import { Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import axios from 'axios'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Hero } from '../../components/Hero'
 import { PodcastShowInfo } from '../../components/PodcastShowInfo'
 import { PostsGrid } from '../../components/PostsGrid'
 import { uiConfigs } from '../../configs/ui.configs'
+import { useAutoScrollToNewGridItem } from '../../hooks/useAutoScrollToNewGridItem'
 import { LPE } from '../../types/lpe.types'
 import { lsdUtils } from '../../utils/lsd.utils'
 import { LoadMoreButton } from './LoadMoreButton'
@@ -53,14 +54,20 @@ const FeaturedContent: React.FC<{
   posts: LPE.Post.Document[]
   shows: LPE.Podcast.Show[]
   variant: 'first' | 'second'
-}> = ({ posts, shows, variant }) => {
+  gridRef?: React.Ref<HTMLDivElement>
+}> = ({ posts, shows, variant, gridRef }) => {
   if (!posts.length) return null
 
   const StyledWrapper = variant === 'first' ? FeaturedFirst : FeaturedSecond
 
   return (
     <StyledWrapper>
-      <PostsGrid {...POSTS_GRID_CONFIG} shows={shows} posts={posts} />
+      <PostsGrid
+        {...POSTS_GRID_CONFIG}
+        shows={shows}
+        posts={posts}
+        ref={gridRef}
+      />
     </StyledWrapper>
   )
 }
@@ -76,6 +83,15 @@ export const HomePage: React.FC<HomePageProps> = ({
     articles,
     episodes,
   })
+
+  const [firstFeaturedPost, ...secondFeaturedPosts] = displayedItems.articles
+  const [featuredEpisode, ...remainingEpisodes] = displayedItems.episodes
+
+  const articlesGridRef = useRef<HTMLDivElement>(null)
+  const episodesGridRef = useRef<HTMLDivElement>(null)
+
+  useAutoScrollToNewGridItem(secondFeaturedPosts, articlesGridRef)
+  useAutoScrollToNewGridItem(remainingEpisodes, episodesGridRef)
 
   const [remainingHighlighted, setRemainingHighlighted] = useState({
     articles: articlesMoreData.remainingHighlighted,
@@ -148,9 +164,6 @@ export const HomePage: React.FC<HomePageProps> = ({
     }
   }
 
-  const [firstFeaturedPost, ...secondFeaturedPosts] = displayedItems.articles
-  const [featuredEpisode, ...remainingEpisodes] = displayedItems.episodes
-
   return (
     <Root {...props}>
       <HeroContainer>
@@ -167,6 +180,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             posts={secondFeaturedPosts}
             shows={shows}
             variant="second"
+            gridRef={articlesGridRef}
           />
           {hasMore.articles && (
             <LoadMoreButton
@@ -201,6 +215,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               posts={remainingEpisodes}
               shows={shows}
               variant="second"
+              gridRef={episodesGridRef}
             />
             {hasMore.episodes && (
               <LoadMoreButton
