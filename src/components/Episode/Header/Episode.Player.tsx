@@ -7,7 +7,7 @@ import { useHookstate } from '@hookstate/core'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
-import { useHydrated } from '../../../utils/useHydrated.util'
+import { useHydrated } from '../../../hooks/useHydrated.util'
 import SimplecastPlayer from './Episode.SimplecastPlayer'
 
 export type EpisodePlayerProps = {
