@@ -1,4 +1,3 @@
-import { siteConfigs } from '@/configs/site.configs'
 import { LPEFooterGroup } from '@/types/ui.types'
 import { getPostLink } from '../utils/route.utils'
 
@@ -35,10 +34,7 @@ export const FooterLinksItems: {
   org: [
     {
       title: 'Research',
-      links: [
-        { label: 'VacP2P', href: 'https://vac.dev/' },
-        { label: 'AFAIK', href: 'https://afaik.institute/' },
-      ],
+      links: [{ label: 'VacP2P', href: 'https://vac.dev/' }],
     },
     {
       title: 'Infrastructure',
@@ -49,59 +45,48 @@ export const FooterLinksItems: {
         { label: 'Nomos', href: 'https://nomos.tech/' },
       ],
     },
-    {
-      title: 'Creative Studio',
-      links: [{ label: 'Acid.info', href: 'https://acid.info/' }],
-    },
-    {
-      title: 'Movement',
-      links: [{ label: 'Logos', href: 'https://logos.co/' }],
-    },
-    {
-      title: 'User-facing Products',
-      links: [
-        { label: 'Status', href: 'https://status.im/' },
-        { label: 'Keycard', href: 'https://keycard.tech/' },
-      ],
-    },
   ],
 
   about: [
     {
       title: null,
-      key: 'social',
+      key: 'all',
       links: [
         {
-          label: 'Discord',
-          href: 'https://discord.gg/logosnetwork',
-          key: 'discord',
-        },
-        { label: 'X', href: `https://x.com/${siteConfigs.xHandle}`, key: 'x' },
-        {
           label: 'Github',
-          href: `https://github.com/${siteConfigs.githubHandle}`,
+          href: 'https://github.com/logos-co',
           key: 'github',
         },
         {
-          label: 'Youtube',
-          href: `https://www.youtube.com/${siteConfigs.youtubeHandle}`,
-          key: 'youtube',
+          label: 'Blog',
+          href: 'https://press.logos.co/',
+          key: 'blog',
         },
         {
-          label: 'RSS',
-          href: `https://press.logos.co/rss/main.xml`,
-          key: 'rss',
+          label: 'Work With Us',
+          href: 'https://job-boards.greenhouse.io/logos',
+          key: 'work-with-us',
         },
-      ],
-    },
-    {
-      title: null,
-      key: 'info',
-      links: [
-        { label: 'Terms of Use', href: '/terms' },
-        { label: 'Privacy Policy', href: '/privacy-policy' },
-        { label: 'Security', href: '/security' },
-        { label: 'About', href: '/about' },
+        {
+          label: 'Brand Guidelines',
+          href: 'https://guide.logos.co/',
+          key: 'brand-guidelines',
+        },
+        {
+          label: 'Terms & Conditions',
+          href: 'https://logos.co/terms',
+          key: 'terms-and-conditions',
+        },
+        {
+          label: 'Privacy Policy',
+          href: 'https://logos.co/privacy-policy',
+          key: 'privacy-policy',
+        },
+        {
+          label: 'Security',
+          href: 'https://logos.co/security',
+          key: 'security',
+        },
       ],
     },
   ],

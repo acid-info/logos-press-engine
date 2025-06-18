@@ -3,7 +3,6 @@ import { FooterSection } from '@/components/Footer/Footer.Section'
 import { FooterLinksItems } from '@/configs/data.configs'
 import { Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
-import { lsdUtils } from '../../utils/lsd.utils'
 
 export const FooterBuPanel = () => {
   return (
@@ -33,7 +32,7 @@ export const FooterBuPanel = () => {
                   genericFontFamily="sans-serif"
                   variant="body2"
                 >
-                  {title}:
+                  {title}
                 </Typography>
               </div>
               <Row>
@@ -58,61 +57,73 @@ export const FooterBuPanel = () => {
 }
 
 const BusinessUnits = styled.div`
-  margin-top: 50px;
-  padding-top: 16px;
+  padding-top: 24px;
+  padding-bottom: 18px;
   border-top: 1px solid rgb(var(--lsd-border-primary));
-
   display: flex;
   align-items: baseline;
+  flex-direction: column;
+  gap: 40px;
+  margin-bottom: 116px;
 
-  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'down')} {
-    flex-direction: column;
-    margin-top: 72px;
+  @media only screen and (min-width: 576px) {
+    flex-direction: row;
+    gap: unset;
+    margin-bottom: 86px;
+  }
+
+  @media only screen and (min-width: 997px) {
+    margin-bottom: unset;
+  }
+
+  @media only screen and (min-width: 1200px) {
+    padding-bottom: 34px;
   }
 `
 
-const BUInfo = styled(FooterSection)`
-  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'down')} {
-    margin-bottom: 76px;
-  }
-`
+const BUInfo = styled(FooterSection)``
 
 const BUs = styled(FooterSection)`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  padding-left: 0;
   gap: 8px;
 
-  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'down')} {
-    flex-direction: column;
+  @media only screen and (min-width: 576px) {
+    flex-direction: row;
+    padding-left: 16px;
   }
 `
 
 const Row = styled.div`
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 `
 
 const BusinessUnitItemGroup = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 
-  .footer-link-group-0 {
-    grid-area: 1 / 1 / 2 / 2;
+  > * {
+    flex: 1;
   }
 
-  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'down')} {
-    grid-template-columns: repeat(1, 1fr);
-    padding-bottom: 24px;
+  @media only screen and (min-width: 576px) {
+    flex-direction: row;
+    gap: 1rem;
   }
 `
 
 const LinkGroup = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 34px;
+  margin-bottom: 4px;
   gap: 4px;
 
-  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'down')} {
-    margin-bottom: 24px;
+  @media only screen and (min-width: 576px) {
+    margin-bottom: 34px;
   }
 `

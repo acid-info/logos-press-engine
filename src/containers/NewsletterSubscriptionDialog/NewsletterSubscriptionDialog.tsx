@@ -2,10 +2,11 @@ import { FullscreenDialog } from '@/components/FullscreenDialog'
 import { LogosIcon } from '@/components/Icons/LogosIcon'
 import NewsletterSubscriptionForm from '@/components/NewsletterSubscriptionForm/NewsletterSubscriptionForm'
 import { copyConfigs } from '@/configs/copy.configs'
+import { useNewsletterSubscription } from '@/hooks/useNewsletterSubscription'
 import { lsdUtils } from '@/utils/lsd.utils'
 import { Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 type NewsletterSubscriptionDialogProps =
   React.HTMLAttributes<HTMLDivElement> & {
@@ -24,76 +25,24 @@ export default function NewsletterSubscriptionDialog({
   onClose,
   ...props
 }: NewsletterSubscriptionDialogProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [successMessage, setSuccessMessage] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
-  const defaultErrorMessage =
-    'There was an error submitting the form. Please try again.'
+  const { isSubmitting, successMessage, errorMessage, subscribe, reset } =
+    useNewsletterSubscription()
 
   // Reset states when the dialog is closed.
   useEffect(() => {
     if (!isOpen) {
-      if (successMessage) {
-        setSuccessMessage('')
-      }
-
-      if (errorMessage) {
-        setErrorMessage('')
-      }
+      reset()
     }
-  }, [isOpen, successMessage, errorMessage])
+  }, [isOpen, reset])
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    setIsSubmitting(true)
-    setErrorMessage('')
-    setSuccessMessage('')
-
-    try {
-      const email = e.currentTarget.email.value
-
-      if (email === 'successtest@successtest.com') {
-        setSuccessMessage('Subscribed successfully!')
-      } else if (email === 'errortest@errortest.com') {
-        setErrorMessage(defaultErrorMessage)
-      } else {
-        const NEWSLETTER_ID = '6835cf08531d570001068824'
-
-        const res = await fetch(
-          `https://odoo.logos.co/website_mass_mailing/subscribe_ghost`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              jsonrpc: '2.0',
-              method: 'call',
-              params: {
-                email: email,
-                type: 'logos',
-                subscription_type: 'email',
-                newsletter: NEWSLETTER_ID,
-              },
-            }),
-          },
-        )
-
-        const data = await res.json()
-
-        if (data?.result?.errors && data?.result?.errors[0]?.context?.length) {
-          setErrorMessage(data?.result?.errors[0].context)
-          return
-        }
-
-        setSuccessMessage('Thank you for subscribing!')
-      }
-    } catch (error) {
-      setErrorMessage(defaultErrorMessage)
-    } finally {
-      setIsSubmitting(false)
-    }
+    const email = e.currentTarget.email.value
+    const NEWSLETTER_ID = '6835cf08531d570001068824'
+    await subscribe(email, NEWSLETTER_ID)
+    // @ts-ignore
+    window.umami.track('subscribe', { source: 'navbar-newsletter-dialog' })
   }
 
   return (
