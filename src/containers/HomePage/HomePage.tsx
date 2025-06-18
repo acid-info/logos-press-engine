@@ -1,12 +1,20 @@
+import { Enum_Post_Type } from '@/lib/strapi/strapi.generated'
 import { Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
-import React from 'react'
+import axios from 'axios'
+import React, { useState } from 'react'
 import { Hero } from '../../components/Hero'
 import { PodcastShowInfo } from '../../components/PodcastShowInfo'
 import { PostsGrid } from '../../components/PostsGrid'
 import { uiConfigs } from '../../configs/ui.configs'
 import { LPE } from '../../types/lpe.types'
 import { lsdUtils } from '../../utils/lsd.utils'
+import { LoadMoreButton } from './LoadMoreButton'
+
+type MoreData = {
+  remainingHighlighted: LPE.Post.Document[]
+  initialNonHighlightedCount: number
+}
 
 export type HomePageProps = React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement>,
@@ -18,7 +26,13 @@ export type HomePageProps = React.DetailedHTMLProps<
     articles: LPE.Post.Document[]
     episodes: LPE.Post.Document[]
   }
+  articlesMoreData: MoreData
+  episodesMoreData: MoreData
 }
+
+const POSTS_TO_LOAD = 3
+const FEATURED_ARTICLES_LIMIT = 4
+const FEATURED_EPISODES_LIMIT = 4
 
 const PODCAST_SHOWS_INFO_DISPLAY_LIMIT = 2
 
@@ -54,10 +68,88 @@ const FeaturedContent: React.FC<{
 export const HomePage: React.FC<HomePageProps> = ({
   data,
   data: { articles = [], shows = [], tags: _tags = [], episodes = [] },
+  articlesMoreData,
+  episodesMoreData,
   ...props
 }) => {
-  const [firstFeaturedPost, ...secondFeaturedPosts] = articles
-  const [featuredEpisode, ...remainingEpisodes] = episodes
+  const [displayedItems, setDisplayedItems] = useState({
+    articles,
+    episodes,
+  })
+
+  const [remainingHighlighted, setRemainingHighlighted] = useState({
+    articles: articlesMoreData.remainingHighlighted,
+    episodes: episodesMoreData.remainingHighlighted,
+  })
+
+  const [hasMore, setHasMore] = useState({
+    articles:
+      articlesMoreData.remainingHighlighted.length > 0 ||
+      articles.length === FEATURED_ARTICLES_LIMIT,
+    episodes:
+      episodesMoreData.remainingHighlighted.length > 0 ||
+      episodes.length === FEATURED_EPISODES_LIMIT,
+  })
+  const [loading, setLoading] = useState({ articles: false, episodes: false })
+
+  const [nonHighlightedCount, setNonHighlightedCount] = useState({
+    articles: articlesMoreData.initialNonHighlightedCount,
+    episodes: episodesMoreData.initialNonHighlightedCount,
+  })
+
+  const fetchMore = async (type: Enum_Post_Type) => {
+    const isArticle = type === 'Article'
+    const key = isArticle ? 'articles' : 'episodes'
+
+    setLoading((prev) => ({ ...prev, [key]: true }))
+
+    try {
+      const currentRemainingHighlighted = remainingHighlighted[key]
+      let postsToAdd: LPE.Post.Document[] = []
+
+      if (currentRemainingHighlighted.length > 0) {
+        postsToAdd = currentRemainingHighlighted.slice(0, POSTS_TO_LOAD)
+        const stillRemaining = currentRemainingHighlighted.slice(POSTS_TO_LOAD)
+        setRemainingHighlighted((prev) => ({ ...prev, [key]: stillRemaining }))
+      }
+
+      const postsNeededFromApi = POSTS_TO_LOAD - postsToAdd.length
+
+      if (postsNeededFromApi > 0) {
+        const currentNonHighlightedCount = nonHighlightedCount[key]
+        const response = await axios.get('/api/posts', {
+          params: {
+            skip: currentNonHighlightedCount,
+            limit: postsNeededFromApi,
+            type,
+          },
+        })
+        const newPostsFromApi = response.data.data.data
+        postsToAdd = [...postsToAdd, ...newPostsFromApi]
+
+        setNonHighlightedCount((prev) => ({
+          ...prev,
+          [key]: prev[key] + newPostsFromApi.length,
+        }))
+
+        if (newPostsFromApi.length < postsNeededFromApi) {
+          setHasMore((prev) => ({ ...prev, [key]: false }))
+        }
+      }
+
+      setDisplayedItems((prev) => ({
+        ...prev,
+        [key]: [...prev[key], ...postsToAdd],
+      }))
+    } catch (error) {
+      console.error('Error fetching more posts:', error)
+    } finally {
+      setLoading((prev) => ({ ...prev, [key]: false }))
+    }
+  }
+
+  const [firstFeaturedPost, ...secondFeaturedPosts] = displayedItems.articles
+  const [featuredEpisode, ...remainingEpisodes] = displayedItems.episodes
 
   return (
     <Root {...props}>
@@ -76,6 +168,13 @@ export const HomePage: React.FC<HomePageProps> = ({
             shows={shows}
             variant="second"
           />
+          {hasMore.articles && (
+            <LoadMoreButton
+              onClick={() => fetchMore('Article')}
+              disabled={loading.articles}
+              loading={loading.articles}
+            />
+          )}
         </div>
 
         <div>
@@ -103,6 +202,13 @@ export const HomePage: React.FC<HomePageProps> = ({
               shows={shows}
               variant="second"
             />
+            {hasMore.episodes && (
+              <LoadMoreButton
+                onClick={() => fetchMore('Episode')}
+                disabled={loading.episodes}
+                loading={loading.episodes}
+              />
+            )}
           </PodcastsContent>
         </div>
       </Container>

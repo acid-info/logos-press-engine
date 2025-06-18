@@ -351,10 +351,12 @@ export class StrapiService {
     skip = 0,
     limit = 10,
     highlighted = 'exclude',
+    type,
   }: {
     limit?: number
     skip?: number
     highlighted?: 'only' | 'include' | 'exclude'
+    type?: Enum_Post_Type
   }) =>
     this.handleRequest(async () => {
       const posts = await this.getPosts({
@@ -363,6 +365,9 @@ export class StrapiService {
         highlighted,
         parseContent: false,
         published: true,
+        filters: {
+          ...(type && { type: { eq: type } }),
+        },
       })
 
       return posts.data

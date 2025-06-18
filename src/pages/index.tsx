@@ -6,7 +6,10 @@ import { DefaultLayout } from '../layouts/DefaultLayout'
 import { Enum_Post_Type } from '../lib/strapi/strapi.generated'
 import { strapiApi } from '../services/strapi'
 
-type PageProps = Pick<HomePageProps, 'data'>
+type PageProps = Pick<
+  HomePageProps,
+  'data' | 'articlesMoreData' | 'episodesMoreData'
+>
 
 const FEATURED_ARTICLES_LIMIT = 4
 const FEATURED_EPISODES_LIMIT = 4
@@ -15,7 +18,11 @@ const Page: CustomNextPage<PageProps> = (props) => {
   return (
     <>
       <SEO rssFileName={'main.rss'} />
-      <HomePage data={props.data} />
+      <HomePage
+        data={props.data}
+        articlesMoreData={props.articlesMoreData}
+        episodesMoreData={props.episodesMoreData}
+      />
     </>
   )
 }
@@ -32,18 +39,26 @@ Page.getLayout = function getLayout(page: React.ReactNode) {
 }
 
 export const getStaticProps: GetStaticProps<PageProps> = async () => {
-  const { data: highlightedArticlesResponse } = await strapiApi.getPosts({
+  const { data: allHighlightedArticlesResponse } = await strapiApi.getPosts({
     highlighted: 'only',
     filters: {
       type: {
         eq: 'Article' as Enum_Post_Type,
       },
     },
-    limit: FEATURED_ARTICLES_LIMIT,
   })
 
-  const highlightedArticles = highlightedArticlesResponse.data
-  const articlesNeeded = FEATURED_ARTICLES_LIMIT - highlightedArticles.length
+  const allHighlightedArticles = allHighlightedArticlesResponse.data
+  const initialHighlightedArticles = allHighlightedArticles.slice(
+    0,
+    FEATURED_ARTICLES_LIMIT,
+  )
+  const remainingHighlightedArticles = allHighlightedArticles.slice(
+    FEATURED_ARTICLES_LIMIT,
+  )
+
+  const articlesNeeded =
+    FEATURED_ARTICLES_LIMIT - initialHighlightedArticles.length
 
   let nonHighlightedArticles: any[] = []
   if (articlesNeeded > 0) {
@@ -58,19 +73,31 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     })
     nonHighlightedArticles = nonHighlightedResponse.data
   }
+  const initialArticles = [
+    ...initialHighlightedArticles,
+    ...nonHighlightedArticles,
+  ]
 
-  const { data: highlightedEpisodesResponse } = await strapiApi.getPosts({
+  const { data: allHighlightedEpisodesResponse } = await strapiApi.getPosts({
     highlighted: 'only',
     filters: {
       type: {
         eq: 'Episode' as Enum_Post_Type,
       },
     },
-    limit: FEATURED_EPISODES_LIMIT,
   })
 
-  const highlightedEpisodes = highlightedEpisodesResponse.data
-  const episodesNeeded = FEATURED_EPISODES_LIMIT - highlightedEpisodes.length
+  const allHighlightedEpisodes = allHighlightedEpisodesResponse.data
+  const initialHighlightedEpisodes = allHighlightedEpisodes.slice(
+    0,
+    FEATURED_EPISODES_LIMIT,
+  )
+  const remainingHighlightedEpisodes = allHighlightedEpisodes.slice(
+    FEATURED_EPISODES_LIMIT,
+  )
+
+  const episodesNeeded =
+    FEATURED_EPISODES_LIMIT - initialHighlightedEpisodes.length
 
   let nonHighlightedEpisodes: any[] = []
   if (episodesNeeded > 0) {
@@ -85,12 +112,10 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     })
     nonHighlightedEpisodes = nonHighlightedResponse.data
   }
-
-  const featuredArticles = [...highlightedArticles, ...nonHighlightedArticles]
-  const featuredEpisodes = [
-    ...highlightedEpisodes,
+  const initialEpisodes = [
+    ...initialHighlightedEpisodes,
     ...nonHighlightedEpisodes,
-  ].slice(0, FEATURED_EPISODES_LIMIT)
+  ]
 
   const { data: _shows = [] } = await strapiApi.getPodcastShows({})
 
@@ -101,7 +126,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
   try {
     const rss = new LPERssFeed('main')
     await rss.init()
-    featuredArticles.forEach((post) => rss.addPost(post))
+    initialArticles.forEach((post) => rss.addPost(post))
     await rss.save()
   } catch (e) {
     console.log('Error generating RSS feed', e)
@@ -112,8 +137,16 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
       data: {
         tags,
         shows,
-        articles: featuredArticles.slice(0, FEATURED_ARTICLES_LIMIT),
-        episodes: featuredEpisodes,
+        articles: initialArticles,
+        episodes: initialEpisodes,
+      },
+      articlesMoreData: {
+        remainingHighlighted: remainingHighlightedArticles,
+        initialNonHighlightedCount: nonHighlightedArticles.length,
+      },
+      episodesMoreData: {
+        remainingHighlighted: remainingHighlightedEpisodes,
+        initialNonHighlightedCount: nonHighlightedEpisodes.length,
       },
     },
     revalidate: 10,
