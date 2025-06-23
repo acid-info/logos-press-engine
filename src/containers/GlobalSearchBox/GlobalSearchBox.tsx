@@ -1,5 +1,5 @@
+import { useHydrated } from '@/hooks/useHydrated.util'
 import { LPE } from '@/types/lpe.types'
-import { useHydrated } from '@/utils/useHydrated.util'
 import React from 'react'
 import {
   ArrayParam,
