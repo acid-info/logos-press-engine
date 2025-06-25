@@ -42,9 +42,6 @@ export const SearchBoxResults: React.FC<SearchBoxResultsProps> = ({
               ? copyConfigs.search.results.noResults
               : `${numberOfResults} ${copyConfigs.search.results.results}`}
           </Typography>
-          <span className="dot">
-            <DotIcon color="primary" />
-          </span>
         </>
       )}
       {title && !isMobile && (
