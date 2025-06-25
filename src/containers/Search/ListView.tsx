@@ -105,7 +105,7 @@ export const SearchResultsListView = (props: Props) => {
     <Container xs={{ cols: 8 }} md={{ cols: 12 }} lg={{ cols: 16 }} cols={16}>
       <PostsList xs={{ cols: 8 }} md={{ cols: 8 }} lg={{ cols: 11 }}>
         {topPost && (
-          <Section title={copyConfigs.search.labels.topResults}>
+          <CustomSection title={copyConfigs.search.labels.topResults}>
             <SearchResultTopPost
               post={topPost}
               shows={shows}
@@ -116,14 +116,16 @@ export const SearchResultsListView = (props: Props) => {
                 textBlocksInTopResult as LPE.Article.TextBlock[]
               }
             />
-          </Section>
+          </CustomSection>
         )}
         <PostsListContent>
           {renderPosts.length > 0 ? (
             <>
-              <Section title={copyConfigs.search.labels.articlesAndPodcasts}>
+              <CustomSection
+                title={copyConfigs.search.labels.articlesAndPodcasts}
+              >
                 <SearchResultListPosts posts={renderPosts} shows={shows} />
-              </Section>
+              </CustomSection>
             </>
           ) : (
             !busy &&
@@ -169,11 +171,8 @@ const PostsList = styled(GridItem)`
 `
 const PostsListContent = styled.div``
 
-const BlocksList = styled(GridItem)``
-
-const BlockListSticky = styled.div`
-  position: sticky;
-  top: ${uiConfigs.navbarRenderedHeight * 2 + 12}px;
-  height: 100vh;
-  overflow-y: auto;
+const CustomSection = styled(Section)`
+  &.section.section--small.section--bordered {
+    border-top: none;
+  }
 `
