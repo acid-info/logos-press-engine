@@ -1,6 +1,10 @@
 import { LPERssFeed } from '@/services/rss.service'
 import { CustomNextPage, GetStaticProps } from 'next'
 import SEO from '../components/SEO/SEO'
+import {
+  FEATURED_ARTICLES_LIMIT,
+  FEATURED_EPISODES_LIMIT,
+} from '../configs/consts.configs'
 import { HomePage, HomePageProps } from '../containers/HomePage'
 import { DefaultLayout } from '../layouts/DefaultLayout'
 import { Enum_Post_Type } from '../lib/strapi/strapi.generated'
@@ -10,9 +14,6 @@ type PageProps = Pick<
   HomePageProps,
   'data' | 'articlesMoreData' | 'episodesMoreData'
 >
-
-const FEATURED_ARTICLES_LIMIT = 4
-const FEATURED_EPISODES_LIMIT = 4
 
 const Page: CustomNextPage<PageProps> = (props) => {
   return (

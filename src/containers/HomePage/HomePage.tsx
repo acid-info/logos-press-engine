@@ -6,6 +6,12 @@ import React, { useRef, useState } from 'react'
 import { Hero } from '../../components/Hero'
 import { PodcastShowInfo } from '../../components/PodcastShowInfo'
 import { PostsGrid } from '../../components/PostsGrid'
+import {
+  FEATURED_ARTICLES_LIMIT,
+  FEATURED_EPISODES_LIMIT,
+  PODCAST_SHOWS_INFO_DISPLAY_LIMIT,
+  POSTS_TO_LOAD,
+} from '../../configs/consts.configs'
 import { uiConfigs } from '../../configs/ui.configs'
 import { useAutoScrollToNewGridItem } from '../../hooks/useAutoScrollToNewGridItem'
 import { LPE } from '../../types/lpe.types'
@@ -30,12 +36,6 @@ export type HomePageProps = React.DetailedHTMLProps<
   articlesMoreData: MoreData
   episodesMoreData: MoreData
 }
-
-const POSTS_TO_LOAD = 3
-const FEATURED_ARTICLES_LIMIT = 4
-const FEATURED_EPISODES_LIMIT = 4
-
-const PODCAST_SHOWS_INFO_DISPLAY_LIMIT = 2
 
 const POSTS_GRID_CONFIG = {
   pattern: [{ cols: 1, size: 'large' as const }],
