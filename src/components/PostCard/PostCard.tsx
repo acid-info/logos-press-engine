@@ -46,6 +46,7 @@ export type PostCardProps = CommonProps &
     displayYear?: boolean
     isHoverable?: boolean
     isSubtitleVisible?: boolean
+    isSubtitleFullWidth?: boolean
     isClickable?: boolean
   }
 
@@ -69,6 +70,7 @@ export const PostCard = (_props: PostCardProps) => {
     isHoverable = false,
     isSubtitleVisible = true,
     isClickable = false,
+    isSubtitleFullWidth = false,
     ...props
   } = _props
 
@@ -123,27 +125,32 @@ export const PostCard = (_props: PostCardProps) => {
   )
 
   return (
-    <Container
-      onClick={isClickable ? () => router.push(link) : undefined}
-      isClickable={isClickable}
-      className={clsx(
-        'post-card',
-        applySizeStyles && applySizeStyles && `post-card--${size}`,
-        coverImageElement && 'post-card--with-image',
-        props.className,
-        `post-card--${contentType}`,
-        isHoverable && 'post-card--is-hoverable',
-      )}
-    >
-      <div className="post-card__content">
-        {titleElement}
-        {authorsLabelElement}
-        {subtitleElement}
-        {showElement}
-        {metaLabelElement}
-      </div>
-      <div className="post-card__cover-image-wrapper">{coverImageElement}</div>
-    </Container>
+    <div>
+      <Container
+        onClick={isClickable ? () => router.push(link) : undefined}
+        isClickable={isClickable}
+        className={clsx(
+          'post-card',
+          applySizeStyles && applySizeStyles && `post-card--${size}`,
+          coverImageElement && 'post-card--with-image',
+          props.className,
+          `post-card--${contentType}`,
+          isHoverable && 'post-card--is-hoverable',
+        )}
+      >
+        <div className="post-card__content">
+          {titleElement}
+          {authorsLabelElement}
+          {!isSubtitleFullWidth && subtitleElement}
+          {showElement}
+          {metaLabelElement}
+        </div>
+        <div className="post-card__cover-image-wrapper">
+          {coverImageElement}
+        </div>
+      </Container>
+      {isSubtitleFullWidth && subtitleElement}
+    </div>
   )
 }
 
