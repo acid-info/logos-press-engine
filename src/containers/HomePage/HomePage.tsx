@@ -268,6 +268,16 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 200px;
+
+  .post-card-wrapper {
+    border-top: none;
+  }
+
+  ${(props) => lsdUtils.breakpoint(props.theme, 'sm', 'up')} {
+    .post-card-wrapper {
+      border-top: 1px solid rgb(var(--lsd-border-primary));
+    }
+  }
 `
 
 const FeaturedFirst = styled.div`
@@ -337,10 +347,6 @@ const FeaturedSecond = styled.div`
   .post-card__authors-label * {
     font-size: 12px !important;
     line-height: 16px !important;
-  }
-
-  .post-card-wrapper {
-    border-top: 1px solid rgb(var(--lsd-border-primary));
   }
 
   .post-card__cover-image-wrapper {
@@ -442,8 +448,4 @@ const PodcastsSection = styled.div`
   }
 `
 
-const PodcastsContent = styled.div`
-  .post-card-wrapper {
-    border-top: 1px solid rgb(var(--lsd-border-primary));
-  }
-`
+const PodcastsContent = styled.div``

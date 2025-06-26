@@ -36,7 +36,6 @@ export const Hero: React.FC<HeroProps> = ({ ...props }) => {
       <Description component="div" variant="subtitle2">
         {copyConfigs.site.description}
       </Description>
-      <Border />
     </Container>
   )
 }
@@ -70,20 +69,5 @@ const Description = styled(Typography)`
 
   ${(props) => lsdUtils.breakpoint(props.theme, 'sm', 'down')} {
     ${lsdUtils.typography('subtitle4')}
-  }
-`
-
-const Border = styled.div`
-  line-height: 0;
-  height: 0;
-  width: 100%;
-  position: absolute;
-  left: 0px;
-  bottom: 0;
-  border-bottom: 1px solid rgb(var(--lsd-border-primary));
-
-  @media (max-width: ${uiConfigs.maxContainerWidth}px) {
-    width: calc(100% - 2 * var(--main-content-padding));
-    left: var(--main-content-padding);
   }
 `
