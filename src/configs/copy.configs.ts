@@ -12,7 +12,7 @@ export const copyConfigs = {
   },
   search: {
     searchbarPlaceholders: {
-      global: () => 'Search through the LPE posts...',
+      global: () => 'Search through LPE...',
       article: () => `Search on this page or go to`,
     },
     views: {

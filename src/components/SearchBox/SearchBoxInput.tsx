@@ -160,24 +160,25 @@ const Container = styled.div`
     line-height: var(--lsd-label1-lineHeight);
     outline: none;
     border: none;
-
     width: 100%;
     height: 44px;
 
-    ::placeholder {
-      color: rgba(var(--lsd-text-primary), 0.3);
-    }
-
+    ::placeholder,
     :-ms-input-placeholder {
       color: rgba(var(--lsd-text-primary), 0.3);
-    }
-
-    ::-ms-input-placeholder {
-      color: rgba(var(--lsd-text-primary), 0.3);
+      font-size: var(--lsd-h4-lineHeight);
+      line-height: var(--lsd-h4-lineHeight);
+      position: absolute;
+      top: 50%;
+      left: 2px;
+      transform: translateY(-50%);
+      padding: 0;
     }
   }
 
   .search-box-input__wrapper {
+    position: relative;
+
     display: grid;
     grid-template-rows: auto;
     grid-template-columns: 100%;
@@ -221,6 +222,8 @@ const Container = styled.div`
     flex-direction: row;
     align-items: center;
     pointer-events: none;
+    font-size: var(--lsd-h4-lineHeight);
+    line-height: var(--lsd-h4-lineHeight);
 
     & > *:not(a) {
       opacity: 0.34;
