@@ -173,8 +173,8 @@ const StyledTextField = styled(TextField)<{ hasError?: boolean }>`
 
 const SubscribeButton = styled(Button)`
   &.lsd-button {
-    margin-right: 0;
-    height: auto;
-    padding: 19px 40px;
+    margin-right: 0 !important;
+    height: auto !important;
+    padding: 19px 40px !important;
   }
 `
