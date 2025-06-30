@@ -27,26 +27,28 @@ export default function NewsletterSubscriptionForm({
   return (
     <FormContainer>
       {errorMessage && (
-        <MessageContainer>
-          <ErrorIcon color="primary" />
-          <SubmitionInfoMessage variant="body2">
-            {errorMessage}
-          </SubmitionInfoMessage>
-        </MessageContainer>
+        <ErrorMessageContainer>
+          <MessageContainer>
+            <ErrorIcon color="primary" />
+            <SubmitionInfoMessage variant="body2">
+              {errorMessage}
+            </SubmitionInfoMessage>
+          </MessageContainer>
+        </ErrorMessageContainer>
       )}
 
       {successMessage && (
-        <>
+        <SuccessMessageContainer>
           <MessageContainer>
             <CheckIcon color="primary" />
             <SubmitionInfoMessage variant="body2">
               {successMessage}
             </SubmitionInfoMessage>
           </MessageContainer>
-          <GoBackButton variant="filled" onClick={onClose}>
-            Go back
-          </GoBackButton>
-        </>
+          <SubscribeButton variant="outlined" onClick={onClose}>
+            Home page
+          </SubscribeButton>
+        </SuccessMessageContainer>
       )}
 
       <EmailSubscribeForm
@@ -60,22 +62,30 @@ export default function NewsletterSubscriptionForm({
           disabled={disabled}
         /> */}
 
-        <StyledTextField
-          id="email"
-          inputProps={{
-            name: 'email',
-            type: 'email',
-            required: true,
-            disabled,
-          }}
-          placeholder="Email address (required)"
-          disabled={disabled}
-        />
+        <TextFieldWrapper>
+          <StyledTextField
+            id="email"
+            inputProps={{
+              name: 'email',
+              type: 'email',
+              required: true,
+              disabled,
+            }}
+            placeholder="Email address"
+            disabled={disabled}
+            hasError={!!errorMessage}
+          />
+          {errorMessage && (
+            <ErrorIconWrapper>
+              <ErrorIcon color="primary" />
+            </ErrorIconWrapper>
+          )}
+        </TextFieldWrapper>
 
         <SubscribeButton
           variant="filled"
           type="submit"
-          size="medium"
+          size="large"
           disabled={disabled}
         >
           {isSubmitting ? 'Subscribing...' : 'Subscribe'}
@@ -86,17 +96,9 @@ export default function NewsletterSubscriptionForm({
 }
 
 const FormContainer = styled.div`
-  padding: 24px 0;
   width: 430px;
   max-width: 90%;
-`
-
-const GoBackButton = styled(Button)`
-  margin-top: 46px;
-  margin-bottom: 60px;
-  height: 40px;
-  width: 162px;
-  color: rgb(var(--lsd-text-secondary));
+  margin-top: 64px;
 `
 
 const MessageContainer = styled.div`
@@ -106,10 +108,7 @@ const MessageContainer = styled.div`
   align-items: center;
 
   border: 1px solid rgb(var(--lsd-border-primary));
-  padding: 14px;
-
-  margin-bottom: -6px;
-  margin-top: 40px;
+  padding: 11px 18px;
 
   width: 100%;
 
@@ -122,6 +121,17 @@ const SubmitionInfoMessage = styled(Typography)`
   padding-left: 14px;
 `
 
+const ErrorMessageContainer = styled.div`
+  margin-bottom: 40px;
+`
+
+const SuccessMessageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  align-items: center;
+`
+
 const EmailSubscribeForm = styled.form<{
   hideForm: boolean
 }>`
@@ -130,19 +140,41 @@ const EmailSubscribeForm = styled.form<{
   align-items: center;
   flex-direction: column;
 
-  gap: 16px;
+  gap: 48px;
   width: 100%;
-  margin-top: 50px;
-
   margin-bottom: 60px;
 `
 
-const StyledTextField = styled(TextField)`
+const TextFieldWrapper = styled.div`
+  position: relative;
   width: 100%;
 `
 
+const ErrorIconWrapper = styled.div`
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 1;
+`
+
+const StyledTextField = styled(TextField)<{ hasError?: boolean }>`
+  width: 100%;
+
+  ${({ hasError }) =>
+    hasError &&
+    `
+    input {
+      padding-right: 40px;
+    }
+  `}
+`
+
 const SubscribeButton = styled(Button)`
-  margin-top: 30px;
-  height: 40px;
-  width: 162px;
+  &.lsd-button {
+    margin-right: 0;
+    height: auto;
+    padding: 19px 40px;
+  }
 `

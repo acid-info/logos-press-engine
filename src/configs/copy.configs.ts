@@ -8,7 +8,7 @@ export const copyConfigs = {
     keywords: siteConfigs.keywords.join(','),
   },
   navbar: {
-    title: 'Press Engine',
+    title: 'Logos Press Engine',
   },
   search: {
     searchbarPlaceholders: {

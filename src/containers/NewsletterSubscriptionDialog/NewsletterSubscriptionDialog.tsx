@@ -52,8 +52,8 @@ export default function NewsletterSubscriptionDialog({
         <PressLogoType variant={'h1'} genericFontFamily={'serif'}>
           {copyConfigs.navbar.title}
         </PressLogoType>
+        <Typography variant="body2">Subscribe for updates</Typography>
       </LogosIconAndTitleContainer>
-      <Typography variant="body2">Subscribe for updates</Typography>
 
       <NewsletterSubscriptionForm
         handleFormSubmit={handleFormSubmit}
@@ -79,8 +79,7 @@ const PressLogoType = styled(Typography)`
 
 const LogosIconAndTitleContainer = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 16px;
-
-  margin: 16px 0;
 `

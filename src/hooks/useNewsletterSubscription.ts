@@ -46,7 +46,7 @@ export const useNewsletterSubscription = () => {
           return
         }
 
-        setSuccessMessage('Thank you for subscribing!')
+        setSuccessMessage('You successfully subscribed to the newsletter')
       }
     } catch (error) {
       setErrorMessage(defaultErrorMessage)
