@@ -18,12 +18,9 @@ const ArticleStats = ({
         <DotIcon color="primary" />
         <Date variant="body3" genericFontFamily="sans-serif">
           {date &&
-            date.toLocaleString('en-GB', {
-              day: 'numeric',
-              month: 'short',
-              year: 'numeric',
-              timeZone: 'EST',
-            })}
+            `${date.getDate()} ${date
+              .toLocaleString('en-GB', { month: 'short' })
+              .toUpperCase()} ${date.getFullYear()}`}
         </Date>
       </>
     )}
