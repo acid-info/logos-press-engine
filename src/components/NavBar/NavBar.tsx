@@ -67,6 +67,11 @@ export default function NavBar({ defaultState }: NavBarProps) {
   const buttons = (
     <>
       <Buttons>
+        <div className="navbar-right-links">
+          <NavbarLinks
+            links={NavLinksItems.filter((item) => item?.position === 'right')}
+          />
+        </div>
         <SubscribeButton />
         <ThemeSwitch
           toggle={themeState.toggleMode}
@@ -91,7 +96,9 @@ export default function NavBar({ defaultState }: NavBarProps) {
       <NavBarContainer bordered={state.showTitle.get()}>
         <Buttons mobile>{searchButton}</Buttons>
         <NavLinksContainer>
-          <NavbarLinks links={NavLinksItems} />
+          <NavbarLinks
+            links={NavLinksItems.filter((item) => item?.position !== 'right')}
+          />
         </NavLinksContainer>
         <Centered>
           <Logo href="/">
@@ -139,6 +146,10 @@ const Buttons = styled.div<{ mobile?: boolean }>`
   display: none;
   align-items: center;
   justify-content: center;
+
+  .navbar-right-links {
+    margin-right: var(--lsd-spacing-24);
+  }
 
   > * {
     background: rgb(var(--lsd-surface-primary));

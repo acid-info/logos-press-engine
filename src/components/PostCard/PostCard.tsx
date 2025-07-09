@@ -61,6 +61,7 @@ export const PostCard = (_props: PostCardProps) => {
       authors,
       slug,
       podcastShowDetails,
+      tags = [],
     },
     size = 'small',
     contentType,
@@ -106,6 +107,7 @@ export const PostCard = (_props: PostCardProps) => {
       contentType={contentType}
       displayYear={displayYear}
       date={date}
+      tags={tags}
     />
   )
 

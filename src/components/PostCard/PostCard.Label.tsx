@@ -10,18 +10,21 @@ export type Props = React.ComponentProps<typeof Container> & {
   date: Date | null
   displayYear?: boolean
   size?: 'small' | 'medium' | 'large'
+  tags?: string[]
 }
 
 export const PostCardLabel: FC<Props> = ({
   displayYear = true,
   contentType,
   date,
+  tags = [],
   ...props
 }) => {
+  const isCommunity = tags.includes('Community')
   return (
     <Container {...props} className={`post-card__label ${props.className}`}>
       <ContentType variant="subtitle2" genericFontFamily="sans-serif">
-        {contentType}
+        {isCommunity ? 'Community' : contentType}
       </ContentType>
       {date && (
         <>
