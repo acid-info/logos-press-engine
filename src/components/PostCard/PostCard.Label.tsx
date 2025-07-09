@@ -24,7 +24,7 @@ export const PostCardLabel: FC<Props> = ({
   return (
     <Container {...props} className={`post-card__label ${props.className}`}>
       <ContentType variant="subtitle2" genericFontFamily="sans-serif">
-        {isCommunity ? 'Community' : contentType}
+        {isCommunity ? 'Community Article' : contentType}
       </ContentType>
       {date && (
         <>
