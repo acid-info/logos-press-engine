@@ -249,6 +249,7 @@ export const LightBox = ({ children, caption }: LightBoxProps) => {
 const LightBoxCaption = styled.figcaption<{ isActive?: boolean }>`
   padding-top: 8px;
   ${lsdUtils.typography('body3')}
+  text-align: center;
 
   @keyframes fadeIn {
     0% {
