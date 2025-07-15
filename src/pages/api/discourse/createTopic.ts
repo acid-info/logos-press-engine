@@ -3,6 +3,7 @@ import { discourseApi } from '../../../services/discourse.service'
 import { strapiApi } from '../../../services/strapi'
 import { ApiResponse } from '../../../types/data.types'
 import { LPE } from '../../../types/lpe.types'
+import { validateOrigin } from '../../../utils/security.utils'
 
 type RequestBody = {
   articleData: LPE.Article.Data
@@ -14,6 +15,10 @@ export default async function handler(
 ) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
+  }
+
+  if (!validateOrigin(req)) {
+    return res.status(403).json({ error: 'Forbidden: Invalid origin' })
   }
 
   try {

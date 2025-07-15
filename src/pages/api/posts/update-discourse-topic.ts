@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { strapiApi } from '../../../services/strapi'
+import { validateOrigin } from '../../../utils/security.utils'
 
 interface RequestBody {
   articleId: string
@@ -12,6 +13,10 @@ export default async function handler(
 ) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' })
+  }
+
+  if (!validateOrigin(req)) {
+    return res.status(403).json({ message: 'Forbidden: Invalid origin' })
   }
 
   const { articleId, topicId }: RequestBody = req.body
