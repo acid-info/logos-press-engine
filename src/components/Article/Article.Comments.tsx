@@ -129,7 +129,7 @@ const ArticleComments = ({ article }: ArticleCommentsProps) => {
 
       {error && <ErrorMessage>{error}</ErrorMessage>}
 
-      {topic ? (
+      {topic && (
         <Content>
           <TopicInfo>
             <TopicTitle>{topic.title}</TopicTitle>
@@ -186,8 +186,10 @@ const ArticleComments = ({ article }: ArticleCommentsProps) => {
             </ViewMore>
           )}
         </Content>
-      ) : (
-        !loading && !error && <NoComments>No discussion yet.</NoComments>
+      )}
+
+      {((!loading && !error && !topic) || (topic && topic.posts_count < 2)) && (
+        <NoComments>No discussion yet.</NoComments>
       )}
     </Container>
   )
