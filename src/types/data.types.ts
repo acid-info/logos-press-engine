@@ -5,12 +5,23 @@ export enum PostTypes {
   Block = 'block',
 }
 
-export type ApiResponse<T> = {
-  data: T
-  errors: any
+export interface ApiError {
+  message: string
+  code?: string | number
+  details?: any
 }
 
-export type ApiPaginatedPayload<T> = { data: T; hasMore: boolean }
+export type ApiResponse<T> = {
+  data: T
+  errors: ApiError | string | null
+  status?: number
+}
+
+export type ApiPaginatedPayload<T> = {
+  data: T
+  hasMore: boolean
+}
+
 export type ApiPaginatedResponse<T> = ApiResponse<ApiPaginatedPayload<T>>
 
 export type SearchResultItem<T> = {
