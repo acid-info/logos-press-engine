@@ -3,6 +3,7 @@ import { discourseApi } from '../../../services/discourse.service'
 import { strapiApi } from '../../../services/strapi'
 import { ApiResponse } from '../../../types/data.types'
 import { LPE } from '../../../types/lpe.types'
+import { send500 } from '../../../utils/api.utils'
 import { validateOrigin } from '../../../utils/security.utils'
 
 type RequestBody = {
@@ -13,20 +14,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>,
 ) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
+  if (req.method !== 'POST') return send500(res, 'Method not allowed')
 
-  if (!validateOrigin(req)) {
-    return res.status(403).json({ error: 'Forbidden: Invalid origin' })
-  }
+  if (!validateOrigin(req)) return send500(res, 'Forbidden: Invalid origin')
 
   try {
     const { articleData }: RequestBody = req.body
-
-    if (!articleData) {
-      return res.status(400).json({ error: 'Article data is required' })
-    }
+    if (!articleData) return send500(res, 'Article data is required')
 
     // Check if article exists in Strapi to avoid misuse of the API
     const articleCheck = await strapiApi.getPosts({
@@ -38,35 +32,27 @@ export default async function handler(
       !articleCheck.data.data ||
       articleCheck.data.data.length === 0
     ) {
-      console.error('Article not found in Strapi:', articleData.id)
-      return res.status(500).json({ error: 'Internal server error' })
+      return send500(res, `Article not found in Strapi: ${articleData.id}`)
     }
 
     const result: ApiResponse<any> = await discourseApi.createArticleTopic(
       articleData,
     )
-
     if (result.data && !result.errors) {
       const updateResult = await strapiApi.updatePostDiscourseTopicId(
         articleData.id,
         result.data.topic_id,
       )
-
-      if (updateResult.errors) {
-        console.error(
-          'Failed to update article with topic ID:',
-          updateResult.errors,
+      if (updateResult.errors)
+        send500(
+          res,
+          `Failed to update article with topic ID: ${updateResult.errors}`,
         )
-      }
     }
-
-    if (result.errors) {
-      return res.status(result.status || 500).json({ error: result.errors })
-    }
+    if (result.errors) return send500(res, result.errors)
 
     res.status(200).json(result)
   } catch (error) {
-    console.error('Discourse create topic error:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    send500(res, error)
   }
 }
