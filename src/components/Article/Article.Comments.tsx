@@ -43,14 +43,17 @@ const ArticleComments = ({ article }: ArticleCommentsProps) => {
     setState((prev) => ({ ...prev, ...updates }))
 
   const callGetTopic = useCallback(async (topicId: number) => {
-    const response = await fetch(`/api/discourse/getTopic?topicId=${topicId}`, {
-      method: 'GET',
-    })
+    const response = await fetch(
+      `/api/discourse/get-topic?topicId=${topicId}`,
+      {
+        method: 'GET',
+      },
+    )
     return { response, data: await response.json() }
   }, [])
 
   const callCreateTopic = useCallback(async (articleData: LPE.Article.Data) => {
-    const response = await fetch('/api/discourse/createTopic', {
+    const response = await fetch('/api/discourse/create-topic', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ articleData }),
