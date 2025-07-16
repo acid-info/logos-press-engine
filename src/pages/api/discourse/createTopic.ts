@@ -28,6 +28,20 @@ export default async function handler(
       return res.status(400).json({ error: 'Article data is required' })
     }
 
+    // Check if article exists in Strapi to avoid misuse of the API
+    const articleCheck = await strapiApi.getPosts({
+      id: articleData.id,
+      limit: 1,
+    })
+    if (
+      !articleCheck.data ||
+      !articleCheck.data.data ||
+      articleCheck.data.data.length === 0
+    ) {
+      console.error('Article not found in Strapi:', articleData.id)
+      return res.status(500).json({ error: 'Internal server error' })
+    }
+
     const result: ApiResponse<any> = await discourseApi.createArticleTopic(
       articleData,
     )
