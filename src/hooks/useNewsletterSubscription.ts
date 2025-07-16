@@ -20,7 +20,7 @@ export const useNewsletterSubscription = () => {
         setErrorMessage(defaultErrorMessage)
       } else {
         const res = await fetch(
-          `https://odoo.logos.co/website_mass_mailing/subscribe_ghost`,
+          `http://admin-acid.logos.co/api/admin/newsletters/subscribe`,
           {
             method: 'POST',
             headers: {
@@ -32,7 +32,6 @@ export const useNewsletterSubscription = () => {
               params: {
                 email: email,
                 type: 'logos',
-                subscription_type: 'email',
                 newsletter: newsletterId,
               },
             }),
