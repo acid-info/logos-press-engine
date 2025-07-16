@@ -22,15 +22,3 @@ export const validateOrigin = (req: NextApiRequest): boolean => {
 
   return origin.replace(/\/$/, '') === productionOrigin
 }
-
-export const createOriginCheckMiddleware = () => {
-  return (req: NextApiRequest): { success: boolean; error?: string } => {
-    if (!validateOrigin(req)) {
-      return {
-        success: false,
-        error: 'Forbidden: Invalid origin',
-      }
-    }
-    return { success: true }
-  }
-}
