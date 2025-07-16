@@ -20,7 +20,7 @@ export const useNewsletterSubscription = () => {
         setErrorMessage(defaultErrorMessage)
       } else {
         const res = await fetch(
-          `http://admin-acid.logos.co/api/admin/newsletters/subscribe`,
+          `https://admin-acid.logos.co/api/admin/newsletters/subscribe`,
           {
             method: 'POST',
             headers: {
