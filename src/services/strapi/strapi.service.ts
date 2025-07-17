@@ -605,7 +605,7 @@ export class StrapiService {
 
   updatePostDiscourseTopicId = async (
     postId: string,
-    discourseTopicId: number,
+    discourseTopicId: number | null,
   ): Promise<ApiResponse<{ success: boolean }>> =>
     this.handleRequest(async () => {
       const response = await this.axios.put(`/posts/${postId}`, {
