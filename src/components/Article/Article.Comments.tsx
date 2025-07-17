@@ -52,11 +52,11 @@ const ArticleComments = ({ article }: ArticleCommentsProps) => {
     return { response, data: await response.json() }
   }, [])
 
-  const callCreateTopic = useCallback(async (articleData: LPE.Article.Data) => {
+  const callCreateTopic = useCallback(async (articleId: string) => {
     const response = await fetch('/api/discourse/create-topic', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ articleData }),
+      body: JSON.stringify({ articleId }),
     })
     return { response, data: await response.json() }
   }, [])
@@ -87,7 +87,7 @@ const ArticleComments = ({ article }: ArticleCommentsProps) => {
   const handleStartDiscussion = async () => {
     updateState({ loading: true, error: null })
     try {
-      const { response, data } = await callCreateTopic(article)
+      const { response, data } = await callCreateTopic(article.id)
       if (response.ok) {
         openTopic(data.data.topic_slug, data.data.topic_id)
         await fetchTopic(data.data.topic_id)

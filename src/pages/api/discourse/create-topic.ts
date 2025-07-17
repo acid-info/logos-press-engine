@@ -7,7 +7,7 @@ import { send500 } from '../../../utils/api.utils'
 import { validateOrigin } from '../../../utils/security.utils'
 
 type RequestBody = {
-  articleData: LPE.Article.Data
+  articleId: string
 }
 
 export default async function handler(
@@ -19,12 +19,16 @@ export default async function handler(
   if (!validateOrigin(req)) return send500(res, 'Forbidden: Invalid origin')
 
   try {
-    const { articleData }: RequestBody = req.body
-    if (!articleData) return send500(res, 'Article data is required')
+    const { articleId }: RequestBody = req.body
+    if (!articleId) return send500(res, 'Article id is required')
+
+    if (!/^\d+$/.test(articleId)) {
+      return send500(res, 'Article id must be a positive or zero number')
+    }
 
     // Check if article exists in Strapi to avoid misuse of the API
     const articleCheck = await strapiApi.getPosts({
-      id: articleData.id,
+      id: articleId,
       limit: 1,
     })
     if (
@@ -32,15 +36,16 @@ export default async function handler(
       !articleCheck.data.data ||
       articleCheck.data.data.length === 0
     ) {
-      return send500(res, `Article not found in Strapi: ${articleData.id}`)
+      return send500(res, `Article not found in Strapi: ${articleId}`)
     }
 
+    const strapiArticle = articleCheck.data.data[0] as LPE.Article.Data
     const result: ApiResponse<any> = await discourseApi.createArticleTopic(
-      articleData,
+      strapiArticle,
     )
     if (result.data && !result.errors) {
       const updateResult = await strapiApi.updatePostDiscourseTopicId(
-        articleData.id,
+        strapiArticle.id,
         result.data.topic_id,
       )
       if (updateResult.errors)
