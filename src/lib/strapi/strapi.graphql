@@ -584,6 +584,7 @@ type Post {
   cover_image: UploadFileEntityResponse
   createdAt: DateTime
   credits: String
+  discourse_topic_id: Int
   episode_number: Int
   featured: Boolean
   podcast_show: PodcastShowEntityResponse
@@ -621,6 +622,7 @@ input PostFiltersInput {
   channel: ComponentCatChannelFiltersInput
   createdAt: DateTimeFilterInput
   credits: StringFilterInput
+  discourse_topic_id: IntFilterInput
   episode_number: IntFilterInput
   featured: BooleanFilterInput
   id: IDFilterInput
@@ -645,6 +647,7 @@ input PostInput {
   channel: [ComponentCatChannelInput]
   cover_image: ID
   credits: String
+  discourse_topic_id: Int
   episode_number: Int
   featured: Boolean
   podcast_show: ID

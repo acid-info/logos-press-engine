@@ -842,6 +842,7 @@ export type Post = {
   cover_image: Maybe<UploadFileEntityResponse>
   createdAt: Maybe<Scalars['DateTime']['output']>
   credits: Maybe<Scalars['String']['output']>
+  discourse_topic_id: Maybe<Scalars['Int']['output']>
   episode_number: Maybe<Scalars['Int']['output']>
   featured: Maybe<Scalars['Boolean']['output']>
   podcast_show: Maybe<PodcastShowEntityResponse>
@@ -907,6 +908,7 @@ export type PostFiltersInput = {
   channel?: InputMaybe<ComponentCatChannelFiltersInput>
   createdAt?: InputMaybe<DateTimeFilterInput>
   credits?: InputMaybe<StringFilterInput>
+  discourse_topic_id?: InputMaybe<IntFilterInput>
   episode_number?: InputMaybe<IntFilterInput>
   featured?: InputMaybe<BooleanFilterInput>
   id?: InputMaybe<IdFilterInput>
@@ -931,6 +933,7 @@ export type PostInput = {
   channel?: InputMaybe<Array<InputMaybe<ComponentCatChannelInput>>>
   cover_image?: InputMaybe<Scalars['ID']['input']>
   credits?: InputMaybe<Scalars['String']['input']>
+  discourse_topic_id?: InputMaybe<Scalars['Int']['input']>
   episode_number?: InputMaybe<Scalars['Int']['input']>
   featured?: InputMaybe<Scalars['Boolean']['input']>
   podcast_show?: InputMaybe<Scalars['ID']['input']>
@@ -1580,6 +1583,7 @@ export type PostCommonAttributesFragment = {
   slug: string
   featured: boolean
   episode_number: number
+  discourse_topic_id: number
   publish_date: any
   publishedAt: any
   podcast_show: {
@@ -1706,6 +1710,7 @@ export type GetPostsQuery = {
         slug: string
         featured: boolean
         episode_number: number
+        discourse_topic_id: number
         publish_date: any
         publishedAt: any
         channel?: Array<{
@@ -1782,6 +1787,7 @@ export type GetRelatedPostsQuery = {
               slug: string
               featured: boolean
               episode_number: number
+              discourse_topic_id: number
               publish_date: any
               publishedAt: any
               podcast_show: {
@@ -1854,6 +1860,7 @@ export type SearchPostsQuery = {
           slug: string
           featured: boolean
           episode_number: number
+          discourse_topic_id: number
           publish_date: any
           publishedAt: any
           podcast_show: {
@@ -1950,6 +1957,10 @@ export const PostCommonAttributesFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
           { kind: 'Field', name: { kind: 'Name', value: 'featured' } },
           { kind: 'Field', name: { kind: 'Name', value: 'episode_number' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'discourse_topic_id' },
+          },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'podcast_show' },
@@ -2592,6 +2603,10 @@ export const GetPostsDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'episode_number' } },
           {
             kind: 'Field',
+            name: { kind: 'Name', value: 'discourse_topic_id' },
+          },
+          {
+            kind: 'Field',
             name: { kind: 'Name', value: 'podcast_show' },
             selectionSet: {
               kind: 'SelectionSet',
@@ -2900,6 +2915,10 @@ export const GetRelatedPostsDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'episode_number' } },
           {
             kind: 'Field',
+            name: { kind: 'Name', value: 'discourse_topic_id' },
+          },
+          {
+            kind: 'Field',
             name: { kind: 'Name', value: 'podcast_show' },
             selectionSet: {
               kind: 'SelectionSet',
@@ -3185,6 +3204,10 @@ export const SearchPostsDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
           { kind: 'Field', name: { kind: 'Name', value: 'featured' } },
           { kind: 'Field', name: { kind: 'Name', value: 'episode_number' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'discourse_topic_id' },
+          },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'podcast_show' },

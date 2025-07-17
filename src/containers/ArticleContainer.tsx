@@ -29,7 +29,13 @@ const ArticleContainer = (props: Props) => {
           const displaySearchResults = search.active && !search.isInitialLoading
 
           return (
-            <ArticleContainerContext.Provider value={{ tocId, setTocId }}>
+            <ArticleContainerContext.Provider
+              value={{
+                tocId,
+                setTocId,
+                articleData: data.data,
+              }}
+            >
               <ArticleGrid
                 searchMode={search.active}
                 displaySearchResults={displaySearchResults}
