@@ -28,6 +28,7 @@ export const postTransformer: Transformer<
     const publishedAt = attributes.publish_date
     const isHighlighted = attributes.featured
     const isDraft = !attributes.publishedAt
+    const discourseTopicId = attributes.discourse_topic_id
     const coverImage: LPE.Post.Document['coverImage'] =
       await transformStrapiImageData(attributes.cover_image)
     const tags: LPE.Tag.Document[] = attributes.tags.data.map((tag) => ({
@@ -91,6 +92,7 @@ export const postTransformer: Transformer<
         authors,
         highlighted: isHighlighted,
         isDraft,
+        discourse_topic_id: discourseTopicId,
       } as LPE.Article.Data
     } else {
       return {
@@ -114,6 +116,7 @@ export const postTransformer: Transformer<
         summary: attributes.summary,
         showId: attributes.podcast_show.data?.id || null,
         modifiedAt: publishedAt,
+        discourse_topic_id: discourseTopicId,
         // will be filled in later
         credits: [],
         transcription: [],

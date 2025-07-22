@@ -28,7 +28,7 @@ export const NavLinksItems = [
     position: 'right',
   },
   {
-    label: 'Forum',
+    label: 'Discuss',
     href: 'https://forum.logos.co/',
     target: '_blank',
     isExternal: true,

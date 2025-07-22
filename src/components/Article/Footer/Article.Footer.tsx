@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import { useMemo } from 'react'
 import { LPE } from '../../../types/lpe.types'
 import { lsdUtils } from '../../../utils/lsd.utils'
+import ArticleComments from '../Article.Comments'
 import ArticleFootnotes from './Article.Footnotes'
 import FromSameAuthorsArticles from './Article.FromSameAuthorsArticles'
 import ArticleRelatedArticles from './Article.RelatedArticles'
@@ -16,6 +17,7 @@ const ArticleFooter = ({ data: post }: { data: LPE.Article.Document }) => {
   return (
     <ArticleFooterContainer>
       <ArticleFootnotes footnotes={footnotes} />
+      <ArticleComments article={data} />
       <ArticleRelatedArticles data={relatedArticles} />
       <FromSameAuthorsArticles data={articlesFromSameAuthors} />
     </ArticleFooterContainer>
@@ -25,8 +27,8 @@ const ArticleFooter = ({ data: post }: { data: LPE.Article.Document }) => {
 const ArticleFooterContainer = styled.div`
   margin-top: 16px;
 
-  & > div:not(:first-child) > div > button,
-  & > div:not(:first-child) > div {
+  & > div:not(:first-child):not(.related-articles) > div > button,
+  & > div:not(:first-child):not(.related-articles) > div {
     border-top: none;
   }
 

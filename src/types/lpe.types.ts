@@ -162,6 +162,7 @@ export namespace LPE {
       tags: Tag.Document[]
       highlighted?: boolean
       isDraft?: boolean
+      discourse_topic_id?: number
 
       createdAt: string | null
       modifiedAt: string | null
@@ -237,6 +238,7 @@ export namespace LPE {
       showId?: string
       highlighted?: boolean
       isDraft?: boolean
+      discourse_topic_id?: number
       coverImage?: Image.Document
       show?: Show
       summary?: string
@@ -284,5 +286,44 @@ export namespace LPE {
       posts: Search.ResultItem[]
       blocks: Search.ResultItem[]
     }
+  }
+
+  export namespace Discourse {
+    export interface Post {
+      id: number
+      username: string
+      avatar_template: string
+      created_at: string
+      cooked: string
+      display_username: string | null
+    }
+
+    export interface TopicResponse {
+      id: number
+      slug: string
+      title: string
+      posts_count: number
+      like_count: number
+      post_stream: {
+        posts: Post[]
+      }
+    }
+
+    export interface CreateTopicRequest {
+      title: string
+      raw: string
+      category?: number
+      archetype?: 'regular' | 'private_message'
+      created_at?: string
+      reply_to_post_number?: number
+      embed_url?: string
+    }
+
+    export interface CreateTopicResponse extends Post {
+      topic_id: number
+      topic_slug?: string
+    }
+
+    export type Action = 'getTopic' | 'createTopic'
   }
 }

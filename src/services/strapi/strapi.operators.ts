@@ -9,6 +9,7 @@ const POST_COMMON_ATTRIBUTES = gql`
     slug
     featured
     episode_number
+    discourse_topic_id
     podcast_show {
       data {
         id
