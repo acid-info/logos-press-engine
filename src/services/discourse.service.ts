@@ -8,7 +8,7 @@ const DEFAULT_ARTICLE_DISCUSSION_CATEGORY_ID = 8
 const DISCOURSE_API_KEY = process.env.DISCOURSE_API_KEY || ''
 const DISCOURSE_BASE_URL =
   process.env.DISCOURSE_BASE_URL || 'https://forum.logos.co'
-const DISCOURSE_USERNAME = process.env.DISCOURSE_USERNAME || 'system'
+const DISCOURSE_USERNAME = process.env.DISCOURSE_USERNAME || ''
 
 export class DiscourseService {
   client: AxiosInstance
