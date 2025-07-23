@@ -37,11 +37,14 @@ export class DiscourseService {
     errors: any = null,
   ): ApiResponse<T> => {
     if (errors) {
+      console.log('Discourse API Error:', errors)
       const status = errors?.response?.status || 500
       const errorMessage =
         errors?.response?.data?.message ||
         errors?.message ||
-        errors?.toString() ||
+        (errors instanceof AggregateError
+          ? errors.errors?.map((e) => e.message).join(', ')
+          : errors?.toString()) ||
         'Unknown error'
 
       return {
