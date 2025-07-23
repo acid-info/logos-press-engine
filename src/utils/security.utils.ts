@@ -1,7 +1,10 @@
 import { NextApiRequest } from 'next'
+import { getWebsiteUrl } from './route.utils'
 
-const getProductionOrigin = () =>
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
+const getProductionOrigin = () => {
+  const origin = getWebsiteUrl()
+  return origin.replace(/\/$/, '')
+}
 
 export const validateOrigin = (req: NextApiRequest): boolean => {
   const origin = req.headers.origin || req.headers.referer
@@ -12,8 +15,7 @@ export const validateOrigin = (req: NextApiRequest): boolean => {
 
   if (
     originUrl.hostname === 'localhost' ||
-    originUrl.hostname === '127.0.0.1' ||
-    originUrl.hostname === 'lpe-git-feat-articles-comments-acidinfo.vercel.app'
+    originUrl.hostname === '127.0.0.1'
   ) {
     return true
   }
