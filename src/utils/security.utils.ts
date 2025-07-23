@@ -13,6 +13,7 @@ export const validateOrigin = (req: NextApiRequest): boolean => {
 
   const originUrl = new URL(origin)
 
+  // todo: remove dev-press.logos.co
   if (
     originUrl.hostname === 'localhost' ||
     originUrl.hostname === '127.0.0.1' ||
