@@ -39,7 +39,10 @@ export class DiscourseService {
     if (errors) {
       const status = errors?.response?.status || 500
       const errorMessage =
-        errors?.response?.data?.message || errors?.message || 'Unknown error'
+        errors?.response?.data?.message ||
+        errors?.message ||
+        errors?.toString() ||
+        'Unknown error'
 
       return {
         data: data as any,
