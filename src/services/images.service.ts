@@ -7,6 +7,7 @@ import {
 import axios from 'axios'
 import path from 'path'
 import sharp from 'sharp'
+import logger from '../lib/logger'
 
 export class PlaceholderService {
   cache = new Map<string, string>()
@@ -61,7 +62,19 @@ export class PlaceholderService {
 
       return relativePath
     } catch (e) {
-      console.log(e)
+      const relativePath = path.join(POSTS_IMAGE_PLACEHOLDER_DIR, fileName)
+      logger.debug('Image generation failed', {
+        fileName,
+        imagePath,
+        thumbnailPath,
+        error: e,
+        errorType: typeof e,
+        filePath: path.join(
+          process.env.SOURCE_DIR ?? process.cwd(),
+          relativePath,
+        ),
+      })
+      logger.error('Failed to generate image', { error: e })
     }
 
     return thumbnailPath

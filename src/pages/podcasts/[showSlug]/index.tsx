@@ -5,6 +5,7 @@ import { GetStaticPropsContext } from 'next'
 import { useRouter } from 'next/router'
 import { ReactNode } from 'react'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
+import logger from '../../../lib/logger'
 import { strapiApi } from '../../../services/strapi'
 import { ApiPaginatedPayload } from '../../../types/data.types'
 import { LPE } from '../../../types/lpe.types'
@@ -113,7 +114,19 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
     latestEpisodes.data.forEach((post: LPE.Post.Document) => rss.addPost(post))
     await rss.save()
   } catch (e) {
-    console.log('Error generating RSS feed', e)
+    const showSlug = params?.showSlug
+    logger.debug('Podcast RSS feed generation failed', {
+      showSlug,
+      error: e,
+      errorType: typeof e,
+      episodesCount: latestEpisodes.data.length,
+      showTitle: shows[0]?.title,
+      feedType: 'podcast',
+    })
+    logger.error('Error generating RSS feed for podcast', {
+      showSlug,
+      error: e,
+    })
   }
 
   return {

@@ -1,5 +1,6 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client'
 import axios, { Axios } from 'axios'
+import logger from '../../lib/logger'
 import {
   Enum_Post_Type,
   GetPodcastShowsDocument,
@@ -100,7 +101,14 @@ export class StrapiService {
     data: T | null = null,
     errors: any = null,
   ): ApiResponse<T> => {
-    if (errors) console.error(errors)
+    if (errors) {
+      logger.debug('Strapi API raw error data', {
+        errors,
+        data,
+        errorType: typeof errors,
+      })
+      logger.error('Strapi API error', { errors })
+    }
     if (errors || !data) {
       return {
         data: data as any,

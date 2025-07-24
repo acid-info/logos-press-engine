@@ -3,6 +3,7 @@ import styled from '@emotion/styled'
 import Link from 'next/link'
 import { useMemo, useRef, useState } from 'react'
 import { useClickAway, useWindowSize } from 'react-use'
+import logger from '../../lib/logger'
 import { CopyIcon } from '../Icons/CopyIcon'
 import { ShareIcon } from '../Icons/ShareIcon'
 import { XIcon } from '../Icons/XIcon'
@@ -28,7 +29,7 @@ export default function ShareButton({ url }: Props) {
       }
       navigator.share(shareObject).catch((error) => {
         if (error.name === 'AbortError') return
-        console.error('Error sharing', error)
+        logger.error('Error sharing', { url, error })
         setShowOptions(!showOptions)
       })
     } else {
