@@ -1,4 +1,5 @@
 import { Transformer } from '../../../lib/TransformPipeline/types'
+import logger from '../../../lib/logger'
 import { LPE } from '../../../types/lpe.types'
 import { settle } from '../../../utils/promise.utils'
 import { simplecastApi } from '../../simplecast.service'
@@ -73,7 +74,12 @@ const transformChannels = async (
         const episodeId = simplecastApi.extractEpisodeIdFromUrl(link)
 
         if (!episodeId) {
-          console.error('invalid Simplecast player url!')
+          logger.debug('Simplecast URL parsing failed', {
+            link,
+            channelName: name,
+            extractedId: episodeId,
+          })
+          logger.error('Invalid Simplecast player URL', { link })
           continue
         }
 
@@ -82,8 +88,17 @@ const transformChannels = async (
         )
 
         if (err) {
-          console.error('failed to fetch Simplecast episode ', link)
-          console.error(err)
+          logger.debug('Simplecast API call failed', {
+            link,
+            episodeId,
+            channelName: name,
+            error: err,
+            errorType: typeof err,
+          })
+          logger.error('Failed to fetch Simplecast episode', {
+            link,
+            error: err,
+          })
           continue
         }
 

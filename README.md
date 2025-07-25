@@ -24,6 +24,8 @@ SIMPLECAST_ACCESS_TOKEN=
 REVALIDATE_WEBHOOK_TOKEN=
 NEXT_PUBLIC_SITE_URL=https://press.logos.co
 FATHOM_SITE_ID=
+NODE_ENV=
+LOG_LEVEL=
 ```
 
 This is a template for `.env.local`, which is included in `.gitignore`.

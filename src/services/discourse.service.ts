@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
+import logger from '../lib/logger'
 import { ApiResponse } from '../types/data.types'
 import { LPE } from '../types/lpe.types'
 import { settle } from '../utils/promise.utils'
@@ -37,19 +38,17 @@ export class DiscourseService {
     errors: any = null,
   ): ApiResponse<T> => {
     if (errors) {
-      console.log('Discourse API Error:', errors)
+      logger.debug('Discourse API raw error data', {
+        errors,
+        data,
+        errorType: typeof errors,
+      })
+      logger.error('Discourse API Error', { errors })
       const status = errors?.response?.status || 500
-      const errorMessage =
-        errors?.response?.data?.message ||
-        errors?.message ||
-        (errors instanceof AggregateError
-          ? errors.errors?.map((e) => e.message).join(', ')
-          : errors?.toString()) ||
-        'Unknown error'
 
       return {
         data: data as any,
-        errors: errorMessage,
+        errors: JSON.stringify(errors),
         status,
       }
     }

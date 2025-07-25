@@ -14,6 +14,7 @@ import {
 } from '../../configs/consts.configs'
 import { uiConfigs } from '../../configs/ui.configs'
 import { useAutoScrollToNewGridItem } from '../../hooks/useAutoScrollToNewGridItem'
+import logger from '../../lib/logger'
 import { LPE } from '../../types/lpe.types'
 import { lsdUtils } from '../../utils/lsd.utils'
 import { LoadMoreButton } from './LoadMoreButton'
@@ -158,7 +159,14 @@ export const HomePage: React.FC<HomePageProps> = ({
         [key]: [...prev[key], ...postsToAdd],
       }))
     } catch (error) {
-      console.error('Error fetching more posts:', error)
+      logger.debug('Fetch more posts failed', {
+        key,
+        type,
+        error,
+        errorType: typeof error,
+        currentItems: displayedItems[key]?.length || 0,
+      })
+      logger.error('Error fetching more posts', { key, error })
     } finally {
       setLoading((prev) => ({ ...prev, [key]: false }))
     }

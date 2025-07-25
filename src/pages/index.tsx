@@ -7,6 +7,7 @@ import {
 } from '../configs/consts.configs'
 import { HomePage, HomePageProps } from '../containers/HomePage'
 import { DefaultLayout } from '../layouts/DefaultLayout'
+import logger from '../lib/logger'
 import { Enum_Post_Type } from '../lib/strapi/strapi.generated'
 import { strapiApi } from '../services/strapi'
 
@@ -130,7 +131,13 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     initialArticles.forEach((post) => rss.addPost(post))
     await rss.save()
   } catch (e) {
-    console.log('Error generating RSS feed', e)
+    logger.debug('RSS feed generation failed', {
+      error: e,
+      errorType: typeof e,
+      articlesCount: initialArticles.length,
+      feedType: 'main',
+    })
+    logger.error('Error generating RSS feed', { error: e })
   }
 
   return {
