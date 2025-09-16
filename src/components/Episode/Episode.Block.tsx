@@ -46,6 +46,8 @@ export const RenderEpisodeBlock = ({
           </TranscriptText>
         </Transcript>
       </TranscriptionItem>
+    ) : block?.html ? (
+      <div dangerouslySetInnerHTML={{ __html: block.html }} />
     ) : null
   }
 }
