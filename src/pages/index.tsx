@@ -129,8 +129,48 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
   try {
     const rss = new LPERssFeed('main')
     await rss.init()
-    initialArticles.forEach((post) => rss.addPost(post))
+
+    // Add all articles (not just initialArticles)
+    const { data: allArticlesResponse } = await strapiApi.getPosts({
+      skip: 0,
+      limit: 1000,
+      highlighted: 'include',
+      parseContent: false,
+      published: true,
+      filters: {
+        type: {
+          eq: 'Article' as Enum_Post_Type,
+        },
+      },
+    })
+    const allArticles = allArticlesResponse.data || []
+
+    // Add all podcast episodes
+    const { data: allEpisodesResponse } = await strapiApi.getPosts({
+      skip: 0,
+      limit: 1000,
+      highlighted: 'include',
+      parseContent: false,
+      published: true,
+      filters: {
+        type: {
+          eq: 'Episode' as Enum_Post_Type,
+        },
+      },
+    })
+    const allEpisodes = allEpisodesResponse.data || []
+
+    // Add all articles to RSS
+    allArticles.forEach((post) => rss.addPost(post))
+
+    // Add all episodes to RSS
+    allEpisodes.forEach((post) => rss.addPost(post))
+
     await rss.save()
+
+    console.log(
+      `RSS feed generated with ${allArticles.length} articles and ${allEpisodes.length} episodes`,
+    )
   } catch (e) {
     logger.debug(
       {
