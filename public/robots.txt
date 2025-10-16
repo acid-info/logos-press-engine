@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://press.logos.co/sitemap.xml
+
+# RSS Feeds (for reference)
+# Main RSS feed: https://press.logos.co/rss/main.xml
+# Logos State podcast: https://press.logos.co/rss/logos-state.xml
+# Hashing It Out podcast: https://press.logos.co/rss/hashing-it-out.xml
