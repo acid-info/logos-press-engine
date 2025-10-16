@@ -80,7 +80,7 @@ export default function SEO({
       <link
         rel="alternate"
         type="application/rss+xml"
-        href={`${getWebsiteUrl()}/rss/${rssFileName ?? 'main.rss'}`}
+        href={`${getWebsiteUrl()}/rss/${rssFileName ?? 'main.xml'}`}
       />
       {noIndex && (
         <>
