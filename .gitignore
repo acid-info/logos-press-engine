@@ -42,3 +42,4 @@ public/images/placeholders/*
 !public/images/placeholders/.gitkeep
 
 public/rss/*.xml
+public/sitemap.xml

@@ -1,4 +1,5 @@
 import { LPERssFeed } from '@/services/rss.service'
+import { LPESitemapGenerator } from '@/services/sitemap.service'
 import { CustomNextPage, GetStaticProps } from 'next'
 import SEO from '../components/SEO/SEO'
 import {
@@ -131,13 +132,31 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     initialArticles.forEach((post) => rss.addPost(post))
     await rss.save()
   } catch (e) {
-    logger.debug('RSS feed generation failed', {
-      error: e,
-      errorType: typeof e,
-      articlesCount: initialArticles.length,
-      feedType: 'main',
-    })
-    logger.error('Error generating RSS feed', { error: e })
+    logger.debug(
+      {
+        error: e,
+        errorType: typeof e,
+        articlesCount: initialArticles.length,
+        feedType: 'main',
+      },
+      'RSS feed generation failed',
+    )
+    logger.error({ error: e }, 'Error generating RSS feed')
+  }
+
+  // Generate sitemap
+  try {
+    const sitemapGenerator = new LPESitemapGenerator()
+    await sitemapGenerator.generateSitemap()
+  } catch (e) {
+    logger.debug(
+      {
+        error: e,
+        errorType: typeof e,
+      },
+      'Sitemap generation failed',
+    )
+    logger.error({ error: e }, 'Error generating sitemap')
   }
 
   return {

@@ -13,14 +13,17 @@ export class ApiService {
     fetch(`/api/posts?skip=${skip}&limit=${limit}`)
       .then((res) => res.json())
       .catch((e) => {
-        logger.debug('API fetch posts failed', {
-          skip,
-          limit,
-          error: e,
-          errorType: typeof e,
-          url: `/api/posts?skip=${skip}&limit=${limit}`,
-        })
-        logger.error('Failed to fetch strapi posts', { error: e })
+        logger.debug(
+          {
+            skip,
+            limit,
+            error: e,
+            errorType: typeof e,
+            url: `/api/posts?skip=${skip}&limit=${limit}`,
+          },
+          'API fetch posts failed',
+        )
+        logger.error({ error: e }, 'Failed to fetch strapi posts')
         return { data: [], errors: JSON.stringify(e) }
       })
 
@@ -36,15 +39,18 @@ export class ApiService {
     fetch(`/api/podcasts/${showSlug}/episodes?skip=${skip}&limit=${limit}`)
       .then((res) => res.json())
       .catch((e) => {
-        logger.debug('API fetch podcast episodes failed', {
-          showSlug,
-          skip,
-          limit,
-          error: e,
-          errorType: typeof e,
-          url: `/api/podcasts/${showSlug}/episodes?skip=${skip}&limit=${limit}`,
-        })
-        logger.error('Failed to fetch strapi podcast episodes', { error: e })
+        logger.debug(
+          {
+            showSlug,
+            skip,
+            limit,
+            error: e,
+            errorType: typeof e,
+            url: `/api/podcasts/${showSlug}/episodes?skip=${skip}&limit=${limit}`,
+          },
+          'API fetch podcast episodes failed',
+        )
+        logger.error({ error: e }, 'Failed to fetch strapi podcast episodes')
         return { data: [], errors: JSON.stringify(e) }
       })
 
@@ -68,19 +74,8 @@ export class ApiService {
     )
       .then((res) => res.json())
       .catch((e) => {
-        logger.debug('API search failed', {
-          skip,
-          limit,
-          query,
-          tags,
-          type,
-          error: e,
-          errorType: typeof e,
-          url: `/api/search?skip=${skip}&limit=${limit}&q=${query}&tags=${tags.join(
-            ',',
-          )}&type=${type.join(',')}`,
-        })
-        logger.error('Failed to search strapi', { error: e })
+        logger.debug('API search failed')
+        logger.error({ error: e }, 'Failed to search strapi')
         return { data: { posts: [], blocks: [] }, errors: JSON.stringify(e) }
       })
 
@@ -107,14 +102,20 @@ export class ApiService {
     fetch(`/api/search/post/${id}?q=${query}`)
       .then((res) => res.json())
       .catch((e) => {
-        logger.debug('API search post blocks failed', {
-          id,
-          query,
-          error: e,
-          errorType: typeof e,
-          url: `/api/search/post/${id}?q=${query}`,
-        })
-        logger.error('Failed to search strapi post blocks', { error: e })
+        logger.debug(
+          {
+            id,
+            query,
+            error: e as Error,
+            errorType: typeof e,
+            url: `/api/search/post/${id}?q=${query}`,
+          },
+          'API search post blocks failed',
+        )
+        logger.error(
+          { error: e as Error },
+          'Failed to search strapi post blocks',
+        )
         return { data: { blocks: [], posts: [] }, errors: JSON.stringify(e) }
       })
 
