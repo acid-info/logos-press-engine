@@ -130,7 +130,6 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     const rss = new LPERssFeed('main')
     await rss.init()
 
-    // Add all articles (not just initialArticles)
     const { data: allArticlesResponse } = await strapiApi.getPosts({
       skip: 0,
       limit: 1000,
@@ -145,32 +144,11 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     })
     const allArticles = allArticlesResponse.data || []
 
-    // Add all podcast episodes
-    const { data: allEpisodesResponse } = await strapiApi.getPosts({
-      skip: 0,
-      limit: 1000,
-      highlighted: 'include',
-      parseContent: false,
-      published: true,
-      filters: {
-        type: {
-          eq: 'Episode' as Enum_Post_Type,
-        },
-      },
-    })
-    const allEpisodes = allEpisodesResponse.data || []
-
-    // Add all articles to RSS
     allArticles.forEach((post) => rss.addPost(post))
-
-    // Add all episodes to RSS
-    allEpisodes.forEach((post) => rss.addPost(post))
 
     await rss.save()
 
-    console.log(
-      `RSS feed generated with ${allArticles.length} articles and ${allEpisodes.length} episodes`,
-    )
+    console.log(`RSS feed generated with ${allArticles.length} articles`)
   } catch (e) {
     logger.debug(
       {
@@ -184,7 +162,6 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     logger.error({ error: e }, 'Error generating RSS feed')
   }
 
-  // Generate sitemap
   try {
     const sitemapGenerator = new LPESitemapGenerator()
     await sitemapGenerator.generateSitemap()
