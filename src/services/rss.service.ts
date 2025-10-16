@@ -18,6 +18,7 @@ export class LPERssFeed {
   topics: any[] = []
   articleCategory!: Category
   showCategories!: Record<string, Category>
+  showSlug?: string
 
   constructor(
     readonly name: string,
@@ -99,7 +100,7 @@ export class LPERssFeed {
       date: new Date(post.modifiedAt!!),
       link: getPostUrl(post.type, {
         postSlug: post.slug,
-        showSlug: (post.type === 'podcast' && post.slug) || null,
+        showSlug: (post.type === 'podcast' && this.showSlug) || null,
       }),
       author: post.authors.map((author) => ({
         name: author.name,

@@ -78,26 +78,20 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
     }
   }
 
-  // TODO : error handling
-  const { data: shows, errors: podcastShowDataErrors } =
-    await strapiApi.getPodcastShows({
-      slug: showSlug as string,
-    })
+  const { data: shows, errors } = await strapiApi.getPodcastShows({
+    slug: showSlug as string,
+  })
 
-  // TODO : error handling
-  const { data: latestEpisodes, errors: latestEpisodesErros } =
-    await strapiApi.getLatestEpisodes({
-      showSlug: showSlug as string,
-      limit: 8,
-    })
+  const { data: latestEpisodes } = await strapiApi.getLatestEpisodes({
+    showSlug: showSlug as string,
+    limit: 8,
+  })
 
-  // TODO : error handling
-  const { data: highlightedEpisodes, errors: highlightedEpisodesErrors } =
-    await strapiApi.getLatestEpisodes({
-      highlighted: 'only',
-      limit: 2,
-      showSlug: showSlug as string,
-    })
+  const { data: highlightedEpisodes } = await strapiApi.getLatestEpisodes({
+    highlighted: 'only',
+    limit: 2,
+    showSlug: showSlug as string,
+  })
 
   try {
     const rss = new LPERssFeed(showSlug as string, {
@@ -110,23 +104,66 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
         shows[0].title
       }`,
     })
+    rss.showSlug = showSlug as string
     await rss.init()
-    latestEpisodes.data.forEach((post: LPE.Post.Document) => rss.addPost(post))
+
+    // Try to get all episodes, fallback to latest episodes if API fails
+    let showEpisodes: LPE.Post.Document[] = []
+
+    try {
+      const { data: allEpisodesResponse } = await strapiApi.getPosts({
+        skip: 0,
+        limit: 1000,
+        highlighted: 'include',
+        parseContent: false,
+        published: true,
+        filters: {
+          type: {
+            eq: 'Episode',
+          },
+        },
+      })
+      const allEpisodes = allEpisodesResponse.data || []
+
+      // Filter episodes for this specific show
+      showEpisodes = allEpisodes.filter(
+        (episode: LPE.Post.Document) => (episode as any).showId === shows[0].id,
+      )
+    } catch (apiError) {
+      console.warn(
+        `API failed for ${showSlug}, using latest episodes:`,
+        apiError,
+      )
+      // Fallback to latest episodes if API fails
+      showEpisodes = latestEpisodes.data || []
+    }
+
+    showEpisodes.forEach((post: LPE.Post.Document) => rss.addPost(post))
     await rss.save()
+
+    console.log(
+      `Podcast RSS feed generated for ${showSlug} with ${showEpisodes.length} episodes`,
+    )
   } catch (e) {
     const showSlug = params?.showSlug
-    logger.debug('Podcast RSS feed generation failed', {
-      showSlug,
-      error: e,
-      errorType: typeof e,
-      episodesCount: latestEpisodes.data.length,
-      showTitle: shows[0]?.title,
-      feedType: 'podcast',
-    })
-    logger.error('Error generating RSS feed for podcast', {
-      showSlug,
-      error: e,
-    })
+    logger.debug(
+      {
+        showSlug,
+        error: e,
+        errorType: typeof e,
+        episodesCount: latestEpisodes.data.length,
+        showTitle: shows[0]?.title,
+        feedType: 'podcast',
+      },
+      'Podcast RSS feed generation failed',
+    )
+    logger.error(
+      {
+        showSlug,
+        error: e,
+      },
+      'Error generating RSS feed for podcast',
+    )
   }
 
   return {
