@@ -91,10 +91,12 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
   })
 
   const allHighlightedEpisodes = allHighlightedEpisodesResponse.data
+
   const initialHighlightedEpisodes = allHighlightedEpisodes.slice(
     0,
     FEATURED_EPISODES_LIMIT,
   )
+
   const remainingHighlightedEpisodes = allHighlightedEpisodes.slice(
     FEATURED_EPISODES_LIMIT,
   )
@@ -103,6 +105,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     FEATURED_EPISODES_LIMIT - initialHighlightedEpisodes.length
 
   let nonHighlightedEpisodes: any[] = []
+
   if (episodesNeeded > 0) {
     const { data: nonHighlightedResponse } = await strapiApi.getPosts({
       highlighted: 'exclude',
@@ -148,7 +151,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
 
     await rss.save()
 
-    console.log(`RSS feed generated with ${allArticles.length} articles`)
+    logger.info(`RSS feed generated with ${allArticles.length} articles`)
   } catch (e) {
     logger.debug(
       {

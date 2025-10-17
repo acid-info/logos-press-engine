@@ -130,7 +130,7 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
         (episode: LPE.Post.Document) => (episode as any).showId === shows[0].id,
       )
     } catch (apiError) {
-      console.warn(
+      logger.warn(
         `API failed for ${showSlug}, using latest episodes:`,
         apiError,
       )
@@ -141,7 +141,7 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
     showEpisodes.forEach((post: LPE.Post.Document) => rss.addPost(post))
     await rss.save()
 
-    console.log(
+    logger.info(
       `Podcast RSS feed generated for ${showSlug} with ${showEpisodes.length} episodes`,
     )
   } catch (e) {
