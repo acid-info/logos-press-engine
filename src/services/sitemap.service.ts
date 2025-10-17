@@ -2,6 +2,7 @@ import { strapiApi } from '@/services/strapi'
 import { getWebsiteUrl } from '@/utils/route.utils'
 import { writeFile } from 'fs/promises'
 import path from 'path'
+import logger from '../lib/logger'
 
 export class LPESitemapGenerator {
   baseUrl: string
@@ -13,7 +14,7 @@ export class LPESitemapGenerator {
 
   async generateSitemap() {
     try {
-      console.log('Generating sitemap...')
+      logger.info('Generating sitemap...')
 
       let articles: any[] = []
       let episodes: any[] = []
@@ -61,11 +62,11 @@ export class LPESitemapGenerator {
         shows = showsResponse.data || []
         staticPages = staticPagesResponse.data || []
 
-        console.log(
+        logger.info(
           `Found ${articles.length} articles, ${episodes.length} episodes, ${shows.length} shows, ${staticPages.length} static pages`,
         )
       } catch (apiError) {
-        console.warn('API fetch failed, using fallback data:', apiError)
+        logger.warn('API fetch failed, using fallback data:', apiError)
         // Use fallback data if API fails
         articles = [
           { slug: 'july-2025', modifiedAt: '2025-08-06T00:00:00.000Z' },
@@ -213,10 +214,10 @@ export class LPESitemapGenerator {
       const outputPath = path.join(process.cwd(), 'public', 'sitemap.xml')
       await writeFile(outputPath, sitemap)
 
-      console.log(`Sitemap generated at ${outputPath}`)
+      logger.info(`Sitemap generated at ${outputPath}`)
       return sitemap
     } catch (error) {
-      console.error('Error generating sitemap:', error)
+      logger.error('Error generating sitemap:', error)
       throw error
     }
   }
