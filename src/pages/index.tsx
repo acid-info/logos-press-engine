@@ -1,6 +1,8 @@
 import { LPERssFeed } from '@/services/rss.service'
 import { LPESitemapGenerator } from '@/services/sitemap.service'
+import { stat } from 'fs/promises'
 import { CustomNextPage, GetStaticProps } from 'next'
+import path from 'path'
 import SEO from '../components/SEO/SEO'
 import {
   FEATURED_ARTICLES_LIMIT,
@@ -16,6 +18,24 @@ type PageProps = Pick<
   HomePageProps,
   'data' | 'articlesMoreData' | 'episodesMoreData'
 >
+
+// 24 hours
+const DAY_MS = 24 * 60 * 60 * 1000
+
+// Check if a file is older than a certain age
+async function isFileOlderThan(
+  filePath: string,
+  ageMs: number,
+): Promise<boolean> {
+  try {
+    const s = await stat(filePath)
+    // If the file is older than the age, return true
+    return Date.now() - s.mtime.getTime() > ageMs
+  } catch {
+    // If file doesn't exist or can't be read, treat as stale
+    return true
+  }
+}
 
 const Page: CustomNextPage<PageProps> = (props) => {
   return (
@@ -52,10 +72,12 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
   })
 
   const allHighlightedArticles = allHighlightedArticlesResponse.data
+
   const initialHighlightedArticles = allHighlightedArticles.slice(
     0,
     FEATURED_ARTICLES_LIMIT,
   )
+
   const remainingHighlightedArticles = allHighlightedArticles.slice(
     FEATURED_ARTICLES_LIMIT,
   )
@@ -64,6 +86,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     FEATURED_ARTICLES_LIMIT - initialHighlightedArticles.length
 
   let nonHighlightedArticles: any[] = []
+
   if (articlesNeeded > 0) {
     const { data: nonHighlightedResponse } = await strapiApi.getPosts({
       highlighted: 'exclude',
@@ -76,6 +99,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     })
     nonHighlightedArticles = nonHighlightedResponse.data
   }
+
   const initialArticles = [
     ...initialHighlightedArticles,
     ...nonHighlightedArticles,
@@ -118,6 +142,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     })
     nonHighlightedEpisodes = nonHighlightedResponse.data
   }
+
   const initialEpisodes = [
     ...initialHighlightedEpisodes,
     ...nonHighlightedEpisodes,
@@ -129,29 +154,44 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
 
   const { data: tags = [] } = await strapiApi.getTopics()
 
+  // Generate the RSS feed
   try {
-    const rss = new LPERssFeed('main')
-    await rss.init()
+    const rssOutputPath = path.resolve(
+      process.cwd(),
+      'public',
+      'rss',
+      'main.xml',
+    )
 
-    const { data: allArticlesResponse } = await strapiApi.getPosts({
-      skip: 0,
-      limit: 1000,
-      highlighted: 'include',
-      parseContent: false,
-      published: true,
-      filters: {
-        type: {
-          eq: 'Article' as Enum_Post_Type,
+    // If the RSS feed is older than 24 hours, regenerate it
+    const shouldRegenerateRss = await isFileOlderThan(rssOutputPath, DAY_MS)
+
+    if (shouldRegenerateRss) {
+      const rss = new LPERssFeed('main')
+      await rss.init()
+
+      const { data: allArticlesResponse } = await strapiApi.getPosts({
+        skip: 0,
+        limit: 1000,
+        highlighted: 'include',
+        parseContent: false,
+        published: true,
+        filters: {
+          type: {
+            eq: 'Article' as Enum_Post_Type,
+          },
         },
-      },
-    })
-    const allArticles = allArticlesResponse.data || []
+      })
+      const allArticles = allArticlesResponse.data || []
 
-    allArticles.forEach((post) => rss.addPost(post))
+      allArticles.forEach((post) => rss.addPost(post))
 
-    await rss.save()
+      await rss.save()
 
-    logger.info(`RSS feed generated with ${allArticles.length} articles`)
+      logger.info(`RSS feed generated with ${allArticles.length} articles`)
+    } else {
+      logger.info('RSS feed is fresh; skipping regeneration')
+    }
   } catch (e) {
     logger.debug(
       {
@@ -165,9 +205,26 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     logger.error({ error: e }, 'Error generating RSS feed')
   }
 
+  // Generate the sitemap
   try {
-    const sitemapGenerator = new LPESitemapGenerator()
-    await sitemapGenerator.generateSitemap()
+    const sitemapOutputPath = path.resolve(
+      process.cwd(),
+      'public',
+      'sitemap.xml',
+    )
+
+    // If the sitemap is older than 24 hours, regenerate it
+    const shouldRegenerateSitemap = await isFileOlderThan(
+      sitemapOutputPath,
+      DAY_MS,
+    )
+
+    if (shouldRegenerateSitemap) {
+      const sitemapGenerator = new LPESitemapGenerator()
+      await sitemapGenerator.generateSitemap()
+    } else {
+      logger.info('Sitemap is fresh; skipping regeneration')
+    }
   } catch (e) {
     logger.debug(
       {
