@@ -89,6 +89,10 @@ export const PostCard = (_props: PostCardProps) => {
       imageData={coverImage}
       playIcon={contentType === LPE.PostTypes.Podcast}
       loadDelay={loadDelay}
+      className={clsx(
+        contentType === LPE.PostTypes.Podcast &&
+          'post-card__cover-image-podcast',
+      )}
     />
   ) : (
     <div className="post-card__cover-image"></div>
@@ -545,5 +549,13 @@ const Container = styled.div<Pick<PostCardProps, 'size' | 'isClickable'>>`
 
   &.post-card--large {
     ${({ theme }) => PostCard.styles.large(theme)}
+  }
+
+  ${(props) => lsdUtils.breakpoint(props.theme, 'xl', 'down')} {
+    .post-card__cover-image-podcast {
+      img {
+        object-fit: contain !important;
+      }
+    }
   }
 `
