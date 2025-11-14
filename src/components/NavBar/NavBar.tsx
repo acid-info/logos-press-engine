@@ -102,7 +102,7 @@ export default function NavBar({ defaultState }: NavBarProps) {
         </NavLinksContainer>
         <Centered>
           <Logo href="/">
-            <LogosIcon color="primary" width="48px" height="48px" />
+            <LogosIcon color="primary" width="21px" height="28px" />
           </Logo>
         </Centered>
         <ControlsContainer>
