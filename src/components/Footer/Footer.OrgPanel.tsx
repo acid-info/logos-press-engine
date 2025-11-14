@@ -34,6 +34,7 @@ const Wrapper = styled.div`
   align-items: baseline;
   border-top: 1px solid rgb(var(--lsd-theme-primary));
   padding-top: 24px;
+  padding-bottom: 24px;
   flex-direction: column;
   gap: 40px;
   margin-bottom: -36px;

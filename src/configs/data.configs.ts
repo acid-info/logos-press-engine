@@ -41,19 +41,19 @@ export const FooterLinksItems: {
   about: LPEFooterGroup[]
 } = {
   org: [
-    {
-      title: 'Research',
-      links: [{ label: 'VacP2P', href: 'https://vac.dev/' }],
-    },
-    {
-      title: 'Infrastructure',
-      links: [
-        { label: 'Waku', href: 'https://waku.org/' },
-        { label: 'Nimbus', href: 'https://nimbus.team/' },
-        { label: 'Codex', href: 'https://codex.storage/' },
-        { label: 'Nomos', href: 'https://nomos.tech/' },
-      ],
-    },
+    // {
+    //   title: 'Research',
+    //   links: [{ label: 'VacP2P', href: 'https://vac.dev/' }],
+    // },
+    // {
+    //   title: 'Infrastructure',
+    //   links: [
+    //     { label: 'Waku', href: 'https://waku.org/' },
+    //     { label: 'Nimbus', href: 'https://nimbus.team/' },
+    //     { label: 'Codex', href: 'https://codex.storage/' },
+    //     { label: 'Nomos', href: 'https://nomos.tech/' },
+    //   ],
+    // },
   ],
 
   about: [

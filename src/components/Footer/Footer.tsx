@@ -1,4 +1,3 @@
-import { FooterBuPanel } from '@/components/Footer/Footer.BuPanel'
 import { FooterCTAPanel } from '@/components/Footer/Footer.CTAPanel'
 import { FooterOrgPanel } from '@/components/Footer/Footer.OrgPanel'
 import { FooterSectionContainer } from '@/components/Footer/Footer.Section'
@@ -17,7 +16,7 @@ export default function Footer() {
     <FooterSectionContainer>
       <FooterCTAPanel />
       <FooterOrgPanel />
-      <FooterBuPanel />
+      {/* <FooterBuPanel /> */}
       <ScrollToTop size="small" onClick={handleScrollToTop}>
         Back to top ↑
       </ScrollToTop>
@@ -28,7 +27,7 @@ export default function Footer() {
 const ScrollToTop = styled(Button)`
   width: fit-content;
   position: absolute;
-  bottom: 34px;
+  bottom: 220px;
   left: 0;
 
   span {
@@ -38,8 +37,7 @@ const ScrollToTop = styled(Button)`
   }
 
   @media only screen and (min-width: 576px) {
-    left: 16px;
-
+    bottom: 24px;
     span {
       line-height: 1.25rem;
     }
@@ -51,5 +49,9 @@ const ScrollToTop = styled(Button)`
     span {
       line-height: var(--lsd-label2-lineHeight);
     }
+  }
+
+  @media only screen and (min-width: 1200px) {
+    bottom: 118px;
   }
 `
