@@ -5,7 +5,11 @@ import Link from 'next/link'
 
 export const FooterCopyright = () => (
   <OrgInfo>
-    <Link href="https://logos.co" target="_blank" rel="noopener noreferrer">
+    <CustomLink
+      href="https://logos.co"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       <Typography
         component="div"
         genericFontFamily="sans-serif"
@@ -13,10 +17,14 @@ export const FooterCopyright = () => (
       >
         Logos
       </Typography>
-    </Link>
+    </CustomLink>
   </OrgInfo>
 )
 
 const OrgInfo = styled(FooterSection)`
   align-self: start;
+`
+
+const CustomLink = styled(Link)`
+  width: fit-content;
 `
