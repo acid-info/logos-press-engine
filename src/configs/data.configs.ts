@@ -67,19 +67,9 @@ export const FooterLinksItems: {
           key: 'github',
         },
         {
-          label: 'Blog',
-          href: 'https://press.logos.co/',
-          key: 'blog',
-        },
-        {
           label: 'Work With Us',
           href: 'https://job-boards.greenhouse.io/logos',
           key: 'work-with-us',
-        },
-        {
-          label: 'Brand Guidelines',
-          href: 'https://guide.logos.co/',
-          key: 'brand-guidelines',
         },
         {
           label: 'Terms & Conditions',
