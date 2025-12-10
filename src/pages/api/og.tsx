@@ -147,20 +147,40 @@ export default async function handler(request: NextRequest) {
                 fontSize: titleFontSize,
                 lineHeight: '115%',
                 whiteSpace: 'pre-wrap',
+                width: '100%',
               }}
             >
-              {title && title.length < titleMaxLength
-                ? title
-                : title?.substring(0, titleMaxLength) + '...'}
+              <span
+                style={{
+                  background:
+                    'linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.3) 100%)',
+                  padding: '12px 16px',
+                  borderRadius: '4px',
+                  textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                  color: '#fff',
+                  display: 'block',
+                  width: '100%',
+                }}
+              >
+                {title && title.length < titleMaxLength
+                  ? title
+                  : title?.substring(0, titleMaxLength) + '...'}
+              </span>
             </div>
             <div
               style={{
                 display: 'flex',
                 gap: subtitleGap,
                 fontSize: subtitleFontSize,
+                textShadow: '0 2px 4px rgba(0,0,0,0.5)',
                 alignItems: 'center',
                 textTransform: 'capitalize',
                 fontFamily: 'Inter',
+                background:
+                  'linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.3) 100%)',
+                padding: '12px 16px',
+                borderRadius: '4px',
+                width: '100%',
               }}
             >
               <span>
