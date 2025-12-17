@@ -14,8 +14,7 @@ export const FooterCTAPanel = () => {
   const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     await subscribe(email, NEWSLETTER_ID)
-    // @ts-ignore
-    window.umami.track('subscribe', { source: 'footer' })
+    window.umami?.track('subscribe', { source: 'footer' })
   }
 
   return (
@@ -33,6 +32,9 @@ export const FooterCTAPanel = () => {
           href="https://discord.gg/T6gDZWQCsz"
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => {
+            window.umami?.track('get-involved', { source: 'footer' })
+          }}
         >
           <CTAButton type="button">
             <Typography variant="body1">Get Involved</Typography>

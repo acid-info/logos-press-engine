@@ -18,7 +18,12 @@ declare global {
     q?: Array<any>
   }
 
+  interface Umami {
+    track: (eventName: string, eventData?: Record<string, any>) => void
+  }
+
   interface Window {
     fathom?: Fathom
+    umami?: Umami
   }
 }
