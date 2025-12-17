@@ -1,6 +1,7 @@
 import { useNewsletterSubscription } from '@/hooks/useNewsletterSubscription'
 import { Button, TextField, Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
+import Link from 'next/link'
 import { useState } from 'react'
 
 export const FooterCTAPanel = () => {
@@ -28,27 +29,15 @@ export const FooterCTAPanel = () => {
         >
           Freedom needs builders
         </CTATypography>
-        <HiddenLink
-          id="discord-link"
-          href="https://discord.gg/logosnetwork"
+        <Link
+          href="https://discord.gg/T6gDZWQCsz"
           target="_blank"
           rel="noopener noreferrer"
-          data-umami-event="get-involved"
-          data-umami-event-source="footer"
         >
-          Get Involved
-        </HiddenLink>
-        <CTAButton
-          type="button"
-          onClick={() => {
-            const link = document.getElementById(
-              'discord-link',
-            ) as HTMLAnchorElement
-            link?.click()
-          }}
-        >
-          <Typography variant="body1">Get Involved</Typography>
-        </CTAButton>
+          <CTAButton type="button">
+            <Typography variant="body1">Get Involved</Typography>
+          </CTAButton>
+        </Link>
       </CTASection>
       <CTASection onSubmit={handleSubscribe}>
         <CTATypography
