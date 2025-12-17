@@ -41,8 +41,7 @@ export default function NewsletterSubscriptionDialog({
     const email = e.currentTarget.email.value
     const NEWSLETTER_ID = '6835cf08531d570001068824'
     await subscribe(email, NEWSLETTER_ID)
-    // @ts-ignore
-    window.umami.track('subscribe', { source: 'navbar-newsletter-dialog' })
+    window.umami?.track('subscribe', { source: 'navbar-newsletter-dialog' })
   }
 
   return (
