@@ -62,7 +62,7 @@
     "react-player": "^2.12.0",
     "react-quick-pinch-zoom": "^4.9.0",
     "react-use": "^17.4.0",
-    "sharp": "^0.31.3",
+    "sharp": "^0.33.5",
     "slugify": "^1.6.6",
     "typescript": "5.0.4",
     "use-query-params": "^2.2.1",
