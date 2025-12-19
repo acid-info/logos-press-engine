@@ -29,7 +29,7 @@ export const FooterCTAPanel = () => {
           Freedom needs builders
         </CTATypography>
         <Link
-          href="https://discord.gg/T6gDZWQCsz"
+          href="https://logos.co/take-action"
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => {
