@@ -4,9 +4,7 @@ import path from 'path'
 
 const IS_VERCEL = process.env.VERCEL === '1'
 const WEBHOOK_DATA_PATH = path.join(__dirname, '../../webhook_data.json')
-const TOKEN =
-  process.env.REVALIDATE_WEBHOOK_TOKEN ||
-  'f8f1023d7d9d320af73b5ff49a8430dda97e9b666318c7a76b60c13d7a2e152b'
+const TOKEN = process.env.REVALIDATE_WEBHOOK_TOKEN || ''
 
 export type WebhookData = {
   lastUpdate: number
