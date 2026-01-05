@@ -7,7 +7,13 @@ export default async function handler(
   res: NextApiResponse<any>,
 ) {
   const {
-    query: { q = '', tags: tagsString = '', type: typeString = '' },
+    query: {
+      q = '',
+      tags: tagsString = '',
+      type: typeString = '',
+      skip: skipString = '0',
+      limit: limitString = '15',
+    },
   } = req
 
   const query = Array.isArray(q) ? q.join(' ').trim() : q.trim()
@@ -34,6 +40,15 @@ export default async function handler(
     ? type.filter((t) => validPostTypes.includes(t))
     : []
 
+  const skip = parseInt(
+    Array.isArray(skipString) ? skipString[0] : skipString,
+    10,
+  )
+  const limit = parseInt(
+    Array.isArray(limitString) ? limitString[0] : limitString,
+    10,
+  )
+
   const result: {
     posts: LPE.Search.ResultItem[]
     blocks: LPE.Search.ResultItem[]
@@ -47,8 +62,8 @@ export default async function handler(
       tags,
       query,
       types: postTypes as LPE.PostType[],
-      limit: 15,
-      skip: 0,
+      limit,
+      skip,
     })
 
     result.posts.push(...(response.data ?? []))
