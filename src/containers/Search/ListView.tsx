@@ -5,8 +5,7 @@ import { copyConfigs } from '@/configs/copy.configs'
 import { uiConfigs } from '@/configs/ui.configs'
 import { LPE } from '@/types/lpe.types'
 import { lsdUtils } from '@/utils/lsd.utils'
-import useWindowSize from '@/utils/ui.utils'
-import { Typography } from '@acid-info/lsd-react'
+import { Button, Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import { useMemo } from 'react'
 import { Section } from '../../components/Section/Section'
@@ -17,11 +16,22 @@ interface Props {
   shows: LPE.Podcast.Show[]
   busy: boolean
   showTopPost: boolean
+  hasMore?: boolean
+  onLoadMore?: () => void
+  selectedTypes?: string[]
 }
 
 export const SearchResultsListView = (props: Props) => {
-  const { posts, shows, blocks, busy, showTopPost } = props
-  const isMobile = useWindowSize().width < 768
+  const {
+    posts,
+    shows,
+    blocks,
+    busy,
+    showTopPost,
+    hasMore,
+    onLoadMore,
+    selectedTypes = [],
+  } = props
 
   const mostReferredPostIndex = useMemo(() => {
     if (!showTopPost) return -1
@@ -101,6 +111,24 @@ export const SearchResultsListView = (props: Props) => {
     ]
   }, [posts, blocks, topPost])
 
+  const sectionTitle = useMemo(() => {
+    const hasArticle = selectedTypes.includes(LPE.ContentTypes.Article)
+    const hasPodcast = selectedTypes.includes(LPE.ContentTypes.Podcast)
+
+    // Use renderPosts.length to get the actual number of posts that will be displayed
+    const displayPostCount = renderPosts.length
+
+    if (hasArticle && hasPodcast) {
+      return copyConfigs.search.labels.articlesAndPodcasts
+    } else if (hasArticle) {
+      return displayPostCount === 1 ? 'Article' : 'Articles'
+    } else if (hasPodcast) {
+      return displayPostCount === 1 ? 'Podcast' : 'Podcasts'
+    }
+
+    return copyConfigs.search.labels.articlesAndPodcasts
+  }, [selectedTypes, renderPosts])
+
   return (
     <Container xs={{ cols: 8 }} md={{ cols: 12 }} lg={{ cols: 16 }} cols={16}>
       <PostsList xs={{ cols: 8 }} md={{ cols: 8 }} lg={{ cols: 11 }}>
@@ -121,11 +149,18 @@ export const SearchResultsListView = (props: Props) => {
         <PostsListContent>
           {renderPosts.length > 0 ? (
             <>
-              <CustomSection
-                title={copyConfigs.search.labels.articlesAndPodcasts}
-              >
+              <CustomSection title={sectionTitle}>
                 <SearchResultListPosts posts={renderPosts} shows={shows} />
               </CustomSection>
+              {hasMore && onLoadMore && (
+                <LoadMoreButtonContainer>
+                  <LoadMoreButton onClick={onLoadMore} disabled={busy}>
+                    <Typography variant={'body1'} genericFontFamily={'serif'}>
+                      {busy ? 'Loading...' : 'Load more'}
+                    </Typography>
+                  </LoadMoreButton>
+                </LoadMoreButtonContainer>
+              )}
             </>
           ) : (
             !busy &&
@@ -174,5 +209,19 @@ const PostsListContent = styled.div``
 const CustomSection = styled(Section)`
   &.section.section--small.section--bordered {
     border-top: none;
+  }
+`
+
+const LoadMoreButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+  padding-top: 32px;
+`
+
+const LoadMoreButton = styled(Button)`
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 `
