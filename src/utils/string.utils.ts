@@ -123,3 +123,26 @@ export function cleanUpUrlsInRawHtml(rh: string): string {
   }
   return newRh
 }
+
+/**
+ * Normalizes an unknown value to a comma-separated string.
+ * Arrays are joined with commas, other values are converted to strings.
+ */
+export const normalizeString = (val: unknown): string =>
+  Array.isArray(val) ? val.join(',') : String(val ?? '')
+
+/**
+ * Normalizes an unknown value to a space-separated query string.
+ * Arrays are joined with spaces, other values are converted to strings.
+ */
+export const normalizeQuery = (val: unknown): string =>
+  Array.isArray(val) ? val.join(' ') : String(val ?? '')
+
+/**
+ * Parses a comma-separated string into an array of trimmed, non-empty strings.
+ */
+export const parseCommaSeparated = (str: string): string[] =>
+  str
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
