@@ -115,19 +115,19 @@ export const SearchResultsListView = (props: Props) => {
     const hasArticle = selectedTypes.includes(LPE.ContentTypes.Article)
     const hasPodcast = selectedTypes.includes(LPE.ContentTypes.Podcast)
 
-    // Use renderPosts.length to get the actual number of posts that will be displayed
-    const displayPostCount = renderPosts.length
+    // Count both the topPost (if any) and the posts rendered in the list
+    const totalPostCount = renderPosts.length + (topPost ? 1 : 0)
 
     if (hasArticle && hasPodcast) {
       return copyConfigs.search.labels.articlesAndPodcasts
     } else if (hasArticle) {
-      return displayPostCount === 1 ? 'Article' : 'Articles'
+      return totalPostCount === 1 ? 'Article' : 'Articles'
     } else if (hasPodcast) {
-      return displayPostCount === 1 ? 'Podcast' : 'Podcasts'
+      return totalPostCount === 1 ? 'Podcast' : 'Podcasts'
     }
 
     return copyConfigs.search.labels.articlesAndPodcasts
-  }, [selectedTypes, renderPosts])
+  }, [selectedTypes, renderPosts, topPost])
 
   return (
     <Container xs={{ cols: 8 }} md={{ cols: 12 }} lg={{ cols: 16 }} cols={16}>
