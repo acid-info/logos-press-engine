@@ -156,19 +156,21 @@ export const GET_RELATED_POSTS_QUERY = gql`
 export const SEARCH_POSTS_QUERY = gql`
   ${POST_COMMON_ATTRIBUTES}
 
-  query SearchPosts(
-    $query: String!
-    $filters: PostFiltersInput
-    $pagination: PaginationArg
-  ) {
-    search(query: $query) {
-      posts(filters: $filters, pagination: $pagination) {
-        data {
-          id
-          score
-          attributes {
-            ...PostCommonAttributes
-          }
+  query SearchPosts($filters: PostFiltersInput, $start: Int, $limit: Int) {
+    posts(
+      filters: $filters
+      pagination: { start: $start, limit: $limit }
+      sort: "publishedAt:desc"
+    ) {
+      meta {
+        pagination {
+          total
+        }
+      }
+      data {
+        id
+        attributes {
+          ...PostCommonAttributes
         }
       }
     }

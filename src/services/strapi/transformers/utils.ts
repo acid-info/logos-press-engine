@@ -55,7 +55,13 @@ export const transformStrapiImageData = async (
             'thumbnail',
             transformStrapiImageUrl(attributes.url),
           )
-        : await placeholderService.pixelate(attributes.url)
+        : await (async () => {
+            try {
+              return await placeholderService.pixelate(attributes.url as string)
+            } catch (e) {
+              return transformStrapiImageUrl(attributes.url as string)
+            }
+          })()
       : '',
   }
 }
@@ -144,7 +150,13 @@ export const transformStrapiHtmlContent = async ({
         order: blockIndex,
         placeholder: isVercel()
           ? getStrapiImageUrlBySize('thumbnail', url)
-          : await placeholderService.pixelate(url),
+          : await (async () => {
+              try {
+                return await placeholderService.pixelate(url)
+              } catch (e) {
+                return url
+              }
+            })(),
         url: url.startsWith('/') ? transformStrapiImageUrl(url) : url,
         footnotes,
       })

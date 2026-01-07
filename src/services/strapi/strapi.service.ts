@@ -9,13 +9,13 @@ import {
   GetStaticPagesDocument,
   PodcastShowFiltersInput,
   PostFiltersInput,
-  SearchPostsDocument,
 } from '../../lib/strapi/strapi.generated'
 import { getWebhookData } from '../../pages/api/webhook'
 import { ApiResponse } from '../../types/data.types'
 import { LPE } from '../../types/lpe.types'
 import { isVercel } from '../../utils/env.utils'
 import { settle } from '../../utils/promise.utils'
+import { SEARCH_POSTS_QUERY } from './strapi.operators'
 import { strapiTransformers } from './transformers/strapi.transformers'
 
 export class StrapiService {
@@ -121,6 +121,11 @@ export class StrapiService {
     }
   }
 
+  _safePagination = (skip?: number, limit?: number) => ({
+    start: typeof skip === 'number' && !isNaN(skip) ? skip : 0,
+    limit: typeof limit === 'number' && !isNaN(limit) && limit > 1 ? limit : 15,
+  })
+
   handleRequest = async <T = any>(
     handler: () => T | Promise<T>,
     defaultValue?: T,
@@ -159,10 +164,7 @@ export class StrapiService {
       } = await this.client.query({
         query: GetStaticPagesDocument,
         variables: {
-          pagination: {
-            start: skip,
-            limit: limit,
-          },
+          pagination: this._safePagination(skip, limit),
           filters: {
             and: [
               ...(filters ? [filters] : []),
@@ -219,10 +221,7 @@ export class StrapiService {
       } = await this.client.query({
         query: GetPostsDocument,
         variables: {
-          pagination: {
-            start: skip,
-            limit: limit,
-          },
+          pagination: this._safePagination(skip, limit),
           filters: {
             and: [
               ...(filters ? [filters] : []),
@@ -307,10 +306,7 @@ export class StrapiService {
       } = await this.client.query({
         query: GetPodcastShowsDocument,
         variables: {
-          pagination: {
-            start: skip,
-            limit: limit,
-          },
+          pagination: this._safePagination(skip, limit),
           filters: {
             and: [
               ...(filters ? [filters] : []),
@@ -340,7 +336,7 @@ export class StrapiService {
               },
             },
           },
-          limit: episodesLimit,
+          limit: Number.isInteger(episodesLimit) ? episodesLimit : 10,
           highlighted: 'include',
           parseContent: false,
           published: true,
@@ -537,27 +533,34 @@ export class StrapiService {
     tags?: string[]
     types?: LPE.PostType[]
   }) =>
-    this.handleRequest<LPE.Search.ResultItem[]>(async () => {
-      const {
-        data: {
-          search: {
-            posts: { data },
-          },
-        },
-      } = await this.client.query({
-        query: SearchPostsDocument,
+    this.handleRequest(async () => {
+      const { start, limit: paginationLimit } = this._safePagination(
+        skip,
+        limit,
+      )
+
+      const response = (await this.client.query({
+        query: SEARCH_POSTS_QUERY,
+        fetchPolicy: 'network-only',
         variables: {
-          query,
-          pagination: {
-            start: skip,
-            limit: limit,
-          },
+          start,
+          limit: paginationLimit,
           filters: {
             or: [
               ...(query && query?.length > 0
                 ? [
                     {
                       title: {
+                        containsi: query,
+                      },
+                    },
+                    {
+                      subtitle: {
+                        containsi: query,
+                      },
+                    },
+                    {
+                      summary: {
                         containsi: query,
                       },
                     },
@@ -601,14 +604,27 @@ export class StrapiService {
             ],
           },
         },
-      })
+      })) as any
 
-      return await strapiTransformers.transformMany<LPE.Search.ResultItem>(
-        strapiTransformers.get({}),
-        data,
-        undefined,
-        undefined,
-      )
+      const postsResponse = response?.data?.posts
+      const rawData = postsResponse?.data || []
+      // Inject dummy score for transformer compatibility
+      const data = rawData.map((item: any) => ({ ...item, score: 0 }))
+      const total = postsResponse?.meta?.pagination?.total || 0
+
+      const hasMore =
+        total > 0 ? skip + data.length < total : data.length >= limit
+
+      return {
+        data: await strapiTransformers.transformMany<LPE.Search.ResultItem>(
+          strapiTransformers.get({}),
+          data,
+          undefined,
+          undefined,
+        ),
+        total,
+        hasMore,
+      }
     })
 
   updatePostDiscourseTopicId = async (

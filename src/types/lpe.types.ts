@@ -285,6 +285,8 @@ export namespace LPE {
     export type Result = {
       posts: Search.ResultItem[]
       blocks: Search.ResultItem[]
+      total?: number
+      hasMore?: boolean
     }
   }
 
