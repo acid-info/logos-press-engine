@@ -10,6 +10,11 @@ import {
 
 const validPostTypes = Object.values(LPE.PostTypes) as string[]
 
+const DEFAULT_SKIP = 0
+const DEFAULT_LIMIT = 15
+const MAX_LIMIT = 100
+const RADIX = 10
+
 const searchQuerySchema = z.object({
   q: z
     .preprocess(normalizeQuery, z.string())
@@ -29,20 +34,23 @@ const searchQuerySchema = z.object({
       parseCommaSeparated(val).filter((t) => validPostTypes.includes(t)),
     ),
   skip: z
-    .preprocess((val) => (Array.isArray(val) ? val[0] : val) ?? '0', z.string())
-    .default('0')
-    .transform((val) => parseInt(val, 10))
+    .preprocess(
+      (val) => (Array.isArray(val) ? val[0] : val) ?? `${DEFAULT_SKIP}`,
+      z.string(),
+    )
+    .default(`${DEFAULT_SKIP}`)
+    .transform((val) => parseInt(val, RADIX))
     .refine((val) => !isNaN(val), { message: 'skip must be a number' })
     .pipe(z.number().int().min(0)),
   limit: z
     .preprocess(
-      (val) => (Array.isArray(val) ? val[0] : val) ?? '15',
+      (val) => (Array.isArray(val) ? val[0] : val) ?? `${DEFAULT_LIMIT}`,
       z.string(),
     )
-    .default('15')
-    .transform((val) => parseInt(val, 10))
+    .default(`${DEFAULT_LIMIT}`)
+    .transform((val) => parseInt(val, RADIX))
     .refine((val) => !isNaN(val), { message: 'limit must be a number' })
-    .pipe(z.number().int().min(1).max(100)),
+    .pipe(z.number().int().min(1).max(MAX_LIMIT)),
 })
 
 export default async function handler(
