@@ -32,6 +32,7 @@ const searchQuerySchema = z.object({
     .preprocess((val) => (Array.isArray(val) ? val[0] : val) ?? '0', z.string())
     .default('0')
     .transform((val) => parseInt(val, 10))
+    .refine((val) => !isNaN(val), { message: 'skip must be a number' })
     .pipe(z.number().int().min(0)),
   limit: z
     .preprocess(
@@ -40,6 +41,7 @@ const searchQuerySchema = z.object({
     )
     .default('15')
     .transform((val) => parseInt(val, 10))
+    .refine((val) => !isNaN(val), { message: 'limit must be a number' })
     .pipe(z.number().int().min(1).max(100)),
 })
 
@@ -66,6 +68,9 @@ export default async function handler(
       blocks: [],
     }
 
+    let total = 0
+    let hasMore = false
+
     if (postTypes.length > 0) {
       const response = await strapiApi.searchPosts({
         tags,
@@ -75,7 +80,11 @@ export default async function handler(
         skip,
       })
 
-      result.posts.push(...(response.data ?? []))
+      if (response.data) {
+        result.posts.push(...(response.data.data ?? []))
+        total = response.data.total
+        hasMore = response.data.hasMore
+      }
     }
 
     if (query.trim().length === 0) {
@@ -87,7 +96,11 @@ export default async function handler(
     }
 
     res.status(200).json({
-      data: result,
+      data: {
+        ...result,
+        total,
+        hasMore,
+      },
     })
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {

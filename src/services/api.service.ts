@@ -76,7 +76,10 @@ export class ApiService {
       .catch((e) => {
         logger.debug('API search failed')
         logger.error({ error: e }, 'Failed to search strapi')
-        return { data: { posts: [], blocks: [] }, errors: JSON.stringify(e) }
+        return {
+          data: { posts: [], blocks: [], total: 0, hasMore: false },
+          errors: JSON.stringify(e),
+        }
       })
 
   searchPostBlocks = async ({
