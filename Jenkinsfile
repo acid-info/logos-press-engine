@@ -80,12 +80,9 @@ pipeline {
               "${DOCKER_REGISTRY}/${IMAGE_NAME}:${GIT_COMMIT.take(8)}",
               ["--build-arg='STRAPI_API_KEY=${env.UNBODY_PROJECT_ID}'",
                "--build-arg='UNBODY_API_KEY=${env.UNBODY_API_KEY}'",
-               "--build-arg='SIMPLECAST_ACCESS_TOKEN=${SIMPLECAST_ACCESS_TOKEN}'",
-               "--build-arg='REVALIDATE_WEBHOOK_TOKEN=${REVALIDATE_WEBHOOK_TOKEN}'",
                "--build-arg='STRAPI_API_URL=${params.STRAPI_API_URL}'",
                "--build-arg='STRAPI_GRAPHQL_URL=${params.STRAPI_GRAPHQL_URL}'",
                "--build-arg='NEXT_PUBLIC_ASSETS_BASE_URL=${params.NEXT_PUBLIC_ASSETS_BASE_URL}'",
-               "--build-arg='STRAPI_API_KEY=${STRAPI_API_KEY}'",
                "."].join(' ')
             )
           }
