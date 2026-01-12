@@ -1,4 +1,5 @@
 import { SpacesCalendarEvent } from '@/types/data.types'
+import { lsdUtils } from '@/utils/lsd.utils'
 import { Button, Dropdown, Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import {
@@ -254,6 +255,10 @@ const CalendarContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+
+  ${({ theme }) => lsdUtils.breakpoint(theme, 'sm', 'down')} {
+    padding: 1rem;
+  }
 `
 
 const CalendarHeader = styled.div`
@@ -261,30 +266,56 @@ const CalendarHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+
+  ${({ theme }) => lsdUtils.breakpoint(theme, 'sm', 'down')} {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+    margin-bottom: 1rem;
+  }
 `
 
 const DateSelectors = styled.div`
   display: flex;
   gap: 0.5rem;
   align-items: center;
+
+  ${({ theme }) => lsdUtils.breakpoint(theme, 'sm', 'down')} {
+    width: 100%;
+    justify-content: center;
+  }
 `
 
 const MonthNavigation = styled.div`
   display: flex;
   gap: 0.5rem;
   align-items: center;
+
+  ${({ theme }) => lsdUtils.breakpoint(theme, 'sm', 'down')} {
+    width: 100%;
+    justify-content: center;
+  }
 `
 
 const CalendarGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0.5rem;
+
+  ${({ theme }) => lsdUtils.breakpoint(theme, 'sm', 'down')} {
+    gap: 0.25rem;
+  }
 `
 
 const DayHeader = styled.div`
   text-align: center;
   padding: 0.5rem;
   font-weight: 600;
+
+  ${({ theme }) => lsdUtils.breakpoint(theme, 'sm', 'down')} {
+    padding: 0.25rem;
+    font-size: 0.75rem;
+  }
 `
 
 const DayCell = styled.div<{
@@ -314,12 +345,22 @@ const DayCell = styled.div<{
   &:hover {
     background-color: rgba(var(--lsd-theme-primary), 0.1);
   }
+
+  ${({ theme }) => lsdUtils.breakpoint(theme, 'sm', 'down')} {
+    min-height: 60px;
+    padding: 0.25rem;
+  }
 `
 
 const DayNumber = styled.div`
   font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: 0.25rem;
+
+  ${({ theme }) => lsdUtils.breakpoint(theme, 'sm', 'down')} {
+    font-size: 0.75rem;
+    margin-bottom: 0.125rem;
+  }
 `
 
 const EventList = styled.div`
@@ -339,4 +380,10 @@ const EventTitle = styled.p`
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   word-break: break-word;
+
+  ${({ theme }) => lsdUtils.breakpoint(theme, 'sm', 'down')} {
+    font-size: 0.65rem;
+    line-height: 1.2;
+    -webkit-line-clamp: 2;
+  }
 `
