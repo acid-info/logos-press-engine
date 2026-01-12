@@ -12,7 +12,7 @@ import {
 } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
 import { NumberParam, useQueryParams } from 'use-query-params'
-import { SpacesCalendarEventDetails } from './SpacesCalendar.EventDetails'
+import { CalendarEventDetails } from './Calendar.EventDetails'
 
 const years = [2025, 2026]
 
@@ -30,11 +30,11 @@ const months = [
   'November',
   'December',
 ]
-interface SpacesCalendarProps {
+interface CalendarProps {
   events: SpacesCalendarEvent[]
 }
 
-export const SpacesCalendar: React.FC<SpacesCalendarProps> = ({ events }) => {
+export const Calendar: React.FC<CalendarProps> = ({ events }) => {
   const today = new Date()
 
   const [query, setQuery] = useQueryParams({
@@ -247,7 +247,7 @@ export const SpacesCalendar: React.FC<SpacesCalendarProps> = ({ events }) => {
       </CalendarGrid>
 
       {selectedDate && (
-        <SpacesCalendarEventDetails
+        <CalendarEventDetails
           selectedDate={selectedDate}
           events={selectedEvents}
         />

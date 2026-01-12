@@ -5,14 +5,15 @@ import { Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import { format } from 'date-fns'
 
-interface SpacesCalendarEventDetailsProps {
+interface CalendarEventDetailsProps {
   selectedDate: Date
   events: SpacesCalendarEvent[]
 }
 
-export const SpacesCalendarEventDetails: React.FC<
-  SpacesCalendarEventDetailsProps
-> = ({ selectedDate, events }) => {
+export const CalendarEventDetails: React.FC<CalendarEventDetailsProps> = ({
+  selectedDate,
+  events,
+}) => {
   return (
     <EventDetails>
       <Typography variant="h4" style={{ marginBottom: '1rem' }}>

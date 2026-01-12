@@ -1,1 +1,0 @@
-export { SpacesCalendar } from './SpacesCalendar'
