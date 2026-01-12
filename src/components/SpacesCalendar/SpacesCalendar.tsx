@@ -64,14 +64,14 @@ export const SpacesCalendar: React.FC<SpacesCalendarProps> = ({ events }) => {
   const monthEnd = endOfMonth(currentDate)
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd })
 
-  const firstDayOfWeek = monthStart.getDay()
+  const firstDayOfWeek = (monthStart.getDay() + 6) % 7
   const daysBeforeMonth = Array.from({ length: firstDayOfWeek }, (_, i) => {
     const date = new Date(monthStart)
     date.setDate(date.getDate() - firstDayOfWeek + i)
     return date
   })
 
-  const lastDayOfWeek = monthEnd.getDay()
+  const lastDayOfWeek = (monthEnd.getDay() + 6) % 7
   const daysAfterMonth = Array.from({ length: 6 - lastDayOfWeek }, (_, i) => {
     const date = new Date(monthEnd)
     date.setDate(date.getDate() + i + 1)
@@ -202,7 +202,7 @@ export const SpacesCalendar: React.FC<SpacesCalendarProps> = ({ events }) => {
       </CalendarHeader>
 
       <CalendarGrid>
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
           <DayHeader key={day}>
             <Typography variant="body2">{day}</Typography>
           </DayHeader>
