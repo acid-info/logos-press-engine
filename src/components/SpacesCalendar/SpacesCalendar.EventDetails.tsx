@@ -49,6 +49,11 @@ const EventDetails = styled.div`
   margin-top: 2rem;
   padding: 1.5rem;
   border: 1px solid rgb(var(--lsd-border-primary));
+
+  ${({ theme }) => lsdUtils.breakpoint(theme, 'sm', 'down')} {
+    margin-top: 1rem;
+    padding: 1rem;
+  }
 `
 
 const EventItem = styled.div`
