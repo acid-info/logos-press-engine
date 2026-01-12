@@ -61,3 +61,22 @@ export type SearchHook<T> = {
   ) => Promise<SearchResultItem<T>[]>
   reset: (initialData: SearchResultItem<T>[]) => void
 }
+
+export interface SpacesCalendarEvent {
+  id: number
+  date: string
+  type: string
+  guest: string
+  speakers: string[]
+  topic: string
+  notes: string | null
+  totalConcurrentListeners: number | null
+  totalPlaysDuringOrganic: number | null
+  totalReplaysAll: number | null
+  percentTotalPlaysOrganic: number | null
+}
+
+export interface SpacesCalendarResponse {
+  success: boolean
+  data: SpacesCalendarEvent[]
+}

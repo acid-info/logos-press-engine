@@ -108,6 +108,13 @@ export function formatTagText(tag: string) {
   return tag.replace(/_/g, ' ')
 }
 
+export function formatEventType(type: string): string {
+  return type
+    .split(/[- ]/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ')
+}
+
 export function cleanUpUrlsInRawHtml(rh: string): string {
   const regex = /<a href="(.*)">(.*)<\/a>/g
   const matches = rh.matchAll(regex) || []
