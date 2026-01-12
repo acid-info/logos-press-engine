@@ -1,5 +1,6 @@
 import { SpacesCalendarEvent } from '@/types/data.types'
 import { lsdUtils } from '@/utils/lsd.utils'
+import { formatEventType } from '@/utils/string.utils'
 import { Button, Dropdown, Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import {
@@ -94,8 +95,9 @@ export const SpacesCalendar: React.FC<SpacesCalendarProps> = ({ events }) => {
       }
 
       const topicsForDate = seenTopics.get(dateKey)!
-      if (!topicsForDate.has(event.topic)) {
-        topicsForDate.add(event.topic)
+      const topicKey = event.topic || formatEventType(event.type)
+      if (!topicsForDate.has(topicKey)) {
+        topicsForDate.add(topicKey)
         map.get(dateKey)!.push(event)
       }
     })
@@ -230,8 +232,11 @@ export const SpacesCalendar: React.FC<SpacesCalendarProps> = ({ events }) => {
               {hasEvent && (
                 <EventList>
                   {dayEvents.map((event) => (
-                    <EventTitle key={event.id} title={event.topic}>
-                      {event.topic}
+                    <EventTitle
+                      key={event.id}
+                      title={event.topic || formatEventType(event.type)}
+                    >
+                      {event.topic || formatEventType(event.type)}
                     </EventTitle>
                   ))}
                 </EventList>
@@ -257,7 +262,8 @@ const CalendarContainer = styled.div`
   padding: 2rem;
 
   ${({ theme }) => lsdUtils.breakpoint(theme, 'sm', 'down')} {
-    padding: 1rem;
+    padding-block: 1rem;
+    padding-inline: 0;
   }
 `
 

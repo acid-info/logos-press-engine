@@ -68,8 +68,9 @@ export interface SpacesCalendarEvent {
   type: string
   guest: string
   speakers: string[]
-  topic: string
+  topic: string | null
   notes: string | null
+  links?: string[]
   totalConcurrentListeners: number | null
   totalPlaysDuringOrganic: number | null
   totalReplaysAll: number | null
