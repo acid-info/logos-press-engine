@@ -115,6 +115,15 @@ export function formatEventType(type: string): string {
     .join(' ')
 }
 
+export function isValidTopic(topic: string | null | undefined): boolean {
+  return !!(
+    topic &&
+    topic !== 'null' &&
+    typeof topic === 'string' &&
+    topic.trim() !== ''
+  )
+}
+
 export function cleanUpUrlsInRawHtml(rh: string): string {
   const regex = /<a href="(.*)">(.*)<\/a>/g
   const matches = rh.matchAll(regex) || []

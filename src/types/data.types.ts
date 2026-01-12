@@ -65,6 +65,7 @@ export type SearchHook<T> = {
 export interface SpacesCalendarEvent {
   id: number
   date: string
+  time?: string
   type: string
   guest: string
   speakers: string[]

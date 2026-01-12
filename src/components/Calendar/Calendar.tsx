@@ -1,6 +1,6 @@
 import { SpacesCalendarEvent } from '@/types/data.types'
 import { lsdUtils } from '@/utils/lsd.utils'
-import { formatEventType } from '@/utils/string.utils'
+import { formatEventType, isValidTopic } from '@/utils/string.utils'
 import { Button, Dropdown, Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import {
@@ -231,14 +231,16 @@ export const Calendar: React.FC<CalendarProps> = ({ events }) => {
               <DayNumber>{format(day, 'd')}</DayNumber>
               {hasEvent && (
                 <EventList>
-                  {dayEvents.map((event) => (
-                    <EventTitle
-                      key={event.id}
-                      title={event.topic || formatEventType(event.type)}
-                    >
-                      {event.topic || formatEventType(event.type)}
-                    </EventTitle>
-                  ))}
+                  {dayEvents.map((event) => {
+                    const displayText = isValidTopic(event.topic)
+                      ? event.topic!
+                      : formatEventType(event.type)
+                    return (
+                      <EventTitle key={event.id} title={displayText}>
+                        {displayText}
+                      </EventTitle>
+                    )
+                  })}
                 </EventList>
               )}
             </DayCell>
