@@ -1,5 +1,5 @@
+import { Calendar } from '@/components/Calendar'
 import SEO from '@/components/SEO/SEO'
-import { SpacesCalendar } from '@/components/SpacesCalendar'
 import { DefaultLayout } from '@/layouts/DefaultLayout'
 import { api } from '@/services/api.service'
 import { SpacesCalendarEvent } from '@/types/data.types'
@@ -17,8 +17,8 @@ export default function SpacesCalendarPage({
 }: SpacesCalendarPageProps) {
   return (
     <>
-      <SEO title="Spaces Calendar" pagePath="/spaces-calendar" />
-      <SpacesCalendar events={events} />
+      <SEO title="Calendar" pagePath="/calendar" />
+      <Calendar events={events} />
     </>
   )
 }
