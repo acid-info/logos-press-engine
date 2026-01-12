@@ -23,13 +23,30 @@ export const SpacesCalendarEventDetails: React.FC<
         events.map((event) => (
           <EventItem key={event.id}>
             <EventType>{formatEventType(event.type)}</EventType>
-            <EventTopic>{event.topic}</EventTopic>
+            {event.topic && <EventTopic>{event.topic}</EventTopic>}
             <EventMeta>
               {event.guest && <div>- Guest: {event.guest}</div>}
               {event.speakers.length > 0 && (
                 <div>- Speakers: {event.speakers.join(', ')}</div>
               )}
               {event.notes && <div>- Notes: {event.notes}</div>}
+              {event.links && event.links.length > 0 && (
+                <div>
+                  - Links:{' '}
+                  {event.links.map((link, index) => (
+                    <span key={index}>
+                      <EventLink
+                        href={link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {link}
+                      </EventLink>
+                      {index < (event.links?.length || 0) - 1 && ', '}
+                    </span>
+                  ))}
+                </div>
+              )}
             </EventMeta>
           </EventItem>
         ))
@@ -82,4 +99,14 @@ const EventTopic = styled.h3`
 const EventMeta = styled.div`
   font-size: 0.875rem;
   color: var(--lsd-palette-text-secondary);
+`
+
+const EventLink = styled.a`
+  color: rgb(var(--lsd-theme-primary));
+  text-decoration: underline;
+  word-break: break-all;
+
+  &:hover {
+    text-decoration: none;
+  }
 `
