@@ -1,5 +1,5 @@
 import { SpacesCalendarEvent } from '@/types/data.types'
-import { Button, Typography } from '@acid-info/lsd-react'
+import { Button, Dropdown, Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import {
   eachDayOfInterval,
@@ -12,6 +12,22 @@ import { useEffect, useMemo, useState } from 'react'
 import { NumberParam, useQueryParams } from 'use-query-params'
 import { SpacesCalendarEventDetails } from './SpacesCalendar.EventDetails'
 
+const years = [2025, 2026]
+
+const months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
 interface SpacesCalendarProps {
   events: SpacesCalendarEvent[]
 }
@@ -128,10 +144,50 @@ export const SpacesCalendar: React.FC<SpacesCalendarProps> = ({ events }) => {
     updateDate(new Date(today.getFullYear(), today.getMonth(), 1))
   }
 
+  const currentYear = currentDate.getFullYear()
+  const currentMonth = currentDate.getMonth() + 1
+
+  const handleYearChange = (value: string | string[]) => {
+    const year = Array.isArray(value) ? parseInt(value[0]) : parseInt(value)
+    if (!isNaN(year)) {
+      updateDate(new Date(year, currentMonth - 1, 1))
+    }
+  }
+
+  const handleMonthChange = (value: string | string[]) => {
+    const month = Array.isArray(value) ? parseInt(value[0]) : parseInt(value)
+    if (!isNaN(month)) {
+      updateDate(new Date(currentYear, month - 1, 1))
+    }
+  }
+
   return (
     <CalendarContainer>
       <CalendarHeader>
-        <Typography variant="h3">{format(currentDate, 'MMMM yyyy')}</Typography>
+        <DateSelectors>
+          <Dropdown
+            size="small"
+            placeholder="Year"
+            triggerLabel={currentYear.toString()}
+            options={years.map((year) => ({
+              name: year.toString(),
+              value: year.toString(),
+            }))}
+            value={currentYear.toString()}
+            onChange={handleYearChange}
+          />
+          <Dropdown
+            size="small"
+            placeholder="Month"
+            triggerLabel={months[currentMonth - 1]}
+            options={months.map((month, index) => ({
+              name: month,
+              value: (index + 1).toString(),
+            }))}
+            value={currentMonth.toString()}
+            onChange={handleMonthChange}
+          />
+        </DateSelectors>
         <MonthNavigation>
           <Button variant="outlined" size="small" onClick={goToPreviousMonth}>
             ←
@@ -205,6 +261,12 @@ const CalendarHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+`
+
+const DateSelectors = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 `
 
 const MonthNavigation = styled.div`
