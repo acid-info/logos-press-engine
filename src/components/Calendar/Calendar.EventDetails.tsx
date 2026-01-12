@@ -1,6 +1,6 @@
 import { SpacesCalendarEvent } from '@/types/data.types'
 import { lsdUtils } from '@/utils/lsd.utils'
-import { formatEventType } from '@/utils/string.utils'
+import { formatEventType, isValidTopic } from '@/utils/string.utils'
 import { Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import { format } from 'date-fns'
@@ -14,17 +14,25 @@ export const CalendarEventDetails: React.FC<CalendarEventDetailsProps> = ({
   selectedDate,
   events,
 }) => {
+  const hasTime = events.some((event) => event.time)
+  const firstEventWithTime = events.find((event) => event.time)
+
   return (
     <EventDetails>
       <Typography variant="h4" style={{ marginBottom: '1rem' }}>
         {format(selectedDate, 'MMMM d, yyyy')}
+        {hasTime && firstEventWithTime?.time && (
+          <> {firstEventWithTime.time} (UTC)</>
+        )}
       </Typography>
 
       {events.length > 0 ? (
         events.map((event) => (
           <EventItem key={event.id}>
             <EventType>{formatEventType(event.type)}</EventType>
-            {event.topic && <EventTopic>{event.topic}</EventTopic>}
+            {isValidTopic(event.topic) && (
+              <EventTopic>{event.topic}</EventTopic>
+            )}
             <EventMeta>
               {event.guest && <div>- Guest: {event.guest}</div>}
               {event.speakers.length > 0 && (
