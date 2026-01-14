@@ -10,7 +10,7 @@ import {
   isSameDay,
   startOfMonth,
 } from 'date-fns'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { NumberParam, useQueryParams } from 'use-query-params'
 import { CalendarEventDetails } from './Calendar.EventDetails'
 
@@ -32,9 +32,10 @@ const months = [
 ]
 interface CalendarProps {
   events: SpacesCalendarEvent[]
+  error?: string | null
 }
 
-export const Calendar: React.FC<CalendarProps> = ({ events }) => {
+export const Calendar: React.FC<CalendarProps> = ({ events, error }) => {
   const today = new Date()
 
   const [query, setQuery] = useQueryParams({
@@ -55,12 +56,17 @@ export const Calendar: React.FC<CalendarProps> = ({ events }) => {
 
   const [currentDate, setCurrentDate] = useState(getInitialDate)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const currentDateRef = useRef(currentDate)
 
   useEffect(() => {
-    if (getInitialDate.getTime() !== currentDate.getTime()) {
+    currentDateRef.current = currentDate
+  }, [currentDate])
+
+  useEffect(() => {
+    if (getInitialDate.getTime() !== currentDateRef.current.getTime()) {
       setCurrentDate(getInitialDate)
     }
-  }, [getInitialDate, currentDate])
+  }, [getInitialDate])
 
   const monthStart = startOfMonth(currentDate)
   const monthEnd = endOfMonth(currentDate)
@@ -166,6 +172,11 @@ export const Calendar: React.FC<CalendarProps> = ({ events }) => {
 
   return (
     <CalendarContainer>
+      {error && (
+        <ErrorMessage>
+          <Typography variant="body2">{error}</Typography>
+        </ErrorMessage>
+      )}
       <CalendarHeader>
         <DateSelectors>
           <Dropdown
@@ -237,6 +248,13 @@ export const Calendar: React.FC<CalendarProps> = ({ events }) => {
               isOtherMonth={isOtherMonth}
               isSelected={isSelected}
               onClick={() => setSelectedDate(day)}
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  setSelectedDate(day)
+                }
+              }}
             >
               <DayNumber>{format(day, 'd')}</DayNumber>
               {hasEvent && (
@@ -276,6 +294,19 @@ const CalendarContainer = styled.div`
   ${({ theme }) => lsdUtils.breakpoint(theme, 'sm', 'down')} {
     padding-block: 1rem;
     padding-inline: 0;
+  }
+`
+
+const ErrorMessage = styled.div`
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid rgb(var(--lsd-border-primary));
+  background-color: rgba(255, 0, 0, 0.1);
+  border-color: rgba(255, 0, 0, 0.3);
+
+  ${({ theme }) => lsdUtils.breakpoint(theme, 'sm', 'down')} {
+    margin-bottom: 0.5rem;
+    padding: 0.75rem;
   }
 `
 

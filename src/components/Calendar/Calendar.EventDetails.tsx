@@ -96,7 +96,6 @@ const EventType = styled.div`
   line-height: var(--lsd-body2-lineHeight);
   color: var(--lsd-text-secondary);
   border: 1px solid rgb(var(--lsd-border-primary));
-  margin-bottom: 0.25rem;
   width: fit-content;
   margin-bottom: 12px;
 `

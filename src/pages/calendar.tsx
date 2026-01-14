@@ -10,15 +10,17 @@ import { QueryParamProvider } from 'use-query-params'
 
 interface SpacesCalendarPageProps {
   events: SpacesCalendarEvent[]
+  error?: string | null
 }
 
 export default function SpacesCalendarPage({
   events,
+  error,
 }: SpacesCalendarPageProps) {
   return (
     <>
       <SEO title="Calendar" pagePath="/calendar" />
-      <Calendar events={events} />
+      <Calendar events={events} error={error} />
     </>
   )
 }
@@ -45,6 +47,7 @@ export const getServerSideProps: GetServerSideProps<
       return {
         props: {
           events: [],
+          error: 'Failed to load calendar events. Please try again later.',
         },
       }
     }
@@ -64,6 +67,7 @@ export const getServerSideProps: GetServerSideProps<
     return {
       props: {
         events: [],
+        error: 'Failed to load calendar events. Please try again later.',
       },
     }
   }
