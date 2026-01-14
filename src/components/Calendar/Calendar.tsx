@@ -192,13 +192,23 @@ export const Calendar: React.FC<CalendarProps> = ({ events }) => {
           />
         </DateSelectors>
         <MonthNavigation>
-          <Button variant="outlined" size="small" onClick={goToPreviousMonth}>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={goToPreviousMonth}
+            aria-label="Previous month"
+          >
             ←
           </Button>
           <Button variant="outlined" size="small" onClick={goToToday}>
             Today
           </Button>
-          <Button variant="outlined" size="small" onClick={goToNextMonth}>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={goToNextMonth}
+            aria-label="Next month"
+          >
             →
           </Button>
         </MonthNavigation>
