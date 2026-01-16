@@ -14,8 +14,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { NumberParam, useQueryParams } from 'use-query-params'
 import { CalendarEventDetails } from './Calendar.EventDetails'
 
-const years = [2025, 2026]
-
 const months = [
   'January',
   'February',
@@ -37,6 +35,28 @@ interface CalendarProps {
 
 export const Calendar: React.FC<CalendarProps> = ({ events, error }) => {
   const today = new Date()
+
+  const years = useMemo(() => {
+    const baseYear = 2025
+    if (events.length === 0) {
+      return [baseYear, baseYear + 1]
+    }
+
+    const mostRecentEvent = events.reduce((latest, event) => {
+      const eventDate = new Date(event.date)
+      const latestDate = new Date(latest.date)
+      return eventDate > latestDate ? event : latest
+    })
+
+    const mostRecentYear = new Date(mostRecentEvent.date).getFullYear()
+    const maxYear = Math.max(baseYear, mostRecentYear)
+
+    if (maxYear === baseYear) {
+      return [baseYear, baseYear + 1]
+    }
+
+    return [maxYear - 1, maxYear]
+  }, [events])
 
   const [query, setQuery] = useQueryParams({
     year: NumberParam,
@@ -73,6 +93,7 @@ export const Calendar: React.FC<CalendarProps> = ({ events, error }) => {
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd })
 
   const firstDayOfWeek = (monthStart.getDay() + 6) % 7
+
   const daysBeforeMonth = Array.from({ length: firstDayOfWeek }, (_, i) => {
     const date = new Date(monthStart)
     date.setDate(date.getDate() - firstDayOfWeek + i)
@@ -80,6 +101,7 @@ export const Calendar: React.FC<CalendarProps> = ({ events, error }) => {
   })
 
   const lastDayOfWeek = (monthEnd.getDay() + 6) % 7
+
   const daysAfterMonth = Array.from({ length: 6 - lastDayOfWeek }, (_, i) => {
     const date = new Date(monthEnd)
     date.setDate(date.getDate() + i + 1)
