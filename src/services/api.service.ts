@@ -1,5 +1,10 @@
+import { SPACES_CALENDAR_API_URL } from '../configs/consts.configs'
 import logger from '../lib/logger'
-import { ApiPaginatedResponse, ApiResponse } from '../types/data.types'
+import {
+  ApiPaginatedResponse,
+  ApiResponse,
+  SpacesCalendarResponse,
+} from '../types/data.types'
 import { LPE } from '../types/lpe.types'
 
 export class ApiService {
@@ -152,6 +157,26 @@ export class ApiService {
 
     return res.json()
   }
+
+  getSpacesCalendar = async (): Promise<ApiResponse<SpacesCalendarResponse>> =>
+    fetch(SPACES_CALENDAR_API_URL)
+      .then((res) => res.json())
+      .then((data) => ({ data, errors: null }))
+      .catch((e) => {
+        logger.debug(
+          {
+            error: e,
+            errorType: typeof e,
+            url: SPACES_CALENDAR_API_URL,
+          },
+          'API fetch spaces calendar failed',
+        )
+        logger.error({ error: e }, 'Failed to fetch spaces calendar')
+        return {
+          data: { success: false, data: [] },
+          errors: JSON.stringify(e),
+        }
+      })
 }
 
 export const api = new ApiService()

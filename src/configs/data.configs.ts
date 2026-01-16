@@ -19,6 +19,7 @@ export const NavLinksItems = [
   { label: 'Community', href: '/search?type=article&topic=Community' },
   { label: 'Articles', href: '/search?type=article' },
   { label: 'Podcasts', href: getPostLink('podcast') },
+  { label: 'Calendar', href: '/calendar' },
   { label: 'About', href: '/about' },
   {
     label: 'Logos',
