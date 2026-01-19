@@ -35,7 +35,7 @@ pipeline {
     string(
       name: 'NEXT_PUBLIC_ADMIN_ACID_API_URL',
       description: 'URL of Admin Acid API',
-      defaultValue: params.NEXT_PUBLIC_ADMIN_ACID_API_URL ?: 'https://admin-acid.logos.co/api',
+      defaultValue: params.NEXT_PUBLIC_ADMIN_ACID_API_URL ?: 'https://dev-admin-acid.logos.co/api',
     )
     string(
       name: 'DOCKER_REGISTRY',
@@ -62,19 +62,10 @@ pipeline {
     stage('Build') {
       steps {
         script {
-          def gitBranch = env.GIT_BRANCH ?: ''
-          def adminAcidApiUrl = params.NEXT_PUBLIC_ADMIN_ACID_API_URL
-          
-          if (!adminAcidApiUrl || adminAcidApiUrl == '') {
-            if (gitBranch.contains('master') || gitBranch.contains('main')) {
-              adminAcidApiUrl = 'https://admin-acid.logos.co/api'
-            } else if (gitBranch.contains('develop')) {
-              adminAcidApiUrl = 'https://dev-admin-acid.logos.co/api'
-            } else {
-              adminAcidApiUrl = 'https://admin-acid.logos.co/api'
-            }
-          }
-          
+          def adminAcidApiUrl = (env.GIT_BRANCH == 'master')
+            ? 'https://admin-acid.logos.co/api'
+            : params.NEXT_PUBLIC_ADMIN_ACID_API_URL
+
           withCredentials([
             usernamePassword(
               credentialsId: 'logos-press-engine-unbody-api-token',
