@@ -41,7 +41,7 @@ export const getServerSideProps: GetServerSideProps<
   SpacesCalendarPageProps
 > = async () => {
   try {
-    const response = await api.getSpacesCalendar()
+    const response = await api.getCalendarEvents()
 
     if (response.errors || !response.data.success) {
       return {

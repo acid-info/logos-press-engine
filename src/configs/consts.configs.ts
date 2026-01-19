@@ -7,7 +7,8 @@ export const POSTS_TO_LOAD = 3
 export const PODCAST_SHOWS_INFO_DISPLAY_LIMIT = 2
 
 // API endpoints
-export const SPACES_CALENDAR_API_URL =
-  process.env.NEXT_PUBLIC_SITE_URL === 'https://press.logos.co'
-    ? 'https://admin-acid.logos.co/api/calendar/public'
-    : 'https://dev-admin-acid.logos.co/api/calendar/public'
+export const ADMIN_ACID_API_URL =
+  process.env.NEXT_PUBLIC_ADMIN_ACID_API_URL ||
+  'https://admin-acid.logos.co/api'
+
+export const CALENDAR_PUBLIC_PATH = '/calendar/public'

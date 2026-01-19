@@ -1,4 +1,7 @@
-import { SPACES_CALENDAR_API_URL } from '../configs/consts.configs'
+import {
+  ADMIN_ACID_API_URL,
+  CALENDAR_PUBLIC_PATH,
+} from '../configs/consts.configs'
 import logger from '../lib/logger'
 import {
   ApiPaginatedResponse,
@@ -158,8 +161,11 @@ export class ApiService {
     return res.json()
   }
 
-  getSpacesCalendar = async (): Promise<ApiResponse<SpacesCalendarResponse>> =>
-    fetch(SPACES_CALENDAR_API_URL)
+  getCalendarEvents = async (): Promise<
+    ApiResponse<SpacesCalendarResponse>
+  > => {
+    const url = `${ADMIN_ACID_API_URL}${CALENDAR_PUBLIC_PATH}`
+    return fetch(url)
       .then((res) => res.json())
       .then((data) => ({ data, errors: null }))
       .catch((e) => {
@@ -167,7 +173,7 @@ export class ApiService {
           {
             error: e,
             errorType: typeof e,
-            url: SPACES_CALENDAR_API_URL,
+            url,
           },
           'API fetch spaces calendar failed',
         )
@@ -177,6 +183,7 @@ export class ApiService {
           errors: JSON.stringify(e),
         }
       })
+  }
 }
 
 export const api = new ApiService()
