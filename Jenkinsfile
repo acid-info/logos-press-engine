@@ -62,6 +62,19 @@ pipeline {
     stage('Build') {
       steps {
         script {
+          def gitBranch = env.GIT_BRANCH ?: ''
+          def adminAcidApiUrl = params.NEXT_PUBLIC_ADMIN_ACID_API_URL
+          
+          if (!adminAcidApiUrl || adminAcidApiUrl == '') {
+            if (gitBranch.contains('master') || gitBranch.contains('main')) {
+              adminAcidApiUrl = 'https://admin-acid.logos.co/api'
+            } else if (gitBranch.contains('develop')) {
+              adminAcidApiUrl = 'https://dev-admin-acid.logos.co/api'
+            } else {
+              adminAcidApiUrl = 'https://dev-admin-acid.logos.co/api'
+            }
+          }
+          
           withCredentials([
             usernamePassword(
               credentialsId: 'logos-press-engine-unbody-api-token',
@@ -90,7 +103,7 @@ pipeline {
                "--build-arg='STRAPI_API_URL=${params.STRAPI_API_URL}'",
                "--build-arg='STRAPI_GRAPHQL_URL=${params.STRAPI_GRAPHQL_URL}'",
                "--build-arg='NEXT_PUBLIC_ASSETS_BASE_URL=${params.NEXT_PUBLIC_ASSETS_BASE_URL}'",
-               "--build-arg='NEXT_PUBLIC_ADMIN_ACID_API_URL=${params.NEXT_PUBLIC_ADMIN_ACID_API_URL}'",
+               "--build-arg='NEXT_PUBLIC_ADMIN_ACID_API_URL=${adminAcidApiUrl}'",
                "--build-arg='STRAPI_API_KEY=${STRAPI_API_KEY}'",
                "."].join(' ')
             )
