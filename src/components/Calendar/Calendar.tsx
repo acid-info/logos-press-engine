@@ -75,7 +75,9 @@ export const Calendar: React.FC<CalendarProps> = ({ events, error }) => {
   }, [query.year, query.month])
 
   const [currentDate, setCurrentDate] = useState(getInitialDate)
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(
+    () => new Date(),
+  )
   const currentDateRef = useRef(currentDate)
 
   useEffect(() => {
@@ -173,6 +175,7 @@ export const Calendar: React.FC<CalendarProps> = ({ events, error }) => {
 
   const goToToday = () => {
     updateDate(new Date(today.getFullYear(), today.getMonth(), 1))
+    setSelectedDate(today)
   }
 
   const currentYear = currentDate.getFullYear()
