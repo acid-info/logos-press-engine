@@ -71,7 +71,7 @@ pipeline {
             } else if (gitBranch.contains('develop')) {
               adminAcidApiUrl = 'https://dev-admin-acid.logos.co/api'
             } else {
-              adminAcidApiUrl = 'https://dev-admin-acid.logos.co/api'
+              adminAcidApiUrl = 'https://admin-acid.logos.co/api'
             }
           }
           
