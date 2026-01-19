@@ -33,6 +33,11 @@ pipeline {
       defaultValue: params.NEXT_PUBLIC_ASSETS_BASE_URL ?: 'https://cms-press.logos.co',
     )
     string(
+      name: 'NEXT_PUBLIC_ADMIN_ACID_API_URL',
+      description: 'URL of Admin Acid API',
+      defaultValue: params.NEXT_PUBLIC_ADMIN_ACID_API_URL ?: 'https://admin-acid.logos.co/api',
+    )
+    string(
       name: 'DOCKER_REGISTRY',
       description: 'Docker registry ',
       defaultValue: params.DOCKER_REGISTRY ?: 'harbor.status.im',
@@ -85,6 +90,7 @@ pipeline {
                "--build-arg='STRAPI_API_URL=${params.STRAPI_API_URL}'",
                "--build-arg='STRAPI_GRAPHQL_URL=${params.STRAPI_GRAPHQL_URL}'",
                "--build-arg='NEXT_PUBLIC_ASSETS_BASE_URL=${params.NEXT_PUBLIC_ASSETS_BASE_URL}'",
+               "--build-arg='NEXT_PUBLIC_ADMIN_ACID_API_URL=${params.NEXT_PUBLIC_ADMIN_ACID_API_URL}'",
                "--build-arg='STRAPI_API_KEY=${STRAPI_API_KEY}'",
                "."].join(' ')
             )
