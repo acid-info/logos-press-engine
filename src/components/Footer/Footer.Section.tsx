@@ -17,7 +17,7 @@ export const FooterSectionContainer = styled.div`
   position: relative;
   flex-direction: column;
   padding: 16px 0 40px 0;
-  margin: 312px auto;
+  margin: 200px auto;
   margin-inline: 16px;
   gap: 96px;
 

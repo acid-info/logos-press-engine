@@ -487,8 +487,6 @@ const CalendarSection = styled.div`
 
   ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
     .calendar__header {
-      border-bottom: none;
-
       h2 {
         ${lsdUtils.typography('h3')}
       }
