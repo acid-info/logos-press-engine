@@ -62,11 +62,15 @@ export type SearchHook<T> = {
   reset: (initialData: SearchResultItem<T>[]) => void
 }
 
-export interface SpacesCalendarEvent {
+export interface CalendarEvent {
   id: number
   date: string
   time?: string
-  type: string
+  type: {
+    id: number
+    label: string
+    value: string
+  }
   guest: string
   speakers: string[]
   topic: string | null
@@ -78,7 +82,7 @@ export interface SpacesCalendarEvent {
   percentTotalPlaysOrganic: number | null
 }
 
-export interface SpacesCalendarResponse {
+export interface CalendarResponse {
   success: boolean
-  data: SpacesCalendarEvent[]
+  data: CalendarEvent[]
 }

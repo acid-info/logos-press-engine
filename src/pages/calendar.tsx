@@ -2,14 +2,14 @@ import { Calendar } from '@/components/Calendar'
 import SEO from '@/components/SEO/SEO'
 import { DefaultLayout } from '@/layouts/DefaultLayout'
 import { api } from '@/services/api.service'
-import { SpacesCalendarEvent } from '@/types/data.types'
+import { CalendarEvent } from '@/types/data.types'
 import { GetServerSideProps } from 'next'
 import NextAdapterPages from 'next-query-params'
 import { ReactNode } from 'react'
 import { QueryParamProvider } from 'use-query-params'
 
 interface SpacesCalendarPageProps {
-  events: SpacesCalendarEvent[]
+  events: CalendarEvent[]
   error?: string | null
 }
 

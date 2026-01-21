@@ -1,13 +1,17 @@
-import { SpacesCalendarEvent } from '@/types/data.types'
+import { CalendarEvent } from '@/types/data.types'
 import { lsdUtils } from '@/utils/lsd.utils'
-import { formatEventType, isValidTopic } from '@/utils/string.utils'
+import {
+  getEventTypeLabel,
+  isValidString,
+  isValidTopic,
+} from '@/utils/string.utils'
 import { Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import { format } from 'date-fns'
 
 interface CalendarEventDetailsProps {
   selectedDate: Date
-  events: SpacesCalendarEvent[]
+  events: CalendarEvent[]
 }
 
 export const CalendarEventDetails: React.FC<CalendarEventDetailsProps> = ({
@@ -27,38 +31,49 @@ export const CalendarEventDetails: React.FC<CalendarEventDetailsProps> = ({
       </Typography>
 
       {events.length > 0 ? (
-        events.map((event) => (
-          <EventItem key={event.id}>
-            <EventType>{formatEventType(event.type)}</EventType>
-            {isValidTopic(event.topic) && (
-              <EventTopic>{event.topic}</EventTopic>
-            )}
-            <EventMeta>
-              {event.guest && <div>- Guest: {event.guest}</div>}
-              {event.speakers.length > 0 && (
-                <div>- Speakers: {event.speakers.join(', ')}</div>
+        events.map((event) => {
+          const formattedType = getEventTypeLabel(event.type)
+
+          return (
+            <EventItem key={event.id}>
+              {formattedType && <EventType>{formattedType}</EventType>}
+              {isValidTopic(event.topic) && (
+                <EventTopic>{event.topic}</EventTopic>
               )}
-              {event.notes && <div>- Notes: {event.notes}</div>}
-              {event.links && event.links.length > 0 && (
-                <div>
-                  - Links:{' '}
-                  {event.links.map((link, index) => (
-                    <span key={index}>
-                      <EventLink
-                        href={link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {link}
-                      </EventLink>
-                      {index < (event.links?.length || 0) - 1 && ', '}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </EventMeta>
-          </EventItem>
-        ))
+              <EventMeta>
+                {isValidString(event.guest) && (
+                  <div>- Guest: {event.guest}</div>
+                )}
+                {event.speakers.filter(isValidString).length > 0 && (
+                  <div>
+                    - Speakers:{' '}
+                    {event.speakers.filter(isValidString).join(', ')}
+                  </div>
+                )}
+                {isValidString(event.notes) && (
+                  <div>- Notes: {event.notes}</div>
+                )}
+                {event.links && event.links.length > 0 && (
+                  <div>
+                    - Links:{' '}
+                    {event.links.map((link, index) => (
+                      <span key={index}>
+                        <EventLink
+                          href={link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {link}
+                        </EventLink>
+                        {index < (event.links?.length || 0) - 1 && ', '}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </EventMeta>
+            </EventItem>
+          )
+        })
       ) : (
         <Typography
           variant="body2"

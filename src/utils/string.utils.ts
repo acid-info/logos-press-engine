@@ -108,19 +108,28 @@ export function formatTagText(tag: string) {
   return tag.replace(/_/g, ' ')
 }
 
-export function formatEventType(type: string): string {
-  return type
-    .split(/[- ]/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ')
-}
-
 export function isValidTopic(topic: string | null | undefined): boolean {
   return !!(
     topic &&
     topic !== 'null' &&
     typeof topic === 'string' &&
     topic.trim() !== ''
+  )
+}
+
+export function getEventTypeLabel(
+  type: { id: number; label: string; value: string } | null | undefined,
+): string {
+  if (!type || !type.label) return ''
+  return type.label
+}
+
+export function isValidString(value: string | null | undefined): boolean {
+  return !!(
+    value &&
+    value !== 'null' &&
+    typeof value === 'string' &&
+    value.trim() !== ''
   )
 }
 

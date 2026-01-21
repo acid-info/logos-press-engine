@@ -2,9 +2,14 @@ import { LPERssFeed } from '@/services/rss.service'
 import { LPESitemapGenerator } from '@/services/sitemap.service'
 import { stat } from 'fs/promises'
 import { CustomNextPage, GetStaticProps } from 'next'
+import NextAdapterPages from 'next-query-params'
 import path from 'path'
+import { ReactNode } from 'react'
+import { QueryParamProvider } from 'use-query-params'
 import SEO from '../components/SEO/SEO'
 import {
+  ADMIN_ACID_API_URL,
+  CALENDAR_PUBLIC_PATH,
   FEATURED_ARTICLES_LIMIT,
   FEATURED_EPISODES_LIMIT,
 } from '../configs/consts.configs'
@@ -13,10 +18,15 @@ import { DefaultLayout } from '../layouts/DefaultLayout'
 import logger from '../lib/logger'
 import { Enum_Post_Type } from '../lib/strapi/strapi.generated'
 import { strapiApi } from '../services/strapi'
+import { CalendarEvent } from '../types/data.types'
 
 type PageProps = Pick<
   HomePageProps,
-  'data' | 'articlesMoreData' | 'episodesMoreData'
+  | 'data'
+  | 'articlesMoreData'
+  | 'episodesMoreData'
+  | 'calendarEvents'
+  | 'calendarError'
 >
 
 // 24 hours
@@ -45,19 +55,23 @@ const Page: CustomNextPage<PageProps> = (props) => {
         data={props.data}
         articlesMoreData={props.articlesMoreData}
         episodesMoreData={props.episodesMoreData}
+        calendarEvents={props.calendarEvents}
+        calendarError={props.calendarError}
       />
     </>
   )
 }
 
-Page.getLayout = function getLayout(page: React.ReactNode) {
+Page.getLayout = function getLayout(page: ReactNode) {
   return (
-    <DefaultLayout
-      mainProps={{ spacing: false, contentPadding: false }}
-      navbarProps={{ defaultState: { showTitle: false } }}
-    >
-      {page}
-    </DefaultLayout>
+    <QueryParamProvider adapter={NextAdapterPages}>
+      <DefaultLayout
+        mainProps={{ spacing: false, contentPadding: false }}
+        navbarProps={{ defaultState: { showTitle: false } }}
+      >
+        {page}
+      </DefaultLayout>
+    </QueryParamProvider>
   )
 }
 
@@ -153,6 +167,38 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
   const shows = [...(_shows ?? [])].sort((a, b) => (a.title > b.title ? -1 : 1))
 
   const { data: tags = [] } = await strapiApi.getTopics()
+
+  let calendarEvents: CalendarEvent[] = []
+  let calendarError: string | null = null
+
+  try {
+    const calendarUrl = `${ADMIN_ACID_API_URL}${CALENDAR_PUBLIC_PATH}`
+    const calendarResponse = await fetch(calendarUrl)
+
+    const calendarData = (await calendarResponse.json()) as {
+      success: boolean
+      data?: CalendarEvent[]
+    }
+
+    if (calendarData.success && calendarData.data) {
+      const allEvents = calendarData.data || []
+
+      calendarEvents = Array.from(
+        new Map(allEvents.map((event) => [event.id, event])).values(),
+      )
+    } else {
+      calendarError = 'Failed to load calendar events. Please try again later.'
+    }
+  } catch (error) {
+    logger.debug(
+      {
+        error,
+        errorType: typeof error,
+      },
+      'Calendar events fetch failed in getStaticProps',
+    )
+    calendarError = 'Failed to load calendar events. Please try again later.'
+  }
 
   // Generate the RSS feed
   try {
@@ -252,6 +298,8 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
         remainingHighlighted: remainingHighlightedEpisodes,
         initialNonHighlightedCount: nonHighlightedEpisodes.length,
       },
+      calendarEvents,
+      calendarError,
     },
     revalidate: 10,
   }
