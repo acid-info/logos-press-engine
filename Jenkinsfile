@@ -62,7 +62,7 @@ pipeline {
     stage('Build') {
       steps {
         script {
-          def adminAcidApiUrl = (env.GIT_BRANCH == 'master')
+          def adminAcidApiUrl = (GIT_BRANCH.endsWith('master'))
             ? 'https://admin-acid.logos.co/api'
             : params.NEXT_PUBLIC_ADMIN_ACID_API_URL
 
