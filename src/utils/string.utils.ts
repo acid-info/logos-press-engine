@@ -120,7 +120,7 @@ export function isValidTopic(topic: string | null | undefined): boolean {
 export function getEventTypeLabel(
   type: { id: number; label: string; value: string } | null | undefined,
 ): string {
-  if (!type || !type.label) return ''
+  if (!type || !isValidString(type.label)) return ''
   return type.label
 }
 
