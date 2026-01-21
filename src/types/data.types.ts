@@ -71,7 +71,7 @@ export interface CalendarEvent {
     label: string
     value: string
   }
-  guest: string
+  guest: string | null
   speakers: string[]
   topic: string | null
   notes: string | null
