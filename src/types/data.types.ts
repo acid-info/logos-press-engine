@@ -72,7 +72,7 @@ export interface CalendarEvent {
     value: string
   }
   guest: string | null
-  speakers: string[]
+  speakers: (string | null)[]
   topic: string | null
   notes: string | null
   links?: string[]
