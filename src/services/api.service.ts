@@ -6,7 +6,7 @@ import logger from '../lib/logger'
 import {
   ApiPaginatedResponse,
   ApiResponse,
-  SpacesCalendarResponse,
+  CalendarResponse,
 } from '../types/data.types'
 import { LPE } from '../types/lpe.types'
 
@@ -161,9 +161,7 @@ export class ApiService {
     return res.json()
   }
 
-  getCalendarEvents = async (): Promise<
-    ApiResponse<SpacesCalendarResponse>
-  > => {
+  getCalendarEvents = async (): Promise<ApiResponse<CalendarResponse>> => {
     const url = `${ADMIN_ACID_API_URL}${CALENDAR_PUBLIC_PATH}`
     return fetch(url)
       .then((res) => res.json())

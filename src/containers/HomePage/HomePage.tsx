@@ -3,6 +3,7 @@ import { Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import axios from 'axios'
 import React, { useRef, useState } from 'react'
+import { Calendar } from '../../components/Calendar'
 import { Hero } from '../../components/Hero'
 import { PodcastShowInfo } from '../../components/PodcastShowInfo'
 import { PostsGrid } from '../../components/PostsGrid'
@@ -36,6 +37,8 @@ export type HomePageProps = React.DetailedHTMLProps<
   }
   articlesMoreData: MoreData
   episodesMoreData: MoreData
+  calendarEvents?: import('../../types/data.types').CalendarEvent[]
+  calendarError?: string | null
 }
 
 const POSTS_GRID_CONFIG = {
@@ -78,6 +81,8 @@ export const HomePage: React.FC<HomePageProps> = ({
   data: { articles = [], shows = [], tags: _tags = [], episodes = [] },
   articlesMoreData,
   episodesMoreData,
+  calendarEvents = [],
+  calendarError,
   ...props
 }) => {
   const [displayedItems, setDisplayedItems] = useState({
@@ -233,6 +238,15 @@ export const HomePage: React.FC<HomePageProps> = ({
               />
             )}
           </PodcastsContent>
+
+          <CalendarSection>
+            <div className="calendar__header">
+              <Typography component="h2" variant="h2">
+                Calendar
+              </Typography>
+            </div>
+            <Calendar events={calendarEvents} error={calendarError} />
+          </CalendarSection>
         </div>
       </Container>
     </Root>
@@ -457,3 +471,27 @@ const PodcastsSection = styled.div`
 `
 
 const PodcastsContent = styled.div``
+
+const CalendarSection = styled.div`
+  margin-top: 200px;
+
+  .calendar__header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--lsd-spacing-24);
+    border-bottom: 1px solid rgb(var(--lsd-border-primary));
+    margin-bottom: var(--lsd-spacing-24);
+  }
+
+  ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
+    .calendar__header {
+      border-bottom: none;
+
+      h2 {
+        ${lsdUtils.typography('h3')}
+      }
+    }
+  }
+`

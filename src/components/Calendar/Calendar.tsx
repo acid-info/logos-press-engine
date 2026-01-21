@@ -1,6 +1,6 @@
-import { SpacesCalendarEvent } from '@/types/data.types'
+import { CalendarEvent } from '@/types/data.types'
 import { lsdUtils } from '@/utils/lsd.utils'
-import { formatEventType, isValidTopic } from '@/utils/string.utils'
+import { getEventTypeLabel, isValidTopic } from '@/utils/string.utils'
 import { Button, Dropdown, Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import {
@@ -29,7 +29,7 @@ const months = [
   'December',
 ]
 interface CalendarProps {
-  events: SpacesCalendarEvent[]
+  events: CalendarEvent[]
   error?: string | null
 }
 
@@ -113,7 +113,7 @@ export const Calendar: React.FC<CalendarProps> = ({ events, error }) => {
   const allDays = [...daysBeforeMonth, ...daysInMonth, ...daysAfterMonth]
 
   const eventsByDate = useMemo(() => {
-    const map = new Map<string, SpacesCalendarEvent[]>()
+    const map = new Map<string, CalendarEvent[]>()
     const seenTopics = new Map<string, Set<string>>()
 
     events.forEach((event) => {
@@ -125,7 +125,10 @@ export const Calendar: React.FC<CalendarProps> = ({ events, error }) => {
       }
 
       const topicsForDate = seenTopics.get(dateKey)!
-      const topicKey = event.topic || formatEventType(event.type)
+      const formattedType = getEventTypeLabel(event.type)
+      const topicKey = isValidTopic(event.topic)
+        ? event.topic!
+        : formattedType || 'Event'
       if (!topicsForDate.has(topicKey)) {
         topicsForDate.add(topicKey)
         map.get(dateKey)!.push(event)
@@ -135,7 +138,7 @@ export const Calendar: React.FC<CalendarProps> = ({ events, error }) => {
   }, [events])
 
   const getEventsForDate = useMemo(() => {
-    return (date: Date): SpacesCalendarEvent[] => {
+    return (date: Date): CalendarEvent[] => {
       const dateKey = format(date, 'yyyy-MM-dd')
       return eventsByDate.get(dateKey) || []
     }
@@ -285,9 +288,10 @@ export const Calendar: React.FC<CalendarProps> = ({ events, error }) => {
               {hasEvent && (
                 <EventList>
                   {dayEvents.map((event) => {
+                    const formattedType = getEventTypeLabel(event.type)
                     const displayText = isValidTopic(event.topic)
                       ? event.topic!
-                      : formatEventType(event.type)
+                      : formattedType || 'Event'
                     return (
                       <EventTitle key={event.id} title={displayText}>
                         {displayText}
