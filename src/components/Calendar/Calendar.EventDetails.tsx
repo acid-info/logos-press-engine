@@ -30,61 +30,69 @@ export const CalendarEventDetails: React.FC<CalendarEventDetailsProps> = ({
         )}
       </Typography>
 
-      {events.length > 0 ? (
-        events.map((event) => {
-          const formattedType = getEventTypeLabel(event.type)
+      <EventList>
+        {events.length > 0 ? (
+          events.map((event) => {
+            const formattedType = getEventTypeLabel(event.type)
 
-          return (
-            <EventItem key={event.id}>
-              {formattedType && <EventType>{formattedType}</EventType>}
-              {isValidTopic(event.topic) && (
-                <EventTopic>{event.topic}</EventTopic>
-              )}
-              <EventMeta>
-                {isValidString(event.guest) && (
-                  <div>- Guest: {event.guest}</div>
+            return (
+              <EventItem key={event.id}>
+                {formattedType && <EventType>{formattedType}</EventType>}
+                {isValidTopic(event.topic) && (
+                  <EventTopic>{event.topic}</EventTopic>
                 )}
-                {event.speakers.filter(isValidString).length > 0 && (
-                  <div>
-                    - Speakers:{' '}
-                    {event.speakers.filter(isValidString).join(', ')}
-                  </div>
-                )}
-                {isValidString(event.notes) && (
-                  <div>- Notes: {event.notes}</div>
-                )}
-                {event.links && event.links.length > 0 && (
-                  <div>
-                    - Links:{' '}
-                    {event.links.map((link, index) => (
-                      <span key={index}>
-                        <EventLink
-                          href={link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {link}
-                        </EventLink>
-                        {index < (event.links?.length || 0) - 1 && ', '}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </EventMeta>
-            </EventItem>
-          )
-        })
-      ) : (
-        <Typography
-          variant="body2"
-          style={{ color: 'var(--lsd-palette-text-secondary)' }}
-        >
-          No events scheduled for this date.
-        </Typography>
-      )}
+                <EventMeta>
+                  {isValidString(event.guest) && (
+                    <div>- Guest: {event.guest}</div>
+                  )}
+                  {event.speakers.filter(isValidString).length > 0 && (
+                    <div>
+                      - Speakers:{' '}
+                      {event.speakers.filter(isValidString).join(', ')}
+                    </div>
+                  )}
+                  {isValidString(event.notes) && (
+                    <div>- Notes: {event.notes}</div>
+                  )}
+                  {event.links && event.links.length > 0 && (
+                    <div>
+                      - Links:{' '}
+                      {event.links.map((link, index) => (
+                        <span key={index}>
+                          <EventLink
+                            href={link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {link}
+                          </EventLink>
+                          {index < (event.links?.length || 0) - 1 && ', '}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </EventMeta>
+              </EventItem>
+            )
+          })
+        ) : (
+          <Typography
+            variant="body2"
+            style={{ color: 'var(--lsd-palette-text-secondary)' }}
+          >
+            No events scheduled for this date.
+          </Typography>
+        )}
+      </EventList>
     </EventDetails>
   )
 }
+
+const EventList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`
 
 const EventDetails = styled.div`
   margin-top: 2rem;
@@ -98,9 +106,11 @@ const EventDetails = styled.div`
 `
 
 const EventItem = styled.div`
+  padding-bottom: 1rem;
   border-bottom: 1px solid rgb(var(--lsd-border-primary));
 
   &:last-child {
+    padding-bottom: 0;
     border-bottom: none;
   }
 `
