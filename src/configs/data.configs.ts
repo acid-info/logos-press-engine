@@ -19,8 +19,8 @@ export const NavLinksItems = [
   { label: 'Community', href: '/search?type=article&topic=Community' },
   { label: 'Articles', href: '/search?type=article' },
   { label: 'Podcasts', href: getPostLink('podcast') },
-  { label: 'Calendar', href: '/calendar' },
   { label: 'About', href: '/about' },
+  { label: 'Calendar', href: '/calendar', position: 'right' },
   {
     label: 'Logos',
     href: 'https://logos.co/',
@@ -29,7 +29,7 @@ export const NavLinksItems = [
     position: 'right',
   },
   {
-    label: 'Discuss',
+    label: 'Forum',
     href: 'https://forum.logos.co/',
     target: '_blank',
     isExternal: true,
