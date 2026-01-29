@@ -116,6 +116,51 @@ export const RenderArticleBlock = ({
               </Paragraph>
             )
           }
+          case 'table': {
+            return (
+              <TableWrapper>
+                <TableContainer
+                  css={css`
+                    ${extractAttributeFromHTML(block.html, 'style', '')}
+                  `}
+                  className={clsx(block.classNames)}
+                  dangerouslySetInnerHTML={{
+                    __html: extractInnerHtml(addTargetBlank(block.html)),
+                  }}
+                />
+              </TableWrapper>
+            )
+          }
+          case 'figure': {
+            const innerHtml = extractInnerHtml(block.html)
+            const hasTable = innerHtml.includes('<table')
+
+            if (hasTable) {
+              return (
+                <TableWrapper>
+                  <TableContainer
+                    dangerouslySetInnerHTML={{
+                      __html: addTargetBlank(innerHtml),
+                    }}
+                  />
+                </TableWrapper>
+              )
+            }
+
+            return (
+              <Paragraph
+                component={block.tagName as any}
+                genericFontFamily="sans-serif"
+                css={css`
+                  ${extractAttributeFromHTML(block.html, 'style', '')}
+                `}
+                className={clsx(block.classNames)}
+                dangerouslySetInnerHTML={{
+                  __html: extractInnerHtml(block.html),
+                }}
+              />
+            )
+          }
           default:
             return (
               <Paragraph
@@ -192,6 +237,24 @@ const Paragraph = styled(Typography)`
   & > strong {
     margin-bottom: 16px;
   }
+
+  & table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+
+    & th,
+    & td {
+      padding: 12px 16px;
+      border: 1px solid rgb(var(--lsd-border-primary));
+      text-align: left;
+    }
+
+    & th {
+      background-color: rgb(var(--lsd-palette-background-secondary));
+      font-weight: 600;
+    }
+  }
 `
 
 const IframeContainer = styled.div<{ isSimplecast?: boolean }>`
@@ -215,5 +278,29 @@ const IframeContainer = styled.div<{ isSimplecast?: boolean }>`
     width: 100% !important;
     height: unset !important;
     aspect-ratio: 16 / 9;
+  }
+`
+
+const TableWrapper = styled.div`
+  margin: 1.5rem 0;
+  overflow-x: auto;
+`
+
+const TableContainer = styled.div`
+  & table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  & th,
+  & td {
+    padding: 12px 16px;
+    border: 1px solid rgb(var(--lsd-border-primary));
+    text-align: left;
+  }
+
+  & th {
+    background-color: rgb(var(--lsd-palette-background-secondary));
+    font-weight: 600;
   }
 `
