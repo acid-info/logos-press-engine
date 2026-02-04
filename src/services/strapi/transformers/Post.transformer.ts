@@ -113,7 +113,10 @@ export const postTransformer: Transformer<
       dynamicBlocks.length > 0
     ) {
       const richTextHtml = dynamicBlocks
-        .filter((b) => b.type === LPE.Post.DynamicBlockTypes.RichText)
+        .filter(
+          (b): b is LPE.Post.DynamicRichTextBlock =>
+            b.type === LPE.Post.DynamicBlockTypes.RichText,
+        )
         .map((b) => b.body)
         .join('\n')
 
