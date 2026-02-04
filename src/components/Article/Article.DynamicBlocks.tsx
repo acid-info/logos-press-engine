@@ -84,22 +84,22 @@ function buildSrcDoc(
     )
     return looksLikeDocument
       ? injectCspMeta(
-          fullHtml
-            .replace(
-              /<head[^>]*>/i,
-              (m) => `${m}
+        fullHtml
+          .replace(
+            /<head[^>]*>/i,
+            (m) => `${m}
     <style>
       html, body { overflow: hidden; }
     </style>`,
-            )
-            .replace(
-              /<\/body>/i,
-              `
+          )
+          .replace(
+            /<\/body>/i,
+            `
 ${linkScript}
 ${heightScript}
 </body>`,
-            ),
-        )
+          ),
+      )
       : `<!doctype html>
 <html>
   <head>
@@ -125,6 +125,20 @@ ${heightScript}
   const hasDocumentMarkup = /<!doctype|<html\b|<head\b|<body\b/i.test(html)
   if (hasDocumentMarkup && !css && !js) {
     return html
+      .replace(
+        /<head[^>]*>/i,
+        (m) => `${m}
+    <style>
+      html, body { overflow: hidden; }
+    </style>`,
+      )
+      .replace(
+        /<\/body>/i,
+        `
+${linkScript}
+${heightScript}
+</body>`,
+      )
   }
 
   return `<!doctype html>
