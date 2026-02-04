@@ -42,18 +42,16 @@ const EpisodePage = ({ episode, relatedEpisodes, errors }: EpisodeProps) => {
 export async function getStaticPaths() {
   const { data } = await strapiApi.getPodcastShows({ populateEpisodes: true })
 
-  const paths = data.flatMap((show) => {
-    return (
-      show?.episodes &&
-      show.episodes.map((episode) => {
-        return {
-          params: {
-            showSlug: show.slug,
-            path: [episode.slug],
-          },
-        }
-      })
-    )
+  const paths = (data || []).flatMap((show) => {
+    if (!show?.episodes) return []
+    return show.episodes.map((episode) => {
+      return {
+        params: {
+          showSlug: show.slug,
+          path: [episode.slug],
+        },
+      }
+    })
   })
 
   return {
