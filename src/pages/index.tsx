@@ -85,7 +85,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     },
   })
 
-  const allHighlightedArticles = allHighlightedArticlesResponse.data
+  const allHighlightedArticles = allHighlightedArticlesResponse?.data || []
 
   const initialHighlightedArticles = allHighlightedArticles.slice(
     0,
@@ -111,7 +111,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
       },
       limit: articlesNeeded,
     })
-    nonHighlightedArticles = nonHighlightedResponse.data
+    nonHighlightedArticles = nonHighlightedResponse?.data || []
   }
 
   const initialArticles = [
@@ -128,7 +128,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     },
   })
 
-  const allHighlightedEpisodes = allHighlightedEpisodesResponse.data
+  const allHighlightedEpisodes = allHighlightedEpisodesResponse?.data || []
 
   const initialHighlightedEpisodes = allHighlightedEpisodes.slice(
     0,
@@ -154,7 +154,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
       },
       limit: episodesNeeded,
     })
-    nonHighlightedEpisodes = nonHighlightedResponse.data
+    nonHighlightedEpisodes = nonHighlightedResponse?.data || []
   }
 
   const initialEpisodes = [
