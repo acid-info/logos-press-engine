@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { LPE } from '../../types/lpe.types'
 import ArticleBlocks from './Article.Blocks'
+import ArticleDynamicBlocks from './Article.DynamicBlocks'
 import ArticleFooter from './Footer/Article.Footer'
 import ArticleHeader from './Header/Article.Header'
 
@@ -18,7 +19,11 @@ export default function ArticleBody({
   return (
     <ArticleContainer>
       {header && <ArticleHeader {...data.data} />}
-      <ArticleBlocks data={data.data} />
+      {data.data.blocks && data.data.blocks.length > 0 ? (
+        <ArticleDynamicBlocks blocks={data.data.blocks} />
+      ) : (
+        <ArticleBlocks data={data.data} />
+      )}
       {footer && <ArticleFooter data={data} />}
     </ArticleContainer>
   )
