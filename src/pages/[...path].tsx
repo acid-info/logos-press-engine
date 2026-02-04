@@ -23,7 +23,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const { data } = await strapiApi.getStaticPages({})
 
   return {
-    paths: data.map((page) => ({
+    paths: (data || []).map((page) => ({
       params: {
         path: [page.slug],
       },

@@ -53,7 +53,7 @@ const PodcastShowPage = ({
 export async function getStaticPaths() {
   const { data } = await strapiApi.getPodcastShows({ populateEpisodes: false })
 
-  const paths = data.map((show) => {
+  const paths = (data || []).map((show) => {
     return {
       params: {
         showSlug: show.slug,
@@ -81,6 +81,14 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   const { data: shows, errors } = await strapiApi.getPodcastShows({
     slug: showSlug as string,
   })
+
+  if (!shows || shows.length === 0) {
+    return {
+      notFound: true,
+      props: { why: 'no show' },
+      revalidate: 10,
+    }
+  }
 
   const { data: latestEpisodes } = await strapiApi.getLatestEpisodes({
     showSlug: showSlug as string,
@@ -123,7 +131,7 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
           },
         },
       })
-      const allEpisodes = allEpisodesResponse.data || []
+      const allEpisodes = allEpisodesResponse?.data || []
 
       // Filter episodes for this specific show
       showEpisodes = allEpisodes.filter(
@@ -169,8 +177,8 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   return {
     props: {
       show: shows[0],
-      latestEpisodes,
-      highlightedEpisodes: highlightedEpisodes.data,
+      latestEpisodes: latestEpisodes || { data: [], hasMore: false },
+      highlightedEpisodes: highlightedEpisodes?.data || [],
     },
     revalidate: 10,
   }
