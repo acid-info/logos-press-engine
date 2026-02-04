@@ -84,13 +84,21 @@ function buildSrcDoc(
     )
     return looksLikeDocument
       ? injectCspMeta(
-          fullHtml.replace(
-            /<\/body>/i,
-            `
+          fullHtml
+            .replace(
+              /<head[^>]*>/i,
+              (m) => `${m}
+    <style>
+      html, body { overflow: hidden; }
+    </style>`,
+            )
+            .replace(
+              /<\/body>/i,
+              `
 ${linkScript}
 ${heightScript}
 </body>`,
-          ),
+            ),
         )
       : `<!doctype html>
 <html>
@@ -98,6 +106,9 @@ ${heightScript}
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     ${CSP_META}
+    <style>
+      html, body { overflow: hidden; }
+    </style>
   </head>
   <body>
     ${fullHtml}
@@ -123,7 +134,7 @@ ${heightScript}
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     ${CSP_META}
     <style>
-      html, body { margin: 0; padding: 0; }
+      html, body { margin: 0; padding: 0; overflow: hidden; }
       ${css}
     </style>
   </head>
@@ -173,6 +184,7 @@ const InteractiveEmbedFrame = ({
       height={height}
       sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
       loading="lazy"
+      scrolling="no"
       srcDoc={buildSrcDoc(block, autoHeight, frameId)}
     />
   )
@@ -293,6 +305,7 @@ const CodeBlock = styled.pre`
 const EmbedFrame = styled.iframe`
   width: 100%;
   border: none;
+  overflow: hidden;
 `
 
 export default ArticleDynamicBlocks
