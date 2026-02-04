@@ -41,11 +41,12 @@ export const PostsGrid = forwardRef<HTMLDivElement, PostsGridProps>(
 
     const items = useMemo(() => {
       const cols = pattern.map((p) => p.cols)
-      const chunked = chunkArray(posts, ...cols)
+      const sanitizedPosts = posts.filter(Boolean) as LPE.Post.Document[]
+      const chunked = chunkArray(sanitizedPosts, ...cols)
 
       return chunked
         .map((posts, i) =>
-          posts.map((post) => ({
+          posts.filter(Boolean).map((post) => ({
             post,
             size: pattern[i % pattern.length]?.size,
           })),

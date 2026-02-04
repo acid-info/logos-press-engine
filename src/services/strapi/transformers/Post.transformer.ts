@@ -3,8 +3,60 @@ import { Transformer } from '../../../lib/TransformPipeline/types'
 import { LPE } from '../../../types/lpe.types'
 import { calcReadingTime } from '../../../utils/string.utils'
 import postSearchService from '../../post-search.service'
-import { StrapiPostData } from '../strapi.types'
+import { StrapiPostBlock, StrapiPostData } from '../strapi.types'
 import { transformStrapiHtmlContent, transformStrapiImageData } from './utils'
+
+const transformDynamicBlocks = (
+  blocks: StrapiPostBlock[] | null | undefined,
+): LPE.Post.DynamicBlock[] => {
+  if (!blocks || blocks.length === 0) return []
+
+  return blocks
+    .map((block) => {
+      switch (block.__typename) {
+        case 'ComponentBlocksRichText':
+          return {
+            type: LPE.Post.DynamicBlockTypes.RichText,
+            body: block.body || '',
+          } as LPE.Post.DynamicRichTextBlock
+        case 'ComponentBlocksCodeBlock': {
+          const codeBlock: LPE.Post.DynamicCodeBlock = {
+            type: LPE.Post.DynamicBlockTypes.CodeBlock,
+            code: block.code || '',
+          }
+          if (block.language) {
+            codeBlock.language = block.language
+          }
+          return codeBlock
+        }
+        case 'ComponentBlocksInteractiveEmbed': {
+          const embedBlock: LPE.Post.DynamicInteractiveEmbedBlock = {
+            type: LPE.Post.DynamicBlockTypes.InteractiveEmbed,
+            html: block.html || '',
+          }
+          if (block.full_html) {
+            embedBlock.fullHtml = block.full_html
+          }
+          if (block.title) {
+            embedBlock.title = block.title
+          }
+          if (block.css) {
+            embedBlock.css = block.css
+          }
+          if (block.js) {
+            embedBlock.js = block.js
+          }
+          if (block.height != null) {
+            embedBlock.height = block.height
+          }
+          return embedBlock
+        }
+        default:
+          return null
+      }
+    })
+    .filter(Boolean) as LPE.Post.DynamicBlock[]
+}
 
 export const postTransformer: Transformer<
   StrapiPostData,
@@ -46,7 +98,9 @@ export const postTransformer: Transformer<
       html: attributes.summary || '',
     }).then((h) => h.text)
 
-    const {
+    const dynamicBlocks = transformDynamicBlocks(attributes.blocks)
+
+    let {
       blocks: content,
       toc,
       text,
@@ -54,7 +108,26 @@ export const postTransformer: Transformer<
       html: attributes.body || '',
     })
 
-    if (attributes.body && content.length > 0) {
+    if (
+      (!attributes.body || content.length === 0) &&
+      dynamicBlocks.length > 0
+    ) {
+      const richTextHtml = dynamicBlocks
+        .filter((b) => b.type === LPE.Post.DynamicBlockTypes.RichText)
+        .map((b) => b.body)
+        .join('\n')
+
+      if (richTextHtml.trim().length > 0) {
+        const derived = await transformStrapiHtmlContent({
+          html: richTextHtml,
+        })
+        content = derived.blocks
+        toc = derived.toc
+        text = derived.text
+      }
+    }
+
+    if (content.length > 0) {
       postSearchService.index({
         id: uuid,
         content,
@@ -72,6 +145,9 @@ export const postTransformer: Transformer<
       })
     }
 
+    const dynamicBlocksField =
+      dynamicBlocks.length > 0 ? { blocks: dynamicBlocks } : {}
+
     if (type === 'Article') {
       return {
         id,
@@ -85,6 +161,7 @@ export const postTransformer: Transformer<
         coverImage,
         tags,
         content,
+        ...dynamicBlocksField,
         summary,
         readingTime: calcReadingTime(text),
         toc,
@@ -112,6 +189,7 @@ export const postTransformer: Transformer<
         highlighted: isHighlighted,
         authors,
         content,
+        ...dynamicBlocksField,
         episodeNumber: attributes.episode_number,
         summary: attributes.summary,
         showId: attributes.podcast_show.data?.id || null,

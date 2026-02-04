@@ -110,6 +110,40 @@ export namespace LPE {
 
     export type ContentBlock<D = any> = TextBlock<D> | ImageBlock<D>
 
+    export const DynamicBlockTypes = {
+      RichText: 'rich-text',
+      CodeBlock: 'code-block',
+      InteractiveEmbed: 'interactive-embed',
+    } as const
+
+    export type DynamicBlockType = DictValues<typeof DynamicBlockTypes>
+
+    export type DynamicRichTextBlock = {
+      type: typeof DynamicBlockTypes.RichText
+      body: string
+    }
+
+    export type DynamicCodeBlock = {
+      type: typeof DynamicBlockTypes.CodeBlock
+      language?: string
+      code: string
+    }
+
+    export type DynamicInteractiveEmbedBlock = {
+      type: typeof DynamicBlockTypes.InteractiveEmbed
+      title?: string
+      fullHtml?: string
+      html: string
+      css?: string
+      js?: string
+      height?: number
+    }
+
+    export type DynamicBlock =
+      | DynamicRichTextBlock
+      | DynamicCodeBlock
+      | DynamicInteractiveEmbedBlock
+
     export type Document = LPE.Article.Data | LPE.Podcast.Document
   }
 
@@ -175,6 +209,7 @@ export namespace LPE {
       readingTime: number
       coverImage: Image.Document | null
       content: Array<Article.ContentBlock>
+      blocks?: Post.DynamicBlock[]
     }
 
     export type Document = {
@@ -229,10 +264,12 @@ export namespace LPE {
       uuid: string
       slug: string
       title: string
+      subtitle?: string
       tags: Tag.Document[]
       description: string
       authors: Author.Document[]
       publishedAt: string
+      createdAt?: string | null
       modifiedAt: string
       episodeNumber: number
       showId?: string
@@ -256,6 +293,7 @@ export namespace LPE {
       channels: Channel[]
       credits: Post.TextBlock[]
       content: Post.ContentBlock<Metadata>[]
+      blocks?: Post.DynamicBlock[]
       transcription: TranscriptionItem[]
     }
 

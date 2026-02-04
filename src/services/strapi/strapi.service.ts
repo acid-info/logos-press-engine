@@ -4,7 +4,6 @@ import logger from '../../lib/logger'
 import {
   Enum_Post_Type,
   GetPodcastShowsDocument,
-  GetPostsDocument,
   GetRelatedPostsDocument,
   GetStaticPagesDocument,
   PodcastShowFiltersInput,
@@ -15,7 +14,7 @@ import { ApiResponse } from '../../types/data.types'
 import { LPE } from '../../types/lpe.types'
 import { isVercel } from '../../utils/env.utils'
 import { settle } from '../../utils/promise.utils'
-import { SEARCH_POSTS_QUERY } from './strapi.operators'
+import { GET_POSTS_QUERY, SEARCH_POSTS_QUERY } from './strapi.operators'
 import { strapiTransformers } from './transformers/strapi.transformers'
 
 export class StrapiService {
@@ -219,7 +218,7 @@ export class StrapiService {
           posts: { data, meta },
         },
       } = await this.client.query({
-        query: GetPostsDocument,
+        query: GET_POSTS_QUERY,
         variables: {
           pagination: this._safePagination(skip, limit),
           filters: {

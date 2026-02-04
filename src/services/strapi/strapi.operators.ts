@@ -123,6 +123,27 @@ export const GET_POSTS_QUERY = gql`
             channel
             link
           }
+          blocks @include(if: $withContent) {
+            __typename
+            ... on ComponentBlocksRichText {
+              id
+              body
+            }
+            ... on ComponentBlocksCodeBlock {
+              id
+              language
+              code
+            }
+            ... on ComponentBlocksInteractiveEmbed {
+              id
+              title
+              full_html
+              html
+              css
+              js
+              height
+            }
+          }
         }
       }
     }
