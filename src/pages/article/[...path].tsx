@@ -47,7 +47,7 @@ export async function getStaticPaths() {
   return {
     paths: errors
       ? []
-      : data.data.map((post) => ({ params: { path: [post.slug] } })),
+      : (data?.data || []).map((post) => ({ params: { path: [post.slug] } })),
     fallback: true,
   }
 }
@@ -104,8 +104,8 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
     props: {
       data: {
         data: article,
-        relatedArticles: relatedArticles,
-        articlesFromSameAuthors: articlesFromSameAuthors.data,
+        relatedArticles: relatedArticles || [],
+        articlesFromSameAuthors: articlesFromSameAuthors?.data || [],
       },
       error: JSON.stringify(errors),
     },
