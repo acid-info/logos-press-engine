@@ -89,6 +89,14 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
 
   const article = res.data[0]
 
+  if (article.type !== LPE.PostTypes.Article) {
+    return {
+      notFound: true,
+      props: { why: 'not article' },
+      revalidate: 10,
+    }
+  }
+
   if (article.htmlFile?.url) {
     const rawUrl = article.htmlFile.url
     const isAbsolute = /^https?:\/\//i.test(rawUrl)
