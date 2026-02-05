@@ -48,18 +48,22 @@ export default function TableOfContents({ contents, ...props }: Props) {
         Contents
       </Title>
       <Contents height={height}>
-        {contents?.map((content, index) => (
-          <TocItem
-            href={`${index === 0 ? '#' : content.href}`}
-            key={index}
-            active={tocId ? content.href.substring(1) === tocId : index === 0}
-            className={`level-${content.level}`}
-          >
-            <Typography variant="label2" genericFontFamily="sans-serif">
-              {content.title}
-            </Typography>
-          </TocItem>
-        ))}
+        {contents?.map((content, index) => {
+          const isActive = tocId
+            ? content.href.substring(1) === tocId
+            : index === 0
+          return (
+            <TocItem
+              href={`${index === 0 ? '#' : content.href}`}
+              key={index}
+              className={`level-${content.level} ${isActive ? 'active' : ''}`}
+            >
+              <Typography variant="label2" genericFontFamily="sans-serif">
+                {content.title}
+              </Typography>
+            </TocItem>
+          )
+        })}
       </Contents>
     </Container>
   )
@@ -104,15 +108,16 @@ const Contents = styled.div<{ height: number }>`
   }
 `
 
-const TocItem = styled(Link)<{ active: boolean }>`
+const TocItem = styled(Link)`
   display: flex;
   padding: 4px 16px 4px 16px;
   text-decoration: none;
-  border-left: ${(p) =>
-    p.active
-      ? '1px solid rgb(var(--lsd-border-primary))'
-      : '1px solid transparent'};
+  border-left: 1px solid transparent;
   cursor: pointer;
+
+  &.active {
+    border-left: 1px solid rgb(var(--lsd-border-primary));
+  }
 
   label {
     cursor: pointer;
