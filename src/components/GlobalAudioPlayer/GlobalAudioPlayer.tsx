@@ -126,10 +126,10 @@ export default function GlobalAudioPlayer() {
             title: epState.value.title,
             podcast: epState.value.podcast,
           },
+          playerType: PlayerType.GLOBAL,
         }}
       />
       <ReactPlayer
-        forceAudio
         ref={globalPlayerRef}
         style={{ display: 'none' }}
         url={state.value.url as string}
@@ -153,7 +153,6 @@ export default function GlobalAudioPlayer() {
         // onBuffer={() => console.log('onBuffer')}
         // onSeek={(e) => console.log('onSeek', e)}
         // onError={(e) => console.log('onError', e)}
-        playerType={PlayerType.GLOBAL}
       />
       <RightMenu>
         {!!epState.value.coverImage && (
@@ -207,7 +206,7 @@ const Container = styled.div<{ visible: boolean }>`
   box-sizing: border-box;
   visibility: ${({ visible }) => (visible ? 'visible' : 'hidden')};
 
-  > :first-child {
+  > :first-of-type {
     width: 60%;
 
     ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'down')} {
@@ -219,7 +218,7 @@ const Container = styled.div<{ visible: boolean }>`
   ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'down')} {
     padding: 10px 16px;
 
-    > :first-child {
+    > :first-of-type {
       width: 100%;
     }
   }
@@ -249,7 +248,7 @@ const EpisodeData = styled(Link)`
   flex-direction: column;
   text-decoration: none;
 
-  > :first-child {
+  > :first-of-type {
     width: 85%;
     text-overflow: ellipsis;
     overflow: hidden;
