@@ -60,7 +60,7 @@ export default function ShareButton({ url }: Props) {
         onClick={handleClick}
         icon={<ShareIcon color="primary" width={14} height={14} />}
         iconDirection="left"
-        showOptions={showOptions}
+        className={showOptions ? 'show-options' : ''}
       >
         <Typography variant="body3">Share</Typography>
       </CustomTag>
@@ -98,14 +98,15 @@ const Container = styled.div`
   position: relative;
 `
 
-const CustomTag = styled(Tag)<{ showOptions: boolean }>`
+const CustomTag = styled(Tag)`
   gap: 0 8px;
   padding: 4px 8px 4px 6px;
   max-height: ${HEIGHT}px;
-  border-bottom: ${(props) =>
-    props.showOptions
-      ? '1px solid transparent'
-      : '1px solid rgb(var(--lsd-border-primary))'};
+  border-bottom: 1px solid rgb(var(--lsd-border-primary));
+
+  &.show-options {
+    border-bottom: 1px solid transparent;
+  }
 `
 
 const Options = styled.div`
