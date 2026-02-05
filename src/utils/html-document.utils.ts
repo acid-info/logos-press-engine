@@ -24,7 +24,7 @@ const getAttr = (el: any, name: string): string | undefined => {
 }
 
 export const parseHtmlDocument = (html: string): LPE.Post.HtmlDocument => {
-  const root = parse(html, { comment: true, script: true, style: true })
+  const root = parse(html, { comment: true })
   const head = root.querySelector('head')
   const body = root.querySelector('body')
 
