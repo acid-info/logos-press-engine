@@ -68,7 +68,7 @@ export const PostSearchContainer: React.FC<
 
   return (
     <>
-      <SearchBoxContainer active={active} height={height}>
+      <SearchBoxContainer active={active} $height={height}>
         <SearchBox
           query={query}
           onClearQuery={() => setQuery('')}
@@ -100,9 +100,9 @@ export const PostSearchContainer: React.FC<
   )
 }
 
-const SearchBoxContainer = styled.div<{ active?: boolean; height?: number }>`
+const SearchBoxContainer = styled.div<{ active?: boolean; $height?: number }>`
   position: absolute;
-  height: ${(props) => props.height || 0}px;
+  height: ${(props) => props.$height || 0}px;
   min-height: 100vh;
   width: calc(100% - 2 * var(--main-content-padding));
   max-width: ${uiConfigs.maxContainerWidth}px;
