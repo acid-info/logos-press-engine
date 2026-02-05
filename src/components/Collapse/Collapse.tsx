@@ -7,13 +7,11 @@ import styled from '@emotion/styled'
 import clsx from 'clsx'
 import { useState } from 'react'
 
-type Props = {
+type Props = React.HTMLAttributes<HTMLDivElement> & {
   label: string
   children: React.ReactNode
-  className?: string
   onClick?: () => void
   initOpen?: boolean
-  style?: React.CSSProperties
 }
 
 export default function Collapse({

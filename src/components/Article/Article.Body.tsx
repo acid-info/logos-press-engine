@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import { LPE } from '../../types/lpe.types'
 import ArticleBlocks from './Article.Blocks'
 import ArticleDynamicBlocks from './Article.DynamicBlocks'
+import ArticleHtmlDocument from './Article.HtmlDocument'
 import ArticleFooter from './Footer/Article.Footer'
 import ArticleHeader from './Header/Article.Header'
 
@@ -17,25 +18,37 @@ export default function ArticleBody({
   footer = true,
 }: Props) {
   return (
-    <ArticleContainer>
-      {header && <ArticleHeader {...data.data} />}
-      {data.data.blocks && data.data.blocks.length > 0 ? (
-        <ArticleDynamicBlocks blocks={data.data.blocks} />
+    <ArticleContainer hasHtmlDocument={!!data.data.htmlDocument}>
+      {data.data.htmlDocument ? (
+        <>
+          {header && <ArticleHeader {...data.data} />}
+          <FullWidthContainer>
+            <ArticleHtmlDocument doc={data.data.htmlDocument} />
+          </FullWidthContainer>
+        </>
       ) : (
-        <ArticleBlocks data={data.data} />
+        <>
+          {header && <ArticleHeader {...data.data} />}
+          {data.data.blocks && data.data.blocks.length > 0 ? (
+            <ArticleDynamicBlocks blocks={data.data.blocks} />
+          ) : (
+            <ArticleBlocks data={data.data} />
+          )}
+          {footer && <ArticleFooter data={data} />}
+        </>
       )}
-      {footer && <ArticleFooter data={data} />}
     </ArticleContainer>
   )
 }
 
-const ArticleContainer = styled.article`
+const ArticleContainer = styled.article<{ hasHtmlDocument: boolean }>`
   display: flex;
   position: relative;
   flex-direction: column;
   gap: 16px;
   max-width: 700px;
   padding-bottom: 80px;
+  margin: ${(props) => (props.hasHtmlDocument ? '0 auto' : '0')};
 
   h2,
   h3 {
@@ -69,5 +82,18 @@ const ArticleContainer = styled.article`
 
   h2 + span + h3 {
     margin-top: unset;
+  }
+`
+
+const FullWidthContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+
+  > * {
+    width: 100%;
   }
 `

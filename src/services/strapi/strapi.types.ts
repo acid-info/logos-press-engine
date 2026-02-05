@@ -32,6 +32,16 @@ export type StrapiPostBlock =
 
 export type StrapiPostData = BaseStrapiPostData & {
   attributes: BaseStrapiPostAttributes & {
+    html_file?: {
+      data?: {
+        attributes?: {
+          url?: string | null
+          name?: string | null
+          mime?: string | null
+          size?: number | null
+        }
+      } | null
+    } | null
     blocks?: StrapiPostBlock[] | null
   }
 }

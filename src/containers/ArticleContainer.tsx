@@ -36,25 +36,35 @@ const ArticleContainer = (props: Props) => {
                 articleData: data.data,
               }}
             >
-              <ArticleGrid
-                searchMode={search.active}
-                displaySearchResults={displaySearchResults}
-                isSearching={search.fetching}
-              >
-                <ArticleTocContainer className={'w-3'}>
-                  {!displaySearchResults && (
-                    <TableOfContents contents={data.data.toc ?? []} />
-                  )}
-                </ArticleTocContainer>
-                <Gap className={'w-1'} />
-                <ArticleBodyContainer className={'w-8'}>
+              {data.data.htmlDocument ? (
+                <FullWidthBody>
                   <ArticleBody
                     data={data}
                     header={!displaySearchResults}
                     footer={!displaySearchResults}
                   />
-                </ArticleBodyContainer>
-              </ArticleGrid>
+                </FullWidthBody>
+              ) : (
+                <ArticleGrid
+                  searchMode={search.active}
+                  displaySearchResults={displaySearchResults}
+                  isSearching={search.fetching}
+                >
+                  <ArticleTocContainer className={'w-3'}>
+                    {!displaySearchResults && (
+                      <TableOfContents contents={data.data.toc ?? []} />
+                    )}
+                  </ArticleTocContainer>
+                  <Gap className={'w-1'} />
+                  <ArticleBodyContainer className={'w-8'}>
+                    <ArticleBody
+                      data={data}
+                      header={!displaySearchResults}
+                      footer={!displaySearchResults}
+                    />
+                  </ArticleBodyContainer>
+                </ArticleGrid>
+              )}
             </ArticleContainerContext.Provider>
           )
         }}
@@ -103,6 +113,14 @@ const Gap = styled(GridItem)`
   ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'down')} {
     display: none;
   }
+`
+
+const FullWidthBody = styled.div`
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding: 0;
 `
 
 export default ArticleContainer
