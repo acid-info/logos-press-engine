@@ -4,7 +4,11 @@ import { LPE } from '../../../types/lpe.types'
 import { calcReadingTime } from '../../../utils/string.utils'
 import postSearchService from '../../post-search.service'
 import { StrapiPostBlock, StrapiPostData } from '../strapi.types'
-import { transformStrapiHtmlContent, transformStrapiImageData } from './utils'
+import {
+  transformStrapiHtmlContent,
+  transformStrapiImageData,
+  transformStrapiImageUrl,
+} from './utils'
 
 const transformDynamicBlocks = (
   blocks: StrapiPostBlock[] | null | undefined,
@@ -81,6 +85,18 @@ export const postTransformer: Transformer<
     const isHighlighted = attributes.featured
     const isDraft = !attributes.publishedAt
     const discourseTopicId = attributes.discourse_topic_id
+    const htmlFileAttributes = attributes.html_file?.data?.attributes
+    const htmlFile = htmlFileAttributes?.url
+      ? {
+          url: transformStrapiImageUrl(htmlFileAttributes.url),
+          name: htmlFileAttributes.name || undefined,
+          mime: htmlFileAttributes.mime || undefined,
+          size:
+            typeof htmlFileAttributes.size === 'number'
+              ? htmlFileAttributes.size
+              : undefined,
+        }
+      : undefined
     const coverImage: LPE.Post.Document['coverImage'] =
       await transformStrapiImageData(attributes.cover_image)
     const tags: LPE.Tag.Document[] = attributes.tags.data.map((tag) => ({
@@ -150,6 +166,7 @@ export const postTransformer: Transformer<
 
     const dynamicBlocksField =
       dynamicBlocks.length > 0 ? { blocks: dynamicBlocks } : {}
+    const htmlFileField = htmlFile ? { htmlFile } : {}
 
     if (type === 'Article') {
       return {
@@ -165,6 +182,7 @@ export const postTransformer: Transformer<
         tags,
         content,
         ...dynamicBlocksField,
+        ...htmlFileField,
         summary,
         readingTime: calcReadingTime(text),
         toc,
@@ -193,6 +211,7 @@ export const postTransformer: Transformer<
         authors,
         content,
         ...dynamicBlocksField,
+        ...htmlFileField,
         episodeNumber: attributes.episode_number,
         summary: attributes.summary,
         showId: attributes.podcast_show.data?.id || null,

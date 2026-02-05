@@ -119,6 +119,16 @@ export const GET_POSTS_QUERY = gql`
           ...PostCommonAttributes
           body @include(if: $withContent)
           credits @include(if: $withContent)
+          html_file @include(if: $withContent) {
+            data {
+              attributes {
+                url
+                name
+                mime
+                size
+              }
+            }
+          }
           channel @include(if: $withContent) {
             channel
             link

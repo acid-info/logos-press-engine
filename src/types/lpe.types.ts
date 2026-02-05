@@ -144,6 +144,48 @@ export namespace LPE {
       | DynamicCodeBlock
       | DynamicInteractiveEmbedBlock
 
+    export type HtmlFile = {
+      url: string
+      name?: string
+      mime?: string
+      size?: number
+    }
+
+    export type HtmlMeta = {
+      name?: string
+      content?: string
+      property?: string
+      charset?: string
+      httpEquiv?: string
+    }
+
+    export type HtmlLink = {
+      rel?: string
+      href?: string
+      as?: string
+      type?: string
+      crossOrigin?: string
+    }
+
+    export type HtmlScript = {
+      src?: string
+      content?: string
+      type?: string
+      async?: boolean
+      defer?: boolean
+      noModule?: boolean
+    }
+
+    export type HtmlDocument = {
+      title?: string
+      metas: HtmlMeta[]
+      links: HtmlLink[]
+      styles: string[]
+      scripts: HtmlScript[]
+      bodyHtml: string
+      bodyClass?: string
+    }
+
     export type Document = LPE.Article.Data | LPE.Podcast.Document
   }
 
@@ -210,6 +252,8 @@ export namespace LPE {
       coverImage: Image.Document | null
       content: Array<Article.ContentBlock>
       blocks?: Post.DynamicBlock[]
+      htmlFile?: Post.HtmlFile
+      htmlDocument?: Post.HtmlDocument
     }
 
     export type Document = {

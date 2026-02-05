@@ -1,5 +1,6 @@
 import { SEO } from '@/components/SEO'
 import ArticleContainer from '@/containers/ArticleContainer'
+import { parseHtmlDocument } from '@/utils/html-document.utils'
 import { GetStaticPropsContext } from 'next'
 import { strapiApi } from '../../services/strapi'
 import { LPE } from '../../types/lpe.types'
@@ -87,6 +88,30 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   }
 
   const article = res.data[0]
+
+  if (article.htmlFile?.url) {
+    const rawUrl = article.htmlFile.url
+    const isAbsolute = /^https?:\/\//i.test(rawUrl)
+    const base =
+      process.env.NEXT_PUBLIC_ASSETS_BASE_URL ||
+      process.env.STRAPI_API_URL ||
+      ''
+    const resolvedUrl = isAbsolute
+      ? rawUrl
+      : `${base.replace(/\/$/, '')}${
+          rawUrl.startsWith('/') ? '' : '/'
+        }${rawUrl}`
+
+    try {
+      const response = await fetch(resolvedUrl)
+      if (response.ok) {
+        const html = await response.text()
+        article.htmlDocument = parseHtmlDocument(html)
+      }
+    } catch (error) {
+      // swallow fetch errors to avoid build failure
+    }
+  }
 
   const { data: relatedArticles } = await strapiApi.getRelatedPosts({
     id: article.id,
