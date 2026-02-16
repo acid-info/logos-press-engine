@@ -47,7 +47,6 @@ const ArticleContainer = styled.article<{ hasHtmlDocument: boolean }>`
   flex-direction: column;
   gap: 16px;
   max-width: 700px;
-  padding-bottom: 80px;
   margin: ${(props) => (props.hasHtmlDocument ? '0 auto' : '0')};
 
   h2,
