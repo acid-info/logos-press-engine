@@ -28,8 +28,6 @@ const ArticleHeader = ({
   const { setTocId } = useArticleContainerContext()
   const headingElementsRef = useIntersectionObserver(setTocId)
 
-  console.log('ArticleHeader summary', summary.length)
-
   return (
     <ArticleHeaderContainer>
       <ArticleStats
