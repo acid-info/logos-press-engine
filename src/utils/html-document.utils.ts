@@ -19,6 +19,7 @@ const cleanObject = (value: any): any => {
 }
 
 const getAttr = (el: any, name: string): string | undefined => {
+  if (!el) return undefined
   const value = el.getAttribute?.(name)
   return value || undefined
 }
@@ -27,11 +28,15 @@ export const parseHtmlDocument = (html: string): LPE.Post.HtmlDocument => {
   const root = parse(html, { comment: true })
   const head = root.querySelector('head')
   const body = root.querySelector('body')
+  const headOrRoot = head || root
 
-  const title = head?.querySelector('title')?.text || undefined
+  const title =
+    head?.querySelector('title')?.text ||
+    (!head ? root.querySelector('title')?.text : undefined) ||
+    undefined
 
   const metas =
-    head?.querySelectorAll('meta').map((meta) => ({
+    headOrRoot.querySelectorAll('meta').map((meta) => ({
       name: getAttr(meta, 'name'),
       content: getAttr(meta, 'content'),
       property: getAttr(meta, 'property'),
@@ -40,7 +45,7 @@ export const parseHtmlDocument = (html: string): LPE.Post.HtmlDocument => {
     })) || []
 
   const links =
-    head?.querySelectorAll('link').map((link) => ({
+    headOrRoot.querySelectorAll('link').map((link) => ({
       rel: getAttr(link, 'rel'),
       href: getAttr(link, 'href'),
       as: getAttr(link, 'as'),
@@ -48,7 +53,8 @@ export const parseHtmlDocument = (html: string): LPE.Post.HtmlDocument => {
       crossOrigin: getAttr(link, 'crossorigin'),
     })) || []
 
-  const styles = head?.querySelectorAll('style').map((s) => s.innerHTML) || []
+  // Accept both full HTML documents and fragments that place style tags at top-level.
+  const styles = root.querySelectorAll('style').map((s) => s.innerHTML) || []
 
   const scripts = root.querySelectorAll('script').map((script) => ({
     src: getAttr(script, 'src'),
@@ -59,7 +65,17 @@ export const parseHtmlDocument = (html: string): LPE.Post.HtmlDocument => {
     noModule: script.hasAttribute?.('nomodule') || undefined,
   }))
 
-  body?.querySelectorAll('script').forEach((script) => script.remove())
+  if (body) {
+    body.querySelectorAll('script').forEach((script) => script.remove())
+    body.querySelectorAll('style').forEach((style) => style.remove())
+  } else {
+    root.querySelectorAll('script').forEach((script) => script.remove())
+    root.querySelectorAll('style').forEach((style) => style.remove())
+    root.querySelectorAll('meta').forEach((meta) => meta.remove())
+    root.querySelectorAll('link').forEach((link) => link.remove())
+    root.querySelectorAll('title').forEach((titleTag) => titleTag.remove())
+    root.querySelectorAll('head').forEach((headTag) => headTag.remove())
+  }
 
   const bodyHtml = body ? body.innerHTML : root.innerHTML
   const bodyClass = getAttr(body, 'class')
