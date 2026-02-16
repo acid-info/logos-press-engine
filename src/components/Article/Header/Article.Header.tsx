@@ -28,6 +28,8 @@ const ArticleHeader = ({
   const { setTocId } = useArticleContainerContext()
   const headingElementsRef = useIntersectionObserver(setTocId)
 
+  console.log('ArticleHeader summary', summary.length)
+
   return (
     <ArticleHeaderContainer>
       <ArticleStats
@@ -67,7 +69,7 @@ const ArticleHeader = ({
           order={ArticleBlocksOrders.cover}
         />
       )}
-      {summary && summary.length > 0 && (
+      {summary && summary.length > 1 && (
         <ArticleSummary summary={summary} showLabel={false} />
       )}
     </ArticleHeaderContainer>
