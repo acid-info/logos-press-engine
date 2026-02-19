@@ -28,7 +28,27 @@ function injectCspMeta(html: string) {
   if (/<head[^>]*>/i.test(html)) {
     return html.replace(/<head[^>]*>/i, (m) => `${m}\n    ${CSP_META}`)
   }
-  return html
+  if (/<html\b[^>]*>/i.test(html)) {
+    return html.replace(
+      /<html\b[^>]*>/i,
+      (m) => `${m}\n  <head>\n    ${CSP_META}\n  </head>`,
+    )
+  }
+  if (/<body\b[^>]*>/i.test(html)) {
+    return html.replace(
+      /<body\b[^>]*>/i,
+      (m) => `  <head>\n    ${CSP_META}\n  </head>\n${m}`,
+    )
+  }
+  return `<!doctype html>
+<html>
+  <head>
+    ${CSP_META}
+  </head>
+  <body>
+    ${html}
+  </body>
+</html>`
 }
 
 function buildSrcDoc(
@@ -55,24 +75,86 @@ function buildSrcDoc(
     <script>
       (function () {
         var frameId = ${JSON.stringify(frameId)};
+        var disposed = false;
+        var lastHeight = -1;
+        var scheduled = false;
+        var rafId = 0;
+        var timeoutId = 0;
+        var resizeObserver = null;
+
         function postHeight() {
+          if (disposed) return;
           var h = Math.max(
             document.documentElement.scrollHeight || 0,
             document.body ? document.body.scrollHeight : 0
           );
+          if (h === lastHeight) return;
+          lastHeight = h;
           try {
             parent.postMessage({ type: 'lpe-embed-height', frameId: frameId, height: h }, '*');
           } catch (e) {}
         }
-        if (document.readyState === 'complete') {
+
+        function runScheduledPost() {
+          scheduled = false;
+          rafId = 0;
+          timeoutId = 0;
           postHeight();
-        } else {
-          window.addEventListener('load', postHeight);
         }
-        window.addEventListener('resize', postHeight);
-        var observer = new MutationObserver(function () { postHeight(); });
+
+        function schedulePost() {
+          if (disposed || scheduled) return;
+          scheduled = true;
+          if (typeof window.requestAnimationFrame === 'function') {
+            rafId = window.requestAnimationFrame(runScheduledPost);
+            return;
+          }
+          timeoutId = window.setTimeout(runScheduledPost, 16);
+        }
+
+        function onLoad() {
+          schedulePost();
+        }
+
+        function onResize() {
+          schedulePost();
+        }
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+          schedulePost();
+        } else {
+          window.addEventListener('load', onLoad);
+        }
+
+        window.addEventListener('resize', onResize);
+
+        var observer = new MutationObserver(function () { schedulePost(); });
         observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
-        setInterval(postHeight, 1000);
+
+        if (typeof ResizeObserver !== 'undefined') {
+          resizeObserver = new ResizeObserver(function () {
+            schedulePost();
+          });
+          resizeObserver.observe(document.documentElement);
+          if (document.body) resizeObserver.observe(document.body);
+        }
+
+        if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function') {
+          document.fonts.ready.then(function () { schedulePost(); }).catch(function () {});
+        }
+
+        window.setTimeout(schedulePost, 120);
+        window.setTimeout(schedulePost, 600);
+
+        window.addEventListener('unload', function () {
+          disposed = true;
+          observer.disconnect();
+          if (resizeObserver) resizeObserver.disconnect();
+          window.removeEventListener('resize', onResize);
+          window.removeEventListener('load', onLoad);
+          if (rafId) window.cancelAnimationFrame(rafId);
+          if (timeoutId) window.clearTimeout(timeoutId);
+        });
       })();
     </script>`
     : ''
@@ -84,22 +166,22 @@ function buildSrcDoc(
     )
     return looksLikeDocument
       ? injectCspMeta(
-        fullHtml
-          .replace(
-            /<head[^>]*>/i,
-            (m) => `${m}
+          fullHtml
+            .replace(
+              /<head[^>]*>/i,
+              (m) => `${m}
     <style>
       html, body { overflow: hidden; }
     </style>`,
-          )
-          .replace(
-            /<\/body>/i,
-            `
+            )
+            .replace(
+              /<\/body>/i,
+              `
 ${linkScript}
 ${heightScript}
 </body>`,
-          ),
-      )
+            ),
+        )
       : `<!doctype html>
 <html>
   <head>
@@ -196,7 +278,7 @@ const InteractiveEmbedFrame = ({
       ref={iframeRef}
       title={block.title || 'Interactive content'}
       height={height}
-      sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+      sandbox="allow-scripts allow-popups"
       loading="lazy"
       scrolling="no"
       srcDoc={buildSrcDoc(block, autoHeight, frameId)}

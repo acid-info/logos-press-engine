@@ -71,9 +71,11 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   const { showSlug } = params!
 
   if (!showSlug) {
+    logger.warn(
+      'Podcast show page requested without showSlug; returning notFound',
+    )
     return {
       notFound: true,
-      props: { why: 'no slug' },
       revalidate: 10,
     }
   }
@@ -83,9 +85,12 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   })
 
   if (!shows || shows.length === 0) {
+    logger.warn(
+      { showSlug },
+      'Podcast show not found for slug; returning notFound',
+    )
     return {
       notFound: true,
-      props: { why: 'no show' },
       revalidate: 10,
     }
   }

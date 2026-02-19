@@ -58,16 +58,20 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   const [slug, idProp, id] = (Array.isArray(path) && path) || []
 
   if (idProp && (idProp !== 'id' || !id)) {
+    console.warn('[ArticlePage] Invalid route params for article page', {
+      path,
+      idProp,
+      id,
+    })
     return {
       notFound: true,
-      props: {},
     }
   }
 
   if (!slug) {
+    console.warn('[ArticlePage] Missing article slug; returning notFound')
     return {
       notFound: true,
-      props: { why: 'no slug' },
     }
   }
 
@@ -80,9 +84,15 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   })
 
   if (!res?.data || res.data.length === 0) {
+    console.warn(
+      '[ArticlePage] No article found for slug; returning notFound',
+      {
+        slug,
+        id,
+      },
+    )
     return {
       notFound: true,
-      props: { why: 'no article' },
       revalidate: 10,
     }
   }
@@ -90,9 +100,16 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   const article = res.data[0]
 
   if (article.type !== LPE.PostTypes.Article) {
+    console.warn(
+      '[ArticlePage] Resolved post is not an article; returning notFound',
+      {
+        slug,
+        id,
+        postType: article.type,
+      },
+    )
     return {
       notFound: true,
-      props: { why: 'not article' },
       revalidate: 10,
     }
   }
@@ -100,24 +117,50 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   if (article.htmlFile?.url) {
     const rawUrl = article.htmlFile.url
     const isAbsolute = /^https?:\/\//i.test(rawUrl)
-    const base =
-      process.env.NEXT_PUBLIC_ASSETS_BASE_URL ||
-      process.env.STRAPI_API_URL ||
-      ''
-    const resolvedUrl = isAbsolute
-      ? rawUrl
-      : `${base.replace(/\/$/, '')}${
-          rawUrl.startsWith('/') ? '' : '/'
-        }${rawUrl}`
+    const configuredBase =
+      process.env.NEXT_PUBLIC_ASSETS_BASE_URL || process.env.STRAPI_API_URL
+    let resolvedUrl: string | null = null
 
-    try {
-      const response = await fetch(resolvedUrl)
-      if (response.ok) {
-        const html = await response.text()
-        article.htmlDocument = parseHtmlDocument(html)
+    if (isAbsolute) {
+      resolvedUrl = rawUrl
+    } else if (configuredBase) {
+      try {
+        const baseOrigin = new URL(configuredBase).origin
+        resolvedUrl = new URL(rawUrl, baseOrigin).toString()
+      } catch (error) {
+        console.warn(
+          '[ArticlePage] Failed to resolve htmlFile.url due to invalid base URL configuration',
+          { rawUrl, configuredBase, error },
+        )
       }
-    } catch (error) {
-      // swallow fetch errors to avoid build failure
+    } else {
+      console.warn(
+        '[ArticlePage] Failed to resolve relative htmlFile.url: NEXT_PUBLIC_ASSETS_BASE_URL or STRAPI_API_URL must be set',
+        { rawUrl },
+      )
+    }
+
+    if (resolvedUrl) {
+      try {
+        const response = await fetch(resolvedUrl)
+        if (response.ok) {
+          const html = await response.text()
+          article.htmlDocument = parseHtmlDocument(html)
+        } else {
+          console.warn('[ArticlePage] Failed to fetch html document', {
+            rawUrl,
+            resolvedUrl,
+            status: response.status,
+            statusText: response.statusText,
+          })
+        }
+      } catch (error) {
+        console.warn('[ArticlePage] Failed to fetch html document', {
+          rawUrl,
+          resolvedUrl,
+          error,
+        })
+      }
     }
   }
 
