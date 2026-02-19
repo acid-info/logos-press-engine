@@ -16,7 +16,7 @@ const Page: CustomNextPage<PageProps> = (props) => {
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const path = ctx.query.path
-
+  console.log('Preview path:', path, Array.isArray(path), path?.length)
   if (!path || !Array.isArray(path) || path.length !== 2)
     return {
       notFound: true,

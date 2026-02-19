@@ -9,6 +9,8 @@ import ArticleRelatedArticles from './Article.RelatedArticles'
 
 const ArticleFooter = ({ data: post }: { data: LPE.Article.Document }) => {
   const { data, relatedArticles, articlesFromSameAuthors } = post
+  const hasRelatedArticles = relatedArticles.length > 0
+  const hasSameAuthorArticles = articlesFromSameAuthors.length > 0
 
   const footnotes = useMemo(() => {
     return data.content.flatMap((b) => b.footnotes || [])
@@ -18,8 +20,14 @@ const ArticleFooter = ({ data: post }: { data: LPE.Article.Document }) => {
     <ArticleFooterContainer>
       <ArticleFootnotes footnotes={footnotes} />
       <ArticleComments article={data} />
-      <ArticleRelatedArticles data={relatedArticles} />
-      <FromSameAuthorsArticles data={articlesFromSameAuthors} />
+      <ArticleRelatedArticles
+        data={relatedArticles}
+        keepBorderTop={hasRelatedArticles}
+      />
+      <FromSameAuthorsArticles
+        data={articlesFromSameAuthors}
+        keepBorderTop={!hasRelatedArticles && hasSameAuthorArticles}
+      />
     </ArticleFooterContainer>
   )
 }
