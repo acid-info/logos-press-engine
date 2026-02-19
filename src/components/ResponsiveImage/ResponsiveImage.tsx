@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import Image, { ImageProps } from 'next/image'
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { LPE } from '../../types/lpe.types'
 
 export type ResponsiveImageProps = {
@@ -26,6 +26,29 @@ export const ResponsiveImage = ({
   loadDelay = 0,
 }: React.PropsWithChildren<Props>) => {
   const [loaded, setLoaded] = useState(false)
+  const placeholderSrc = useMemo(() => {
+    const rawPlaceholder = data.placeholder?.trim()
+    if (!rawPlaceholder) return ''
+
+    const localPlaceholder = rawPlaceholder.replace('/public/', '/')
+    if (!localPlaceholder.startsWith('/uploads/')) return localPlaceholder
+
+    try {
+      return new URL(localPlaceholder, data.url).toString()
+    } catch {
+      return ''
+    }
+  }, [data.placeholder, data.url])
+  const [showPlaceholder, setShowPlaceholder] = useState(
+    placeholderSrc.length > 0,
+  )
+
+  useEffect(() => {
+    setShowPlaceholder(placeholderSrc.length > 0)
+  }, [placeholderSrc])
+
+  const shouldPriority = Boolean(nextImageProps?.priority)
+  const loading = nextImageProps?.loading || (shouldPriority ? 'eager' : 'lazy')
 
   const imageProps: ImageProps = {
     src: `${data.url}`,
@@ -38,7 +61,7 @@ export const ResponsiveImage = ({
         setLoaded(true)
       }, loadDelay)
     },
-    loading: 'lazy',
+    loading,
     ...(nextImageProps || {}),
     style: {
       width: '100%',
@@ -54,11 +77,14 @@ export const ResponsiveImage = ({
       $imageHeight={data.height}
     >
       <div className="comment">
-        <img
-          src={data.placeholder?.replace('/public/', '/')}
-          alt={data.alt}
-          title={data.alt}
-        />
+        {showPlaceholder && (
+          <img
+            src={placeholderSrc}
+            alt={data.alt}
+            title={data.alt}
+            onError={() => setShowPlaceholder(false)}
+          />
+        )}
         {children}
       </div>
       <div className={imageProps.className}>
