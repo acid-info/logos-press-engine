@@ -116,6 +116,63 @@ function buildSrcDoc(doc: LPE.Post.HtmlDocument) {
     .join('\n    ')
   const bodyClass = doc.bodyClass ? ` class="${escapeAttr(doc.bodyClass)}"` : ''
 
+  const externalLinkScript = `<script>
+    (function () {
+      function isExternalHttpsLink(rawHref) {
+        if (!rawHref) return false;
+        try {
+          var url = new URL(rawHref, window.location.href);
+          return url.protocol === 'https:' && url.origin !== window.location.origin;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function hardenLink(anchor) {
+        anchor.setAttribute('target', '_blank');
+        var rel = anchor.getAttribute('rel') || '';
+        if (rel.indexOf('noopener') === -1) rel = (rel + ' noopener').trim();
+        if (rel.indexOf('noreferrer') === -1) rel = (rel + ' noreferrer').trim();
+        anchor.setAttribute('rel', rel);
+      }
+
+      function processLinks(root) {
+        var links = root.querySelectorAll('a[href]');
+        for (var i = 0; i < links.length; i++) {
+          var anchor = links[i];
+          var href = anchor.getAttribute('href') || '';
+          if (!isExternalHttpsLink(href)) continue;
+          hardenLink(anchor);
+        }
+      }
+
+      document.addEventListener('click', function (event) {
+        var target = event.target;
+        if (!target || !target.closest) return;
+        var anchor = target.closest('a[href]');
+        if (!anchor) return;
+        var href = anchor.getAttribute('href') || '';
+        if (!isExternalHttpsLink(href)) return;
+        hardenLink(anchor);
+        event.preventDefault();
+        try {
+          window.open(anchor.href, '_blank', 'noopener,noreferrer');
+        } catch (e) {}
+      }, true);
+
+      processLinks(document);
+
+      var observer = new MutationObserver(function () {
+        processLinks(document);
+      });
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+
+      window.addEventListener('unload', function () {
+        observer.disconnect();
+      });
+    })();
+  </script>`
+
   const autoHeightScript = `<script>
     (function () {
       var disposed = false;
@@ -215,6 +272,7 @@ function buildSrcDoc(doc: LPE.Post.HtmlDocument) {
   </head>
   <body${bodyClass}>
     ${doc.bodyHtml}
+    ${externalLinkScript}
     ${scripts}
     ${autoHeightScript}
   </body>
