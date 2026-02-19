@@ -84,7 +84,9 @@ type CustomLinkProps = {
   applySizeStyles?: boolean
 }
 
-const CustomLink = styled(Link)<CustomLinkProps>`
+const CustomLink = styled(Link, {
+  shouldForwardProp: (prop) => prop !== 'size' && prop !== 'applySizeStyles',
+})<CustomLinkProps>`
   .show-details {
     &__container {
       display: flex;

@@ -65,6 +65,7 @@ const ArticleHeader = ({
         <ArticleImageBlockWrapper
           image={coverImage}
           order={ArticleBlocksOrders.cover}
+          nextImageProps={{ priority: true, loading: 'eager' }}
         />
       )}
       {summary && summary.trim().length > 0 && (

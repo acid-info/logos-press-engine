@@ -1,5 +1,6 @@
 import { lsdUtils } from '@/utils/lsd.utils'
 import styled from '@emotion/styled'
+import { ImageProps } from 'next/image'
 import { LPE } from '../../types/lpe.types'
 import { LightBox } from '../LightBox'
 import { ResponsiveImage } from '../ResponsiveImage/ResponsiveImage'
@@ -7,13 +8,18 @@ import { ResponsiveImage } from '../ResponsiveImage/ResponsiveImage'
 type Props = {
   image: LPE.Image.Document
   order: number
+  nextImageProps?: Partial<ImageProps>
 }
 
-export const ArticleImageBlockWrapper = ({ image, order }: Props) => {
+export const ArticleImageBlockWrapper = ({
+  image,
+  order,
+  nextImageProps,
+}: Props) => {
   return (
     <Container id={`i-${order}`}>
       <LightBox caption={image.captionHTML || ''}>
-        <ResponsiveImage data={image} />
+        <ResponsiveImage data={image} nextImageProps={nextImageProps} />
       </LightBox>
     </Container>
   )
