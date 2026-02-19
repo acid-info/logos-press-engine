@@ -67,7 +67,7 @@ const ArticleHeader = ({
           order={ArticleBlocksOrders.cover}
         />
       )}
-      {summary && summary.length > 1 && (
+      {summary && summary.trim().length > 0 && (
         <ArticleSummary summary={summary} showLabel={false} />
       )}
     </ArticleHeaderContainer>
