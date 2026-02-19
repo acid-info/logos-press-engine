@@ -32,7 +32,7 @@ const ArticleHtmlDocument = ({ doc }: Props) => {
     <SandboxedDocumentFrame
       ref={iframeRef}
       title={doc.title || 'Article HTML Document'}
-      sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
       scrolling="no"
       height={height}
       srcDoc={srcDoc}
