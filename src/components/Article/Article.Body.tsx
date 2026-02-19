@@ -48,6 +48,7 @@ const ArticleContainer = styled.article<{ hasHtmlDocument: boolean }>`
   gap: 16px;
   max-width: 700px;
   margin: ${(props) => (props.hasHtmlDocument ? '0 auto' : '0')};
+  padding-bottom: var(--global-audio-player-height, 80px);
 
   h2,
   h3 {
