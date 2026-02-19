@@ -6,6 +6,10 @@ import React, { useEffect, useState } from 'react'
 import { copyConfigs } from '../../configs/copy.configs'
 import { nope } from '../../utils/general.utils'
 
+const CustomTypography = styled(Typography)`
+  display: flex;
+`
+
 const placeholders = {
   global: copyConfigs.search.searchbarPlaceholders.global(),
   post: (
@@ -17,9 +21,9 @@ const placeholders = {
         &nbsp;
       </Typography>
       <Link href="/search">
-        <Typography variant="label1" component="span">
+        <CustomTypography variant="label1" component="span">
           global search
-        </Typography>
+        </CustomTypography>
       </Link>
     </>
   ),
