@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useIsDarkTheme } from '../../states/themeState'
 import { LPE } from '../../types/lpe.types'
 
 type Props = {
@@ -9,7 +10,11 @@ type Props = {
 const ArticleHtmlDocument = ({ doc }: Props) => {
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
   const [height, setHeight] = useState<number>(640)
-  const srcDoc = useMemo(() => buildSrcDoc(doc), [doc])
+  const isDarkTheme = useIsDarkTheme()
+  const srcDoc = useMemo(
+    () => buildSrcDoc(doc, isDarkTheme),
+    [doc, isDarkTheme],
+  )
 
   useEffect(() => {
     const handler = (event: MessageEvent) => {
@@ -101,7 +106,7 @@ function buildScriptTag(script: LPE.Post.HtmlScript) {
   return ''
 }
 
-function buildSrcDoc(doc: LPE.Post.HtmlDocument) {
+function buildSrcDoc(doc: LPE.Post.HtmlDocument, isDarkTheme: boolean) {
   const titleTag = doc.title
     ? `<title>${escapeAttr(doc.title)}</title>`
     : '<title>Article</title>'
@@ -110,6 +115,47 @@ function buildSrcDoc(doc: LPE.Post.HtmlDocument) {
   const styles = doc.styles
     .map((style) => `<style>${style}</style>`)
     .join('\n    ')
+  const darkModeReadabilityStyle = isDarkTheme
+    ? `<style>
+      :root,
+      html,
+      body,
+      body[class],
+      body :where([class*="s0-"], [style*="--s0-bg-surface"]) {
+        --s0-bg-surface: transparent !important;
+        --s0-bg: transparent !important;
+        --s0-text-dim: #aeb8d7 !important;
+        --s0-text: #d7def2 !important;
+        --s0-text-secondary: #c3cce6 !important;
+        --s0-accent-text: #e09ca8 !important;
+        --s0-accent: #ff8ea1 !important;
+      }
+      body :where(h1, h2, h3, h4, h5, h6, p, li, blockquote, figcaption) {
+        color: #a7b0cf !important;
+      }
+      body :where(strong, b) {
+        color: #c2c9e3 !important;
+      }
+      body :where(.s0-pull-quote, [class*="pull-quote"]) {
+        color: #b6bfdc !important;
+      }
+      body :where(.s0-pull-quote, [class*="pull-quote"]) :where(*, strong, b, em, i, p, span) {
+        color: inherit !important;
+      }
+      body :where(.s0-demo-header, [class*="s0-demo-header"]) {
+        color: #626d8d !important;
+      }
+      body :where(.s0-demo-header, [class*="s0-demo-header"]) :where(*, strong, b, em, i, p, span) {
+        color: inherit !important;
+      }
+      body :where(code, kbd, samp) {
+        color: #f8f8fa !important;
+      }
+      body :where(code, kbd, samp) :where(*, strong, b, em, i, span) {
+        color: inherit !important;
+      }
+    </style>`
+    : ''
   const scripts = doc.scripts
     .map((script) => buildScriptTag(script))
     .filter(Boolean)
@@ -269,6 +315,7 @@ function buildSrcDoc(doc: LPE.Post.HtmlDocument) {
       html, body { margin: 0; padding: 0; overflow-x: hidden; }
     </style>
     ${styles}
+    ${darkModeReadabilityStyle}
   </head>
   <body${bodyClass}>
     ${doc.bodyHtml}
