@@ -20,12 +20,12 @@ export default function ArticleBody({
   return (
     <ArticleContainer hasHtmlDocument={!!data.data.htmlDocument}>
       {data.data.htmlDocument ? (
-        <>
+        <HTMLDocumentContainer>
           {header && <ArticleHeader {...data.data} />}
           <FullWidthContainer>
             <ArticleHtmlDocument doc={data.data.htmlDocument} />
           </FullWidthContainer>
-        </>
+        </HTMLDocumentContainer>
       ) : (
         <>
           {header && <ArticleHeader {...data.data} />}
@@ -95,5 +95,12 @@ const FullWidthContainer = styled.div`
 
   > * {
     width: 100%;
+  }
+`
+
+const HTMLDocumentContainer = styled.div`
+  @media (max-width: 768px) {
+    padding-inline: 16px;
+    padding-top: 48px;
   }
 `
