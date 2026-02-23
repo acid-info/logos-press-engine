@@ -20,6 +20,12 @@ export const NavLinksItems = [
   { label: 'Articles', href: '/search?type=article' },
   { label: 'Podcasts', href: getPostLink('podcast') },
   { label: 'About', href: '/about' },
+  {
+    label: 'Book',
+    href: 'https://logos.co/farewell-to-westphalia',
+    target: '_blank',
+    isExternal: true,
+  },
   { label: 'Calendar', href: '/calendar', position: 'right' },
   {
     label: 'Logos',
