@@ -21,6 +21,8 @@ export class StrapiService {
   client: ApolloClient<any> = null as any
   axios: Axios = null as any
   lastUpdate = 0
+  // Stored so the interval can be cleared if the service is torn down
+  private _clearCacheInterval: ReturnType<typeof setInterval> | null = null
 
   constructor(apiUrl: string, graphqlUrl: string, apiKey: string) {
     this.axios = axios.create({
@@ -75,7 +77,8 @@ export class StrapiService {
     if (!isVercel()) {
       this.checkForUpdate()
     } else {
-      setInterval(this.clearCache.bind(this), 5000)
+      // Store the reference so it can be cleared if needed instead of leaking
+      this._clearCacheInterval = setInterval(this.clearCache.bind(this), 5000)
     }
   }
 
@@ -84,11 +87,19 @@ export class StrapiService {
   }
 
   checkForUpdate = async () => {
-    const { lastUpdate } = await getWebhookData()
+    try {
+      const { lastUpdate } = await getWebhookData()
 
-    if (this.lastUpdate < lastUpdate) {
-      await this.clearCache()
-      this.lastUpdate = lastUpdate
+      if (this.lastUpdate < lastUpdate) {
+        await this.clearCache()
+        this.lastUpdate = lastUpdate
+      }
+    } catch (e) {
+      // A transient file-read error must not break the polling chain.
+      // Previously an uncaught rejection here would stop the setTimeout below
+      // from being scheduled, permanently disabling cache invalidation until
+      // the next process restart.
+      logger.error('StrapiService: checkForUpdate failed', { error: e })
     }
 
     setTimeout(() => {

@@ -9,11 +9,22 @@ import path from 'path'
 import sharp from 'sharp'
 import logger from '../lib/logger'
 
+// Maximum number of pixelated placeholder paths kept in memory.
+// Each entry is a small string, but without a cap the Map grows for every
+// unique image filename encountered across all getStaticProps revalidations
+// and is never evicted for the lifetime of the server process.
+const MAX_PLACEHOLDER_CACHE_SIZE = 500
+
 export class PlaceholderService {
   cache = new Map<string, string>()
   constructor() {}
 
   add(key: string, value: string) {
+    // Evict the oldest entry (insertion order) when the cache is full
+    if (this.cache.size >= MAX_PLACEHOLDER_CACHE_SIZE) {
+      const firstKey = this.cache.keys().next().value
+      if (firstKey !== undefined) this.cache.delete(firstKey)
+    }
     this.cache.set(key, value)
   }
 
