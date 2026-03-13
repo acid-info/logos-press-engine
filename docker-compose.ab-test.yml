@@ -1,0 +1,55 @@
+# A/B memory-leak test harness
+#
+# Runs two builds of the app side by side:
+#   master  → port 3001  (lpe:master image — baseline, unfixed)
+#   fix     → port 3002  (lpe:fix image    — patched build)
+#
+# Prerequisites — build both images first:
+#   ./scripts/build-ab-images.sh
+#
+# Usage:
+#   docker compose -f docker-compose.ab-test.yml up -d
+#   ./scripts/watch-memory.sh          # poll /api/debug/memory on both
+#   node scripts/load-test-og.mjs      # hammer /api/og on both simultaneously
+#   docker compose -f docker-compose.ab-test.yml down
+#
+# Env vars: either set them in your shell before running docker compose, or
+# copy .env.local → .env.ab-test and uncomment the env_file lines below.
+# The /api/og endpoint (the one being tested) only needs NODE_ENV and
+# NEXT_PUBLIC_ASSETS_BASE_URL; the rest can be left empty for the test.
+
+services:
+  master:
+    image: lpe:master
+    ports:
+      - '3001:3000'
+    environment:
+      NODE_ENV: production
+      # Strapi and other external services are not called by /api/og so they
+      # can be left blank for the memory-leak test.
+      STRAPI_API_URL: '${STRAPI_API_URL:-}'
+      STRAPI_GRAPHQL_URL: '${STRAPI_GRAPHQL_URL:-}'
+      STRAPI_API_KEY: '${STRAPI_API_KEY:-}'
+      SIMPLECAST_ACCESS_TOKEN: '${SIMPLECAST_ACCESS_TOKEN:-}'
+      REVALIDATE_WEBHOOK_TOKEN: '${REVALIDATE_WEBHOOK_TOKEN:-test-token}'
+      NEXT_PUBLIC_ASSETS_BASE_URL: '${NEXT_PUBLIC_ASSETS_BASE_URL:-}'
+    restart: 'no' # don't auto-restart; we want to observe OOM crashes
+    # mem_limit removed — cap triggers OOM before we can observe steady-state growth
+    # env_file:
+    #   - .env.ab-test
+
+  fix:
+    image: lpe:fix
+    ports:
+      - '3002:3000'
+    environment:
+      NODE_ENV: production
+      STRAPI_API_URL: '${STRAPI_API_URL:-}'
+      STRAPI_GRAPHQL_URL: '${STRAPI_GRAPHQL_URL:-}'
+      STRAPI_API_KEY: '${STRAPI_API_KEY:-}'
+      SIMPLECAST_ACCESS_TOKEN: '${SIMPLECAST_ACCESS_TOKEN:-}'
+      REVALIDATE_WEBHOOK_TOKEN: '${REVALIDATE_WEBHOOK_TOKEN:-test-token}'
+      NEXT_PUBLIC_ASSETS_BASE_URL: '${NEXT_PUBLIC_ASSETS_BASE_URL:-}'
+    restart: 'no'
+    # env_file:
+    #   - .env.ab-test
