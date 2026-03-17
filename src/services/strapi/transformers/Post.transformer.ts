@@ -13,6 +13,14 @@ import {
   transformStrapiImageUrl,
 } from './utils'
 
+const escapeHtml = (input: string) =>
+  input
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+
 marked.use(
   markedHighlight({
     langPrefix: 'hljs language-',
@@ -23,6 +31,11 @@ marked.use(
       return hljs.highlightAuto(code).value
     },
   }),
+  {
+    renderer: {
+      html: (html) => escapeHtml(html),
+    },
+  },
 )
 
 const transformDynamicBlocks = (
@@ -133,7 +146,7 @@ export const postTransformer: Transformer<
 
     // If markdown_body is provided, convert it to HTML first
     let bodyHtml: string
-    if (attributes.markdown_body) {
+    if (attributes.markdown_body != null) {
       bodyHtml = await marked.parse(attributes.markdown_body)
       // Wrap bare <table> in <figure> to match CKEditor output format
       bodyHtml = bodyHtml.replace(
