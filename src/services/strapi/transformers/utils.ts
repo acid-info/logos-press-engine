@@ -133,7 +133,7 @@ export const transformStrapiHtmlContent = async ({
         blockIndex++
         blocks.push({
           id: `p-${blockIndex}`,
-          text: originalHtml.replace(/<[^>]+>/g, ''),
+          text: htmlParser.parse(originalHtml).textContent || '',
           footnotes: [],
           html: originalHtml,
           labels: [],
