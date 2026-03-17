@@ -132,9 +132,17 @@ export const postTransformer: Transformer<
     const dynamicBlocks = transformDynamicBlocks(attributes.blocks)
 
     // If markdown_body is provided, convert it to HTML first
-    const bodyHtml = attributes.markdown_body
-      ? await marked.parse(attributes.markdown_body)
-      : attributes.body || ''
+    let bodyHtml: string
+    if (attributes.markdown_body) {
+      bodyHtml = await marked.parse(attributes.markdown_body)
+      // Wrap bare <table> in <figure> to match CKEditor output format
+      bodyHtml = bodyHtml.replace(
+        /(<table[\s\S]*?<\/table>)/g,
+        '<figure class="table">$1</figure>',
+      )
+    } else {
+      bodyHtml = attributes.body || ''
+    }
 
     let {
       blocks: content,

@@ -79,6 +79,15 @@ export const transformStrapiHtmlContent = async ({
   const toc: LPE.Post.TocItem[] = []
   const blocks: LPE.Post.ContentBlock[] = []
 
+  // Preserve <pre> blocks from being mangled by the HTML parser
+  // (node-html-parser treats <pre> content as TextNodes, escaping inner HTML)
+  const preBlocks: string[] = []
+  html = html.replace(/<pre[\s\S]*?<\/pre>/g, (match) => {
+    const index = preBlocks.length
+    preBlocks.push(match)
+    return `<div data-pre-placeholder="${index}"></div>`
+  })
+
   // split paragraphs with <br> into multiple paragraphs
   html = html.replaceAll(
     /<p(\s+[^>]*)?>(.*?)<br>(.*?)<\/p>/g,
@@ -115,6 +124,28 @@ export const transformStrapiHtmlContent = async ({
     const text = clone.textContent || ''
 
     const tagName = node.tagName.toLowerCase()
+
+    // Restore <pre> placeholder blocks with original HTML
+    const prePlaceholderIndex = node.getAttribute('data-pre-placeholder')
+    if (prePlaceholderIndex !== undefined && prePlaceholderIndex !== null) {
+      const originalHtml = preBlocks[parseInt(prePlaceholderIndex, 10)]
+      if (originalHtml) {
+        blockIndex++
+        blocks.push({
+          id: `p-${blockIndex}`,
+          text: originalHtml.replace(/<[^>]+>/g, ''),
+          footnotes: [],
+          html: originalHtml,
+          labels: [],
+          tagName: 'pre',
+          order: blockIndex,
+          classNames: [],
+          type: 'text',
+        } as LPE.Post.TextBlock)
+        continue
+      }
+    }
+
     const isFigure = tagName === 'figure'
     const isMedia = isFigure && !!node.querySelector('oembed')
     const isImage = !!node.querySelector('img')
