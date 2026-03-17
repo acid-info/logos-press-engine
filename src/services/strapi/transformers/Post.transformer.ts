@@ -1,3 +1,4 @@
+import { marked } from 'marked'
 import * as _uuid from 'uuid'
 import { Transformer } from '../../../lib/TransformPipeline/types'
 import { LPE } from '../../../types/lpe.types'
@@ -116,16 +117,22 @@ export const postTransformer: Transformer<
 
     const dynamicBlocks = transformDynamicBlocks(attributes.blocks)
 
+    // If markdown_body is provided, convert it to HTML first
+    const bodyHtml = attributes.markdown_body
+      ? await marked.parse(attributes.markdown_body)
+      : attributes.body || ''
+
     let {
       blocks: content,
       toc,
       text,
     } = await transformStrapiHtmlContent({
-      html: attributes.body || '',
+      html: bodyHtml,
     })
 
     if (
-      (!attributes.body || content.length === 0) &&
+      ((!attributes.body && !attributes.markdown_body) ||
+        content.length === 0) &&
       dynamicBlocks.length > 0
     ) {
       const richTextHtml = dynamicBlocks

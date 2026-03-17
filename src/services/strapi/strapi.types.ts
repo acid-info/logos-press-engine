@@ -43,6 +43,7 @@ export type StrapiPostData = BaseStrapiPostData & {
       } | null
     } | null
     blocks?: StrapiPostBlock[] | null
+    markdown_body?: string | null
   }
 }
 export type StrapiPodcastShowData =

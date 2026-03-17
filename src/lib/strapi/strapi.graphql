@@ -587,6 +587,7 @@ type Post {
   discourse_topic_id: Int
   episode_number: Int
   featured: Boolean
+  markdown_body: String
   podcast_show: PodcastShowEntityResponse
   publish_date: Date
   publishedAt: DateTime
@@ -626,6 +627,7 @@ input PostFiltersInput {
   episode_number: IntFilterInput
   featured: BooleanFilterInput
   id: IDFilterInput
+  markdown_body: StringFilterInput
   not: PostFiltersInput
   or: [PostFiltersInput]
   podcast_show: PodcastShowFiltersInput
@@ -650,6 +652,7 @@ input PostInput {
   discourse_topic_id: Int
   episode_number: Int
   featured: Boolean
+  markdown_body: String
   podcast_show: ID
   publish_date: Date
   publishedAt: DateTime
