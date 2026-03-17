@@ -116,6 +116,15 @@ export const RenderArticleBlock = ({
               </Paragraph>
             )
           }
+          case 'pre': {
+            return (
+              <CodeBlockWrapper
+                dangerouslySetInnerHTML={{
+                  __html: extractInnerHtml(block.html),
+                }}
+              />
+            )
+          }
           case 'table': {
             return (
               <TableWrapper>
@@ -238,6 +247,15 @@ const Paragraph = styled(Typography)`
     margin-bottom: 16px;
   }
 
+  & code {
+    background-color: rgba(var(--lsd-text-primary), 0.05);
+    border: 1px solid rgba(var(--lsd-text-primary), 0.15);
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-family: 'IBM Plex Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9em;
+  }
+
   & table {
     width: 100%;
     border-collapse: collapse;
@@ -278,6 +296,119 @@ const IframeContainer = styled.div<{ isSimplecast?: boolean }>`
     width: 100% !important;
     height: unset !important;
     aspect-ratio: 16 / 9;
+  }
+`
+
+const CodeBlockWrapper = styled.pre`
+  background-color: rgba(var(--lsd-text-primary), 0.05);
+  border: 1px solid rgba(var(--lsd-text-primary), 0.15);
+  border-radius: 4px;
+  padding: 16px;
+  overflow-x: auto;
+  font-family: 'IBM Plex Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre;
+  margin: 16px 0;
+  color: rgb(var(--lsd-text-primary));
+
+  & code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  /* highlight.js light theme */
+  [data-theme='light'] & {
+    .hljs-keyword,
+    .hljs-selector-tag,
+    .hljs-type {
+      color: #d73a49;
+    }
+    .hljs-string,
+    .hljs-addition {
+      color: #032f62;
+    }
+    .hljs-comment,
+    .hljs-quote {
+      color: #6a737d;
+      font-style: italic;
+    }
+    .hljs-number,
+    .hljs-literal {
+      color: #005cc5;
+    }
+    .hljs-title,
+    .hljs-section {
+      color: #6f42c1;
+    }
+    .hljs-built_in {
+      color: #e36209;
+    }
+    .hljs-meta {
+      color: #735c0f;
+    }
+    .hljs-deletion {
+      color: #b31d28;
+      background-color: #ffeef0;
+    }
+    .hljs-attr,
+    .hljs-variable,
+    .hljs-template-variable {
+      color: #e36209;
+    }
+    .hljs-symbol,
+    .hljs-bullet {
+      color: #005cc5;
+    }
+  }
+
+  /* highlight.js dark theme */
+  [data-theme='dark'] & {
+    .hljs-keyword,
+    .hljs-selector-tag,
+    .hljs-type {
+      color: #ff7b72;
+    }
+    .hljs-string,
+    .hljs-addition {
+      color: #a5d6ff;
+    }
+    .hljs-comment,
+    .hljs-quote {
+      color: #8b949e;
+      font-style: italic;
+    }
+    .hljs-number,
+    .hljs-literal {
+      color: #79c0ff;
+    }
+    .hljs-title,
+    .hljs-section {
+      color: #d2a8ff;
+    }
+    .hljs-built_in {
+      color: #ffa657;
+    }
+    .hljs-meta {
+      color: #d29922;
+    }
+    .hljs-deletion {
+      color: #ffdcd7;
+      background-color: rgba(248, 81, 73, 0.1);
+    }
+    .hljs-attr,
+    .hljs-variable,
+    .hljs-template-variable {
+      color: #ffa657;
+    }
+    .hljs-symbol,
+    .hljs-bullet {
+      color: #79c0ff;
+    }
   }
 `
 
