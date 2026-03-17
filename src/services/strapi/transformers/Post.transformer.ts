@@ -8,26 +8,11 @@ import { calcReadingTime } from '../../../utils/string.utils'
 import postSearchService from '../../post-search.service'
 import { StrapiPostBlock, StrapiPostData } from '../strapi.types'
 import {
+  escapeHtml,
   transformStrapiHtmlContent,
   transformStrapiImageData,
   transformStrapiImageUrl,
 } from './utils'
-
-const escapeHtml = (input: unknown) => {
-  const s =
-    typeof input === 'string'
-      ? input
-      : typeof (input as any)?.text === 'string'
-      ? (input as any).text
-      : ''
-
-  return s
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;')
-}
 
 marked.use(
   markedHighlight({

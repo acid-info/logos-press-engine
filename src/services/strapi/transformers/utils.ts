@@ -24,6 +24,22 @@ type StrapiImage =
 export const getStrapiImageUrlBySize = (size: string, url: string): string =>
   url.replace('/uploads/', `/uploads/${size}_`)
 
+export const escapeHtml = (input: unknown) => {
+  const s =
+    typeof input === 'string'
+      ? input
+      : typeof (input as any)?.text === 'string'
+      ? (input as any).text
+      : ''
+
+  return s
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
 export const transformStrapiImageUrl = (filePath: string): string =>
   assetsBaseUrl + filePath
 
