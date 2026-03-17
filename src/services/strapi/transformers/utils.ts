@@ -101,6 +101,16 @@ export const transformStrapiHtmlContent = async ({
 
   let root = htmlParser.parse(html, { parseNoneClosedTags: true })
 
+  for (const placeholder of root.querySelectorAll('[data-pre-placeholder]')) {
+    const idxRaw = placeholder.getAttribute('data-pre-placeholder')
+    const idx = idxRaw != null ? Number.parseInt(idxRaw, 10) : NaN
+    const originalHtml = Number.isFinite(idx) ? preBlocks[idx] : undefined
+    if (!originalHtml) continue
+    const parsed = htmlParser.parse(originalHtml, { parseNoneClosedTags: true })
+    const el = parsed.firstChild
+    if (el && el instanceof htmlParser.HTMLElement) placeholder.replaceWith(el)
+  }
+
   // remove footnotes container as the content is already stored in sup tags
   root.querySelectorAll('section.footnotes-container').forEach((node) => {
     node.remove()
@@ -124,27 +134,6 @@ export const transformStrapiHtmlContent = async ({
     const text = clone.textContent || ''
 
     const tagName = node.tagName.toLowerCase()
-
-    // Restore <pre> placeholder blocks with original HTML
-    const prePlaceholderIndex = node.getAttribute('data-pre-placeholder')
-    if (prePlaceholderIndex !== undefined && prePlaceholderIndex !== null) {
-      const originalHtml = preBlocks[parseInt(prePlaceholderIndex, 10)]
-      if (originalHtml) {
-        blockIndex++
-        blocks.push({
-          id: `p-${blockIndex}`,
-          text: htmlParser.parse(originalHtml).textContent || '',
-          footnotes: [],
-          html: originalHtml,
-          labels: [],
-          tagName: 'pre',
-          order: blockIndex,
-          classNames: [],
-          type: 'text',
-        } as LPE.Post.TextBlock)
-        continue
-      }
-    }
 
     const isFigure = tagName === 'figure'
     const isMedia = isFigure && !!node.querySelector('oembed')
