@@ -118,6 +118,7 @@ export const GET_POSTS_QUERY = gql`
         attributes {
           ...PostCommonAttributes
           body @include(if: $withContent)
+          markdown_body @include(if: $withContent)
           credits @include(if: $withContent)
           html_file @include(if: $withContent) {
             data {

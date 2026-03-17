@@ -845,6 +845,7 @@ export type Post = {
   discourse_topic_id: Maybe<Scalars['Int']['output']>
   episode_number: Maybe<Scalars['Int']['output']>
   featured: Maybe<Scalars['Boolean']['output']>
+  markdown_body: Maybe<Scalars['String']['output']>
   podcast_show: Maybe<PodcastShowEntityResponse>
   publish_date: Maybe<Scalars['Date']['output']>
   publishedAt: Maybe<Scalars['DateTime']['output']>
@@ -912,6 +913,7 @@ export type PostFiltersInput = {
   episode_number?: InputMaybe<IntFilterInput>
   featured?: InputMaybe<BooleanFilterInput>
   id?: InputMaybe<IdFilterInput>
+  markdown_body?: InputMaybe<StringFilterInput>
   not?: InputMaybe<PostFiltersInput>
   or?: InputMaybe<Array<InputMaybe<PostFiltersInput>>>
   podcast_show?: InputMaybe<PodcastShowFiltersInput>
@@ -936,6 +938,7 @@ export type PostInput = {
   discourse_topic_id?: InputMaybe<Scalars['Int']['input']>
   episode_number?: InputMaybe<Scalars['Int']['input']>
   featured?: InputMaybe<Scalars['Boolean']['input']>
+  markdown_body?: InputMaybe<Scalars['String']['input']>
   podcast_show?: InputMaybe<Scalars['ID']['input']>
   publish_date?: InputMaybe<Scalars['Date']['input']>
   publishedAt?: InputMaybe<Scalars['DateTime']['input']>
@@ -1703,6 +1706,7 @@ export type GetPostsQuery = {
         __typename?: 'Post'
         body?: string
         credits?: string
+        markdown_body?: string
         type: Enum_Post_Type
         title: string
         subtitle: string
@@ -2493,6 +2497,29 @@ export const GetPostsDocument = {
                             {
                               kind: 'Field',
                               name: { kind: 'Name', value: 'body' },
+                              directives: [
+                                {
+                                  kind: 'Directive',
+                                  name: { kind: 'Name', value: 'include' },
+                                  arguments: [
+                                    {
+                                      kind: 'Argument',
+                                      name: { kind: 'Name', value: 'if' },
+                                      value: {
+                                        kind: 'Variable',
+                                        name: {
+                                          kind: 'Name',
+                                          value: 'withContent',
+                                        },
+                                      },
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'markdown_body' },
                               directives: [
                                 {
                                   kind: 'Directive',
