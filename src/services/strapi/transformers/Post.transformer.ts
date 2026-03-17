@@ -1,4 +1,6 @@
+import hljs from 'highlight.js'
 import { marked } from 'marked'
+import { markedHighlight } from 'marked-highlight'
 import * as _uuid from 'uuid'
 import { Transformer } from '../../../lib/TransformPipeline/types'
 import { LPE } from '../../../types/lpe.types'
@@ -10,6 +12,18 @@ import {
   transformStrapiImageData,
   transformStrapiImageUrl,
 } from './utils'
+
+marked.use(
+  markedHighlight({
+    langPrefix: 'hljs language-',
+    highlight(code: string, lang: string) {
+      if (lang && hljs.getLanguage(lang)) {
+        return hljs.highlight(code, { language: lang }).value
+      }
+      return hljs.highlightAuto(code).value
+    },
+  }),
+)
 
 const transformDynamicBlocks = (
   blocks: StrapiPostBlock[] | null | undefined,
