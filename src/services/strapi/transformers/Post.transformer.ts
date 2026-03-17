@@ -13,13 +13,21 @@ import {
   transformStrapiImageUrl,
 } from './utils'
 
-const escapeHtml = (input: string) =>
-  input
+const escapeHtml = (input: unknown) => {
+  const s =
+    typeof input === 'string'
+      ? input
+      : typeof (input as any)?.text === 'string'
+      ? (input as any).text
+      : ''
+
+  return s
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;')
+}
 
 marked.use(
   markedHighlight({
@@ -33,7 +41,7 @@ marked.use(
   }),
   {
     renderer: {
-      html: (html) => escapeHtml(html),
+      html: (token) => escapeHtml(token),
     },
   },
 )
