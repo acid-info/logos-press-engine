@@ -26,6 +26,8 @@ export const ResponsiveImage = ({
   loadDelay = 0,
 }: React.PropsWithChildren<Props>) => {
   const [loaded, setLoaded] = useState(false)
+  const hasDims = Number(data.width) > 0 && Number(data.height) > 0
+  const effectiveFill = fill || !hasDims
   const placeholderSrc = useMemo(() => {
     const rawPlaceholder = data.placeholder?.trim()
     if (!rawPlaceholder) return ''
@@ -52,8 +54,6 @@ export const ResponsiveImage = ({
 
   const imageProps: ImageProps = {
     src: `${data.url}`,
-    width: data.width,
-    height: data.height,
     alt: data.alt,
     className: loaded ? 'loaded' : '',
     onLoad: () => {
@@ -62,19 +62,30 @@ export const ResponsiveImage = ({
       }, loadDelay)
     },
     loading,
+    ...(effectiveFill
+      ? ({
+          fill: true,
+          sizes: nextImageProps?.sizes || '100vw',
+        } as any)
+      : {
+          width: data.width,
+          height: data.height,
+        }),
     ...(nextImageProps || {}),
     style: {
       width: '100%',
-      height: 'auto',
+      height: effectiveFill ? '100%' : 'auto',
+      objectFit: (nextImageProps?.style as any)?.objectFit || 'cover',
+      ...(nextImageProps?.style || {}),
     },
   }
 
   return (
     <Container
-      className={`${fill ? 'fill' : ''} ${className || ''}`}
+      className={`${effectiveFill ? 'fill' : ''} ${className || ''}`}
       $height_={height}
-      $imageWidth={data.width}
-      $imageHeight={data.height}
+      $imageWidth={hasDims ? data.width : 16}
+      $imageHeight={hasDims ? data.height : 9}
     >
       <div className="comment">
         {showPlaceholder && (
