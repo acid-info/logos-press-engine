@@ -5,6 +5,7 @@ import {
   extractIdFromFirstTag,
   extractInnerHtml,
 } from '@/utils/html.utils'
+import { renderLatexInHtml } from '@/utils/latex.utils'
 import { HeadingElementsRef } from '@/utils/ui.utils'
 import { Quote, Typography } from '@acid-info/lsd-react'
 import { css } from '@emotion/react'
@@ -52,7 +53,7 @@ export const RenderArticleBlock = ({
                 <Paragraph
                   variant="body1"
                   dangerouslySetInnerHTML={{
-                    __html: extractInnerHtml(block.html),
+                    __html: renderLatexInHtml(extractInnerHtml(block.html)),
                   }}
                 />
               </Quote>
@@ -84,7 +85,9 @@ export const RenderArticleBlock = ({
                   ${extractAttributeFromHTML(block.html, 'style', '')}
                 `}
                 dangerouslySetInnerHTML={{
-                  __html: extractInnerHtml(addTargetBlank(block.html)),
+                  __html: renderLatexInHtml(
+                    extractInnerHtml(addTargetBlank(block.html)),
+                  ),
                 }}
               />
             )
@@ -110,7 +113,7 @@ export const RenderArticleBlock = ({
                   `}
                   className={clsx(block.classNames)}
                   dangerouslySetInnerHTML={{
-                    __html: extractInnerHtml(block.html),
+                    __html: renderLatexInHtml(extractInnerHtml(block.html)),
                   }}
                 />
               </Paragraph>
@@ -125,7 +128,9 @@ export const RenderArticleBlock = ({
                   `}
                   className={clsx(block.classNames)}
                   dangerouslySetInnerHTML={{
-                    __html: extractInnerHtml(addTargetBlank(block.html)),
+                    __html: renderLatexInHtml(
+                      extractInnerHtml(addTargetBlank(block.html)),
+                    ),
                   }}
                 />
               </TableWrapper>
@@ -140,7 +145,7 @@ export const RenderArticleBlock = ({
                 <TableWrapper>
                   <TableContainer
                     dangerouslySetInnerHTML={{
-                      __html: addTargetBlank(innerHtml),
+                      __html: renderLatexInHtml(addTargetBlank(innerHtml)),
                     }}
                   />
                 </TableWrapper>
@@ -156,7 +161,7 @@ export const RenderArticleBlock = ({
                 `}
                 className={clsx(block.classNames)}
                 dangerouslySetInnerHTML={{
-                  __html: extractInnerHtml(block.html),
+                  __html: renderLatexInHtml(extractInnerHtml(block.html)),
                 }}
               />
             )
@@ -171,7 +176,7 @@ export const RenderArticleBlock = ({
                 `}
                 className={clsx(block.classNames)}
                 dangerouslySetInnerHTML={{
-                  __html: extractInnerHtml(block.html),
+                  __html: renderLatexInHtml(extractInnerHtml(block.html)),
                 }}
               />
             )
