@@ -8,7 +8,8 @@ const nextConfig = {
             'image.simplecastcdn.com',
             'img.youtube.com',
             'cms-press.logos.co',
-            'lpe-cms-production.up.railway.app'
+            'lpe-cms-production.up.railway.app',
+            'lpe-cms-app-production.up.railway.app'
         ],
     },
 }
