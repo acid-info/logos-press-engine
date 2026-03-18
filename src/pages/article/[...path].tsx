@@ -2,6 +2,7 @@ import { SEO } from '@/components/SEO'
 import ArticleContainer from '@/containers/ArticleContainer'
 import { parseHtmlDocument } from '@/utils/html-document.utils'
 import { GetStaticPropsContext } from 'next'
+import { useRouter } from 'next/router'
 import { strapiApi } from '../../services/strapi'
 import { LPE } from '../../types/lpe.types'
 
@@ -12,7 +13,9 @@ type ArticleProps = {
 }
 
 const ArticlePage = ({ data, errors, why }: ArticleProps) => {
-  if (!data) return null
+  const router = useRouter()
+  if (router.isFallback) return <div>Loading...</div>
+  if (!data) return <div>{why || 'Not found'}</div>
   if (errors) return <div>{errors}</div>
 
   return (
@@ -183,7 +186,7 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
         relatedArticles: relatedArticles || [],
         articlesFromSameAuthors: articlesFromSameAuthors?.data || [],
       },
-      error: JSON.stringify(errors),
+      errors: errors ? JSON.stringify(errors) : null,
     },
     revalidate: 10,
   }
