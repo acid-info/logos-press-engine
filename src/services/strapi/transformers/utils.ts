@@ -7,7 +7,7 @@ import { LPE } from '../../../types/lpe.types'
 import { convertToIframe } from '../../../utils/string.utils'
 
 let assetsBaseUrl = process.env.NEXT_PUBLIC_ASSETS_BASE_URL ?? ''
-if (assetsBaseUrl.endsWith('/')) assetsBaseUrl = assetsBaseUrl.slice(1)
+if (assetsBaseUrl.endsWith('/')) assetsBaseUrl = assetsBaseUrl.slice(0, -1)
 
 const placeholderService = new PlaceholderService()
 placeholderService.emptyCache()
@@ -130,8 +130,13 @@ export const transformStrapiHtmlContent = async ({
 
       const caption = text
       const alt = image.getAttribute('alt') || ''
-      let url = image.getAttribute('src') || ''
-      url = url.slice(url.indexOf('/uploads/'))
+      const rawUrl = image.getAttribute('src') || ''
+      let url = rawUrl
+      try {
+        url = new URL(rawUrl).pathname
+      } catch {}
+      const uploadsIdx = url.indexOf('/uploads/')
+      if (uploadsIdx >= 0) url = url.slice(uploadsIdx)
       const width = parseInt(image.getAttribute('width') || '0', 10)
       const height = parseInt(image.getAttribute('height') || '0', 10)
 
