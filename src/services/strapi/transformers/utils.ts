@@ -7,7 +7,7 @@ import { LPE } from '../../../types/lpe.types'
 import { convertToIframe } from '../../../utils/string.utils'
 
 let assetsBaseUrl = process.env.NEXT_PUBLIC_ASSETS_BASE_URL ?? ''
-if (assetsBaseUrl.endsWith('/')) assetsBaseUrl = assetsBaseUrl.slice(1)
+if (assetsBaseUrl.endsWith('/')) assetsBaseUrl = assetsBaseUrl.slice(0, -1)
 
 const placeholderService = new PlaceholderService()
 placeholderService.emptyCache()
@@ -41,7 +41,9 @@ export const escapeHtml = (input: unknown) => {
 }
 
 export const transformStrapiImageUrl = (filePath: string): string =>
-  assetsBaseUrl + filePath
+  filePath.startsWith('http://') || filePath.startsWith('https://')
+    ? filePath
+    : assetsBaseUrl + filePath
 
 export const transformStrapiImageData = async (
   image: StrapiImage,

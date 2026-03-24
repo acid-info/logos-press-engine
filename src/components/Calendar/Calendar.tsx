@@ -8,6 +8,8 @@ import {
   endOfMonth,
   format,
   isSameDay,
+  isValid,
+  parse,
   startOfMonth,
 } from 'date-fns'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -31,6 +33,31 @@ const months = [
 interface CalendarProps {
   events: CalendarEvent[]
   error?: string | null
+}
+
+const EVENT_TIME_FORMATS = ['HH:mm', 'H:mm', 'h:mm a', 'hh:mm a'] as const
+
+const eventTimeMinutesSinceMidnight = (time?: string): number | null => {
+  const trimmed = time?.trim()
+  if (!trimmed) return null
+
+  const ref = new Date(2000, 0, 1)
+  for (const fmt of EVENT_TIME_FORMATS) {
+    const parsed = parse(trimmed, fmt, ref)
+    if (isValid(parsed)) {
+      return parsed.getHours() * 60 + parsed.getMinutes()
+    }
+  }
+  return null
+}
+
+const compareCalendarEventsByTime = (a: CalendarEvent, b: CalendarEvent) => {
+  const ma = eventTimeMinutesSinceMidnight(a.time)
+  const mb = eventTimeMinutesSinceMidnight(b.time)
+  const na = ma ?? Number.MAX_SAFE_INTEGER
+  const nb = mb ?? Number.MAX_SAFE_INTEGER
+  if (na !== nb) return na - nb
+  return a.id - b.id
 }
 
 export const Calendar: React.FC<CalendarProps> = ({ events, error }) => {
@@ -140,7 +167,8 @@ export const Calendar: React.FC<CalendarProps> = ({ events, error }) => {
   const getEventsForDate = useMemo(() => {
     return (date: Date): CalendarEvent[] => {
       const dateKey = format(date, 'yyyy-MM-dd')
-      return eventsByDate.get(dateKey) || []
+      const list = eventsByDate.get(dateKey) || []
+      return [...list].sort(compareCalendarEventsByTime)
     }
   }, [eventsByDate])
 

@@ -18,16 +18,10 @@ export const CalendarEventDetails: React.FC<CalendarEventDetailsProps> = ({
   selectedDate,
   events,
 }) => {
-  const hasTime = events.some((event) => event.time)
-  const firstEventWithTime = events.find((event) => event.time)
-
   return (
     <EventDetails>
       <Typography variant="h4" style={{ marginBottom: '1rem' }}>
         {format(selectedDate, 'MMMM d, yyyy')}
-        {hasTime && firstEventWithTime?.time && (
-          <> {firstEventWithTime.time} (UTC)</>
-        )}
       </Typography>
 
       <EventList>
@@ -37,7 +31,11 @@ export const CalendarEventDetails: React.FC<CalendarEventDetailsProps> = ({
 
             return (
               <EventItem key={event.id}>
-                {formattedType && <EventType>{formattedType}</EventType>}
+                <EventItemHeader>
+                  {formattedType && <EventType>{formattedType}</EventType>}
+                  {formattedType && event.time && <EventDivider />}
+                  {event.time && <EventTime>{event.time} (UTC)</EventTime>}
+                </EventItemHeader>
                 {isValidTopic(event.topic) && (
                   <EventTopic>{event.topic}</EventTopic>
                 )}
@@ -115,6 +113,26 @@ const EventItem = styled.div`
   }
 `
 
+const EventItemHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+`
+
+const EventDivider = styled.div`
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: rgb(var(--lsd-border-primary));
+`
+
+const EventTime = styled.div`
+  font-size: var(--lsd-body2-fontSize);
+  line-height: var(--lsd-body2-lineHeight);
+  color: var(--lsd-text-secondary);
+`
+
 const EventType = styled.div`
   padding: 4px 8px;
   font-size: var(--lsd-body2-fontSize);
@@ -122,7 +140,6 @@ const EventType = styled.div`
   color: var(--lsd-text-secondary);
   border: 1px solid rgb(var(--lsd-border-primary));
   width: fit-content;
-  margin-bottom: 12px;
 `
 
 const EventTopic = styled.h3`
