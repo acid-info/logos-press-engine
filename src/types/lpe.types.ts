@@ -250,6 +250,7 @@ export namespace LPE {
       toc: Post.Toc
       readingTime: number
       coverImage: Image.Document | null
+      ogImage: Image.Document | null
       content: Array<Article.ContentBlock>
       blocks?: Post.DynamicBlock[]
       htmlFile?: Post.HtmlFile

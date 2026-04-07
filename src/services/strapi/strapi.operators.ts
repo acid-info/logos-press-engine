@@ -25,6 +25,15 @@ const POST_COMMON_ATTRIBUTES = gql`
         }
       }
     }
+    og_image {
+      data {
+        attributes {
+          url
+          width
+          height
+        }
+      }
+    }
     authors {
       data {
         id

@@ -22,6 +22,7 @@ const ArticlePage = ({ data, errors, why }: ArticleProps) => {
         description={data.data.summary}
         noIndex={data.data.isDraft}
         image={data.data.coverImage}
+        ogImage={data.data.ogImage}
         pagePath={`/article/${data.data.slug}`}
         date={data.data.createdAt}
         tags={[
