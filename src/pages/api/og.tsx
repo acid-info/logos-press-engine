@@ -4,6 +4,7 @@ import fs from 'fs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { ImageResponse } from 'next/og'
 import path from 'path'
+import sharp from 'sharp'
 
 let loraBuffer: Buffer | null = null
 let interBuffer: Buffer | null = null
@@ -37,7 +38,10 @@ function sanitizeImageUrl(url: string): string {
     )
     if (!allowedHost) return ''
     // Reconstruct from known-safe components to break CodeQL taint chain.
-    const safe = new URL(`${parsed.protocol}//${allowedHost}`)
+    // Preserve the port so that local dev URLs like http://localhost:1337/uploads/...
+    // are not silently rewritten to http://localhost/uploads/... (which would 404).
+    const portPart = parsed.port ? `:${parsed.port}` : ''
+    const safe = new URL(`${parsed.protocol}//${allowedHost}${portPart}`)
     safe.pathname = parsed.pathname
     safe.search = parsed.search
     return safe.href
@@ -98,6 +102,12 @@ export default async function handler(
     }
   }
   const searchParams = new URLSearchParams(safeDecode(rawQ))
+  // `?format=jpg` opts into a small, long-cacheable JPEG. The default PNG
+  // path stays identical for backwards-compatibility. JPEG is used by the
+  // Strapi lifecycle hook that pre-generates og_image at publish time.
+  const formatParam = (request.query['format'] as string) || ''
+  const asJpeg =
+    formatParam.toLowerCase() === 'jpg' || formatParam.toLowerCase() === 'jpeg'
   const contentType = searchParams.get('contentType')
   const title =
     contentType == null
@@ -451,9 +461,25 @@ export default async function handler(
   try {
     // ImageResponse is a Web API Response. Pipe its body into NextApiResponse.
     const arrayBuffer = await imageResponse.arrayBuffer()
+    const pngBuffer = Buffer.from(arrayBuffer)
+
+    if (asJpeg) {
+      // Strapi's lifecycle hook calls this path to store a compact,
+      // long-cacheable JPEG in the CMS media library. Quality 75 +
+      // mozjpeg typically lands around 80–150KB at 1200×630, which
+      // stays well under Twitterbot's scrape budget.
+      const jpegBuffer = await sharp(pngBuffer)
+        .jpeg({ quality: 75, progressive: true, mozjpeg: true })
+        .toBuffer()
+      res.setHeader('Content-Type', 'image/jpeg')
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+      res.status(200).send(jpegBuffer)
+      return
+    }
+
     res.setHeader('Content-Type', 'image/png')
     res.setHeader('Cache-Control', 'public, max-age=3600, immutable')
-    res.status(200).send(Buffer.from(arrayBuffer))
+    res.status(200).send(pngBuffer)
   } catch (e) {
     console.error('[og] Failed to pipe image response', e)
     res.status(500).send('Failed to send OG image')
