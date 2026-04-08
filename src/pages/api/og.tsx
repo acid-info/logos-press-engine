@@ -33,16 +33,18 @@ function sanitizeImageUrl(url: string): string {
     if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return ''
     // Look up the hostname from our allowlist , use the Set value, not the
     // user-provided string, so the returned URL is not considered tainted.
+
     const allowedHost = Array.from(ALLOWED_IMAGE_HOSTS).find(
       (h) => h === parsed.hostname,
     )
+
     if (!allowedHost) return ''
-    // Reconstruct from known-safe components to break CodeQL taint chain.
-    // Preserve the port so that local dev URLs like http://localhost:1337/uploads/...
-    // are not silently rewritten to http://localhost/uploads/... (which would 404).
+
     const portPart = parsed.port ? `:${parsed.port}` : ''
     const safe = new URL(`${parsed.protocol}//${allowedHost}${portPart}`)
+
     safe.pathname = parsed.pathname
+
     safe.search = parsed.search
     return safe.href
   } catch {
@@ -102,17 +104,18 @@ export default async function handler(
     }
   }
   const searchParams = new URLSearchParams(safeDecode(rawQ))
-  // `?format=jpg` opts into a small, long-cacheable JPEG. The default PNG
-  // path stays identical for backwards-compatibility. JPEG is used by the
-  // Strapi lifecycle hook that pre-generates og_image at publish time.
   const formatParam = (request.query['format'] as string) || ''
+
   const asJpeg =
     formatParam.toLowerCase() === 'jpg' || formatParam.toLowerCase() === 'jpeg'
+
   const contentType = searchParams.get('contentType')
+
   const title =
     contentType == null
       ? siteConfigs.heroTitle.join('')
       : sanitizeText(searchParams.get('title'))
+
   const image = sanitizeImageUrl(searchParams.get('image') || '')
   const alt = sanitizeText(searchParams.get('alt') || '') || ''
   const pagePath =
@@ -464,10 +467,7 @@ export default async function handler(
     const pngBuffer = Buffer.from(arrayBuffer)
 
     if (asJpeg) {
-      // Strapi's lifecycle hook calls this path to store a compact,
-      // long-cacheable JPEG in the CMS media library. Quality 75 +
-      // mozjpeg typically lands around 80–150KB at 1200×630, which
-      // stays well under Twitterbot's scrape budget.
+      // Strapi's lifecycle hook calls this path to store a JPEG in the CMS media library
       const jpegBuffer = await sharp(pngBuffer)
         .jpeg({ quality: 75, progressive: true, mozjpeg: true })
         .toBuffer()

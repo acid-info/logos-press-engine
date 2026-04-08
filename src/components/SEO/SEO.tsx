@@ -13,11 +13,6 @@ type Metadata = {
   pageURL?: string
   imageUrl?: string
   image?: LPE.Image.Document | null
-  /**
-   * Pre-generated OG image stored in the CMS. When present, takes
-   * precedence over dynamic /api/og rendering so Twitterbot never
-   * has to hit the slow WASM code path.
-   */
   ogImage?: LPE.Image.Document | null
   tags?: string[]
   pagePath?: string
@@ -55,9 +50,9 @@ export default function SEO({
   const description = _description || siteConfigs.description
 
   // Preference order:
-  //   1) Pre-generated og_image stored in the CMS (static JPG, fastest for scrapers).
-  //   2) Explicit imageUrl prop override (callers can force a URL).
-  //   3) Dynamic /api/og fallback for legacy content without og_image.
+  //  1) Pre-generated og_image stored in the CMS (static JPG)
+  //  2) Explicit imageUrl prop override (callers can force a URL)
+  //  3) Dynamic /api/og fallback for legacy content without og_image
   const ogImageUrl =
     ogImage?.url ||
     imageUrl ||
