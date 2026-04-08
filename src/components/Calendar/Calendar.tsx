@@ -1,4 +1,8 @@
 import { CalendarEvent } from '@/types/data.types'
+import {
+  getEventLocalDateTime,
+  getEventTimeMinutesSinceMidnight,
+} from '@/utils/date.utils'
 import { lsdUtils } from '@/utils/lsd.utils'
 import { getEventTypeLabel, isValidTopic } from '@/utils/string.utils'
 import { Button, Dropdown, Typography } from '@acid-info/lsd-react'
@@ -6,11 +10,11 @@ import styled from '@emotion/styled'
 import {
   eachDayOfInterval,
   endOfMonth,
+  endOfWeek,
   format,
   isSameDay,
-  isValid,
-  parse,
   startOfMonth,
+  startOfWeek,
 } from 'date-fns'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { NumberParam, useQueryParams } from 'use-query-params'
@@ -35,28 +39,22 @@ interface CalendarProps {
   error?: string | null
 }
 
-const EVENT_TIME_FORMATS = ['HH:mm', 'H:mm', 'h:mm a', 'hh:mm a'] as const
-
-const eventTimeMinutesSinceMidnight = (time?: string): number | null => {
-  const trimmed = time?.trim()
-  if (!trimmed) return null
-
-  const ref = new Date(2000, 0, 1)
-  for (const fmt of EVENT_TIME_FORMATS) {
-    const parsed = parse(trimmed, fmt, ref)
-    if (isValid(parsed)) {
-      return parsed.getHours() * 60 + parsed.getMinutes()
-    }
-  }
-  return null
-}
-
 const compareCalendarEventsByTime = (a: CalendarEvent, b: CalendarEvent) => {
-  const ma = eventTimeMinutesSinceMidnight(a.time)
-  const mb = eventTimeMinutesSinceMidnight(b.time)
-  const na = ma ?? Number.MAX_SAFE_INTEGER
-  const nb = mb ?? Number.MAX_SAFE_INTEGER
-  if (na !== nb) return na - nb
+  const localDateA = getEventLocalDateTime(a)
+  const localDateB = getEventLocalDateTime(b)
+  const timestampA = localDateA?.getTime() ?? Number.MAX_SAFE_INTEGER
+  const timestampB = localDateB?.getTime() ?? Number.MAX_SAFE_INTEGER
+
+  if (timestampA !== timestampB) return timestampA - timestampB
+
+  const minutesA = getEventTimeMinutesSinceMidnight(a.time)
+  const minutesB = getEventTimeMinutesSinceMidnight(b.time)
+  const normalizedMinutesA = minutesA ?? Number.MAX_SAFE_INTEGER
+  const normalizedMinutesB = minutesB ?? Number.MAX_SAFE_INTEGER
+  if (normalizedMinutesA !== normalizedMinutesB) {
+    return normalizedMinutesA - normalizedMinutesB
+  }
+
   return a.id - b.id
 }
 
@@ -69,13 +67,13 @@ export const Calendar: React.FC<CalendarProps> = ({ events, error }) => {
       return [baseYear, baseYear + 1]
     }
 
-    const mostRecentEvent = events.reduce((latest, event) => {
-      const eventDate = new Date(event.date)
-      const latestDate = new Date(latest.date)
-      return eventDate > latestDate ? event : latest
-    })
+    const mostRecentYear = events.reduce((latestYear, event) => {
+      const localDateTime = getEventLocalDateTime(event)
+      if (!localDateTime) return latestYear
 
-    const mostRecentYear = new Date(mostRecentEvent.date).getFullYear()
+      return Math.max(latestYear, localDateTime.getFullYear())
+    }, baseYear)
+
     const maxYear = Math.max(baseYear, mostRecentYear)
 
     if (maxYear === baseYear) {
@@ -119,32 +117,18 @@ export const Calendar: React.FC<CalendarProps> = ({ events, error }) => {
 
   const monthStart = startOfMonth(currentDate)
   const monthEnd = endOfMonth(currentDate)
-  const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd })
-
-  const firstDayOfWeek = (monthStart.getDay() + 6) % 7
-
-  const daysBeforeMonth = Array.from({ length: firstDayOfWeek }, (_, i) => {
-    const date = new Date(monthStart)
-    date.setDate(date.getDate() - firstDayOfWeek + i)
-    return date
-  })
-
-  const lastDayOfWeek = (monthEnd.getDay() + 6) % 7
-
-  const daysAfterMonth = Array.from({ length: 6 - lastDayOfWeek }, (_, i) => {
-    const date = new Date(monthEnd)
-    date.setDate(date.getDate() + i + 1)
-    return date
-  })
-
-  const allDays = [...daysBeforeMonth, ...daysInMonth, ...daysAfterMonth]
+  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 })
+  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 })
+  const allDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd })
 
   const eventsByDate = useMemo(() => {
     const map = new Map<string, CalendarEvent[]>()
     const seenTopics = new Map<string, Set<string>>()
 
     events.forEach((event) => {
-      const dateKey = event.date
+      const localDate = getEventLocalDateTime(event)
+      if (!localDate) return
+      const dateKey = format(localDate, 'yyyy-MM-dd')
 
       if (!map.has(dateKey)) {
         map.set(dateKey, [])
@@ -287,13 +271,11 @@ export const Calendar: React.FC<CalendarProps> = ({ events, error }) => {
             <Typography variant="body2">{day}</Typography>
           </DayHeader>
         ))}
-        {allDays.map((day, index) => {
+        {allDays.map((day) => {
           const dayEvents = getEventsForDate(day)
           const hasEvent = dayEvents.length > 0
           const isToday = isSameDay(day, today)
-          const isOtherMonth =
-            index < firstDayOfWeek ||
-            index >= firstDayOfWeek + daysInMonth.length
+          const isOtherMonth = day.getMonth() !== currentDate.getMonth()
           const isSelected = selectedDate ? isSameDay(day, selectedDate) : false
 
           return (

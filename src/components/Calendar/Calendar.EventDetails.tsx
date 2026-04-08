@@ -1,4 +1,5 @@
 import { CalendarEvent } from '@/types/data.types'
+import { getBrowserUtcLabel, getEventLocalDateTime } from '@/utils/date.utils'
 import { lsdUtils } from '@/utils/lsd.utils'
 import {
   getEventTypeLabel,
@@ -18,23 +19,39 @@ export const CalendarEventDetails: React.FC<CalendarEventDetailsProps> = ({
   selectedDate,
   events,
 }) => {
+  const firstEvent = events[0]
+  const displayDate = firstEvent
+    ? getEventLocalDateTime(firstEvent) ?? selectedDate
+    : selectedDate
+
   return (
     <EventDetails>
       <Typography variant="h4" style={{ marginBottom: '1rem' }}>
-        {format(selectedDate, 'MMMM d, yyyy')}
+        {format(displayDate, 'MMMM d, yyyy')}
       </Typography>
 
       <EventList>
         {events.length > 0 ? (
           events.map((event) => {
             const formattedType = getEventTypeLabel(event.type)
+            const localDateTime = getEventLocalDateTime(event)
+            const browserUtcLabel = getBrowserUtcLabel(
+              localDateTime ?? displayDate,
+            )
+            const formattedEventTime = localDateTime
+              ? format(localDateTime, 'HH:mm')
+              : event.time
 
             return (
               <EventItem key={event.id}>
                 <EventItemHeader>
                   {formattedType && <EventType>{formattedType}</EventType>}
                   {formattedType && event.time && <EventDivider />}
-                  {event.time && <EventTime>{event.time} (UTC)</EventTime>}
+                  {event.time && (
+                    <EventTime>
+                      {formattedEventTime} ({browserUtcLabel})
+                    </EventTime>
+                  )}
                 </EventItemHeader>
                 {isValidTopic(event.topic) && (
                   <EventTopic>{event.topic}</EventTopic>

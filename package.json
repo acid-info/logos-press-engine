@@ -39,7 +39,7 @@
     "axios": "^1.4.0",
     "clsx": "^1.2.1",
     "cross-fetch": "^4.0.0",
-    "date-fns": "^2.30.0",
+    "date-fns": "^4.1.0",
     "discord.js": "^14.13.0",
     "dotenv": "^16.3.1",
     "eslint": "8.38.0",
