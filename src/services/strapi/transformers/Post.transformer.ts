@@ -120,19 +120,7 @@ export const postTransformer: Transformer<
       : undefined
     const coverImage: LPE.Post.Document['coverImage'] =
       await transformStrapiImageData(attributes.cover_image)
-    // Pre-generated OG image stored by the Strapi lifecycle hook. When
-    // present, the frontend SEO component will use this directly as
-    // og:image / twitter:image instead of hitting the dynamic /api/og.
-    //
-    // Intentionally NOT using transformStrapiImageData here — that
-    // helper also generates a base64 placeholder (pixelate) in non-Vercel
-    // deployments, which would download and process every og_image once
-    // per render on list pages. SEO only reads `ogImage.url`, so a
-    // minimal extraction is sufficient and much cheaper.
-    //
-    // `og_image` may be absent from the generated GraphQL types until
-    // codegen is rerun against the updated CMS schema; narrow through
-    // unknown so this compiles either way.
+    // Pre-generated OG image stored by the Strapi lifecycle hook
     const ogImage: LPE.Image.Document | null = (() => {
       const raw = (
         attributes as unknown as {
