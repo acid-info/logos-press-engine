@@ -40,7 +40,10 @@ function sanitizeImageUrl(url: string): string {
 
     if (!allowedHost) return ''
 
-    const portPart = parsed.port ? `:${parsed.port}` : ''
+    const isLocal = allowedHost === 'localhost' || allowedHost === '127.0.0.1'
+    const defaultPort = parsed.protocol === 'https:' ? '443' : '80'
+    if (!isLocal && parsed.port && parsed.port !== defaultPort) return ''
+    const portPart = isLocal && parsed.port ? `:${parsed.port}` : ''
     const safe = new URL(`${parsed.protocol}//${allowedHost}${portPart}`)
 
     safe.pathname = parsed.pathname
@@ -104,7 +107,9 @@ export default async function handler(
     }
   }
   const searchParams = new URLSearchParams(safeDecode(rawQ))
-  const formatParam = (request.query['format'] as string) || ''
+  const formatRaw = request.query['format']
+  const formatParam =
+    (Array.isArray(formatRaw) ? formatRaw[0] : formatRaw) ?? ''
 
   const asJpeg =
     formatParam.toLowerCase() === 'jpg' || formatParam.toLowerCase() === 'jpeg'

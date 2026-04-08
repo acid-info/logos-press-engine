@@ -31,6 +31,8 @@ const POST_COMMON_ATTRIBUTES = gql`
           url
           width
           height
+          caption
+          alternativeText
         }
       }
     }
