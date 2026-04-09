@@ -20,6 +20,12 @@ const ALLOWED_IMAGE_HOSTS = new Set([
   '127.0.0.1',
 ])
 
+const CMS_ASSET_ORIGIN = (() => {
+  const raw =
+    process.env.NEXT_PUBLIC_ASSETS_BASE_URL || 'https://cms-press.logos.co'
+  return raw.endsWith('/') ? raw.slice(0, -1) : raw
+})()
+
 /**
  * Validate that an image URL points to a trusted host.
  * Returns the original URL if valid, empty string otherwise.
@@ -53,6 +59,20 @@ function sanitizeImageUrl(url: string): string {
   } catch {
     return ''
   }
+}
+
+function isSupportedOgImageUrl(url: string): boolean {
+  return /\.(png|jpe?g)(\?|$)/i.test(url)
+}
+
+function sanitizeCmsUploadPath(value: string): string {
+  if (!value.startsWith('/uploads/')) return ''
+  if (value.includes('..')) return ''
+  return value
+}
+
+function buildCmsImageUrl(uploadPath: string): string {
+  return new URL(uploadPath, `${CMS_ASSET_ORIGIN}/`).toString()
 }
 
 /**
@@ -122,26 +142,33 @@ export default async function handler(
       : sanitizeText(searchParams.get('title'))
 
   const image = sanitizeImageUrl(searchParams.get('image') || '')
+  const imagePath = sanitizeCmsUploadPath(searchParams.get('imagePath') || '')
   const alt = sanitizeText(searchParams.get('alt') || '') || ''
   const pagePath =
     sanitizeText(searchParams.get('pagePath')) || 'press.logos.co'
   const date = searchParams.get('date')
   const authors = sanitizeText(searchParams.get('authors'))
 
-  let imgSrc = image
-  if (imgSrc && !/\.(png|jpe?g)(\?|$)/i.test(imgSrc)) {
+  const directImageUrl =
+    image && isSupportedOgImageUrl(image)
+      ? image
+      : imagePath && isSupportedOgImageUrl(imagePath)
+      ? buildCmsImageUrl(imagePath)
+      : ''
+  let imgSrc = directImageUrl
+
+  if (!imgSrc && imagePath) {
     try {
-      const res = await fetch(imgSrc)
+      const sourceUrl = buildCmsImageUrl(imagePath)
+      const res = await fetch(sourceUrl)
       if (res.ok) {
         const pngBuf = await sharp(Buffer.from(await res.arrayBuffer()))
           .png()
           .toBuffer()
         imgSrc = `data:image/png;base64,${pngBuf.toString('base64')}`
-      } else {
-        imgSrc = ''
       }
-    } catch {
-      imgSrc = ''
+    } catch (e) {
+      console.error('[og] Failed to load CMS upload image', e)
     }
   }
   const hasImage = !!imgSrc?.length
