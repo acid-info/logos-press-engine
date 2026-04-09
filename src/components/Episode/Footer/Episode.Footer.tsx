@@ -38,8 +38,8 @@ const EpisodeFooter = ({ episode, relatedEpisodes }: Props) => {
 const EpisodeFooterContainer = styled.div`
   margin-top: 56px;
 
-  & > div:not(:first-child) > div > button,
-  & > div:not(:first-child) > div {
+  & > div:not(:first-of-type) > div > button,
+  & > div:not(:first-of-type) > div {
     border-top: none;
   }
 

@@ -7,7 +7,6 @@ import {
 import axios from 'axios'
 import path from 'path'
 import sharp from 'sharp'
-import logger from '../lib/logger'
 
 // Maximum number of pixelated placeholder paths kept in memory.
 // Each entry is a small string, but without a cap the Map grows for every
@@ -17,6 +16,7 @@ const MAX_PLACEHOLDER_CACHE_SIZE = 500
 
 export class PlaceholderService {
   cache = new Map<string, string>()
+  failed = new Set<string>()
   constructor() {}
 
   add(key: string, value: string) {
@@ -34,6 +34,7 @@ export class PlaceholderService {
 
   emptyCache() {
     this.cache.clear()
+    this.failed.clear()
   }
 
   async pixelate(imagePath: string): Promise<string> {
@@ -73,19 +74,9 @@ export class PlaceholderService {
 
       return relativePath
     } catch (e) {
-      const relativePath = path.join(POSTS_IMAGE_PLACEHOLDER_DIR, fileName)
-      logger.debug('Image generation failed', {
-        fileName,
-        imagePath,
-        thumbnailPath,
-        error: e,
-        errorType: typeof e,
-        filePath: path.join(
-          process.env.SOURCE_DIR ?? process.cwd(),
-          relativePath,
-        ),
-      })
-      logger.error('Failed to generate image', { error: e })
+      if (!this.failed.has(fileName)) {
+        this.failed.add(fileName)
+      }
     }
 
     return thumbnailPath

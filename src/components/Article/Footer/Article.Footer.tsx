@@ -35,8 +35,8 @@ const ArticleFooter = ({ data: post }: { data: LPE.Article.Document }) => {
 const ArticleFooterContainer = styled.div`
   margin-top: 16px;
 
-  & > div:not(:first-child):not([data-keep-border-top='true']) > div > button,
-  & > div:not(:first-child):not([data-keep-border-top='true']) > div {
+  & > div:not(:first-of-type):not([data-keep-border-top='true']) > div > button,
+  & > div:not(:first-of-type):not([data-keep-border-top='true']) > div {
     border-top: none;
   }
 

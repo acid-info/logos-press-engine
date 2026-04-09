@@ -40,7 +40,7 @@ export default function PodcastsLists({ shows }: Props) {
                       </ShowInfo>
                     </ShowInfoContainer>
                   </Top>
-                  <ShowData isEven={isEven}>
+                  <ShowData $isEven={isEven}>
                     <Description
                       variant="h4"
                       dangerouslySetInnerHTML={{ __html: show.description }}
@@ -75,7 +75,9 @@ const PodcastListsContainer = styled(Grid)`
 
 const ShowCardContainer = styled(GridItem)``
 
-const ShowCard = styled(Link)<{ isEven: boolean }>`
+const ShowCard = styled(Link, {
+  shouldForwardProp: (prop) => prop !== 'isEven',
+})<{ isEven: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -120,7 +122,7 @@ const Top = styled(Row)`
   justify-content: space-between;
 `
 
-const ShowData = styled.div<{ isEven: boolean }>`
+const ShowData = styled.div<{ $isEven: boolean }>`
   margin-top: 24px;
   display: flex;
   flex-direction: column;
@@ -129,7 +131,7 @@ const ShowData = styled.div<{ isEven: boolean }>`
   p,
   span {
     color: ${(props) =>
-      props.isEven
+      props.$isEven
         ? 'rgb(var(--lsd-text-secondary))'
         : 'rgb(var(--lsd-text-primary))'};
   }
@@ -139,7 +141,9 @@ const ShowData = styled.div<{ isEven: boolean }>`
   }
 `
 
-const ColoredText = styled(Typography)<{ isEven: boolean }>`
+const ColoredText = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== 'isEven',
+})<{ isEven: boolean }>`
   color: ${(props) =>
     props.isEven
       ? 'rgb(var(--lsd-text-secondary))'
@@ -152,7 +156,9 @@ const Description = styled(Typography)`
   }
 `
 
-const ShowButton = styled(Button)<{ isEven: boolean }>`
+const ShowButton = styled(Button, {
+  shouldForwardProp: (prop) => prop !== 'isEven',
+})<{ isEven: boolean }>`
   width: auto;
   align-self: flex-start;
 
