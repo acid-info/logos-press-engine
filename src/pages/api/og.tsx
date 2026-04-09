@@ -128,7 +128,22 @@ export default async function handler(
   const date = searchParams.get('date')
   const authors = sanitizeText(searchParams.get('authors'))
 
-  const imgSrc = image
+  let imgSrc = image
+  if (imgSrc && !/\.(png|jpe?g)(\?|$)/i.test(imgSrc)) {
+    try {
+      const res = await fetch(imgSrc)
+      if (res.ok) {
+        const pngBuf = await sharp(Buffer.from(await res.arrayBuffer()))
+          .png()
+          .toBuffer()
+        imgSrc = `data:image/png;base64,${pngBuf.toString('base64')}`
+      } else {
+        imgSrc = ''
+      }
+    } catch {
+      imgSrc = ''
+    }
+  }
   const hasImage = !!imgSrc?.length
 
   const parsedDate = date ? new Date(date) : null
@@ -146,12 +161,8 @@ export default async function handler(
   const subtitleGap = isArticle && hasImage ? '16px' : '24px'
   const subtitleMargin = isArticle && hasImage ? '24px' : '40px'
 
-  // Wrap ImageResponse in try-catch: the underlying WASM renderer (@resvg/resvg-wasm
-  // used by @vercel/og outside Vercel's Edge network) can throw RuntimeError:
-  // unreachable on malformed input or OOM. Without this guard the error
-  // propagates uncaught, corrupts the WASM module state, and leaks memory on
-  // every subsequent request.
   let imageResponse: ImageResponse
+
   try {
     imageResponse = new ImageResponse(
       // Article with image: use full-bleed image background and overlay text
