@@ -13,7 +13,7 @@ export const PodcastSection: React.FC<PodcastSectionProps> = ({
 )
 
 const Container = styled.div`
-  & > *:not(:first-child) {
+  & > *:not(:first-of-type) {
     margin-top: var(--lsd-spacing-16);
   }
 
