@@ -120,6 +120,34 @@ export const postTransformer: Transformer<
       : undefined
     const coverImage: LPE.Post.Document['coverImage'] =
       await transformStrapiImageData(attributes.cover_image)
+    // Pre-generated OG image stored by the Strapi lifecycle hook
+    const ogImage: LPE.Image.Document | null = (() => {
+      const raw = (
+        attributes as unknown as {
+          og_image?: {
+            data?: {
+              attributes?: {
+                url?: string | null
+                width?: number | null
+                height?: number | null
+                caption?: string | null
+                alternativeText?: string | null
+              }
+            } | null
+          } | null
+        }
+      ).og_image
+      const attrs = raw?.data?.attributes
+      if (!attrs?.url) return null
+      return {
+        url: transformStrapiImageUrl(attrs.url),
+        width: attrs.width || 0,
+        height: attrs.height || 0,
+        alt: attrs.caption || attrs.alternativeText || '',
+        caption: attrs.caption || '',
+        placeholder: '',
+      }
+    })()
     const tags: LPE.Tag.Document[] = attributes.tags.data.map((tag) => ({
       id: tag.id,
       name: tag.attributes.name,
@@ -214,6 +242,7 @@ export const postTransformer: Transformer<
         createdAt: publishedAt,
         publishedAt,
         coverImage,
+        ogImage,
         tags,
         content,
         ...dynamicBlocksField,

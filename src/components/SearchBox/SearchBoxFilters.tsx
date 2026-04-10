@@ -110,7 +110,7 @@ const Clear = styled(Typography)`
   }
 
   ${(props) => lsdUtils.breakpoint(props.theme, 'xs', 'exact')} {
-    span:not(:first-child) {
+    span:not(:first-of-type) {
       display: none;
     }
   }

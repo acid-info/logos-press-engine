@@ -4,6 +4,7 @@ import fs from 'fs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { ImageResponse } from 'next/og'
 import path from 'path'
+import sharp from 'sharp'
 
 let loraBuffer: Buffer | null = null
 let interBuffer: Buffer | null = null
@@ -19,6 +20,12 @@ const ALLOWED_IMAGE_HOSTS = new Set([
   '127.0.0.1',
 ])
 
+const CMS_ASSET_ORIGIN = (() => {
+  const raw =
+    process.env.NEXT_PUBLIC_ASSETS_BASE_URL || 'https://cms-press.logos.co'
+  return raw.endsWith('/') ? raw.slice(0, -1) : raw
+})()
+
 /**
  * Validate that an image URL points to a trusted host.
  * Returns the original URL if valid, empty string otherwise.
@@ -32,18 +39,40 @@ function sanitizeImageUrl(url: string): string {
     if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return ''
     // Look up the hostname from our allowlist , use the Set value, not the
     // user-provided string, so the returned URL is not considered tainted.
+
     const allowedHost = Array.from(ALLOWED_IMAGE_HOSTS).find(
       (h) => h === parsed.hostname,
     )
+
     if (!allowedHost) return ''
-    // Reconstruct from known-safe components to break CodeQL taint chain.
-    const safe = new URL(`${parsed.protocol}//${allowedHost}`)
+
+    const isLocal = allowedHost === 'localhost' || allowedHost === '127.0.0.1'
+    const defaultPort = parsed.protocol === 'https:' ? '443' : '80'
+    if (!isLocal && parsed.port && parsed.port !== defaultPort) return ''
+    const portPart = isLocal && parsed.port ? `:${parsed.port}` : ''
+    const safe = new URL(`${parsed.protocol}//${allowedHost}${portPart}`)
+
     safe.pathname = parsed.pathname
+
     safe.search = parsed.search
     return safe.href
   } catch {
     return ''
   }
+}
+
+function isSupportedOgImageUrl(url: string): boolean {
+  return /\.(png|jpe?g)(\?|$)/i.test(url)
+}
+
+function sanitizeCmsUploadPath(value: string): string {
+  if (!value.startsWith('/uploads/')) return ''
+  if (value.includes('..')) return ''
+  return value
+}
+
+function buildCmsImageUrl(uploadPath: string): string {
+  return new URL(uploadPath, `${CMS_ASSET_ORIGIN}/`).toString()
 }
 
 /**
@@ -98,19 +127,50 @@ export default async function handler(
     }
   }
   const searchParams = new URLSearchParams(safeDecode(rawQ))
+  const formatRaw = request.query['format']
+  const formatParam =
+    (Array.isArray(formatRaw) ? formatRaw[0] : formatRaw) ?? ''
+
+  const asJpeg =
+    formatParam.toLowerCase() === 'jpg' || formatParam.toLowerCase() === 'jpeg'
+
   const contentType = searchParams.get('contentType')
+
   const title =
     contentType == null
       ? siteConfigs.heroTitle.join('')
       : sanitizeText(searchParams.get('title'))
+
   const image = sanitizeImageUrl(searchParams.get('image') || '')
+  const imagePath = sanitizeCmsUploadPath(searchParams.get('imagePath') || '')
   const alt = sanitizeText(searchParams.get('alt') || '') || ''
   const pagePath =
     sanitizeText(searchParams.get('pagePath')) || 'press.logos.co'
   const date = searchParams.get('date')
   const authors = sanitizeText(searchParams.get('authors'))
 
-  const imgSrc = image
+  const directImageUrl =
+    image && isSupportedOgImageUrl(image)
+      ? image
+      : imagePath && isSupportedOgImageUrl(imagePath)
+      ? buildCmsImageUrl(imagePath)
+      : ''
+  let imgSrc = directImageUrl
+
+  if (!imgSrc && imagePath) {
+    try {
+      const sourceUrl = buildCmsImageUrl(imagePath)
+      const res = await fetch(sourceUrl)
+      if (res.ok) {
+        const pngBuf = await sharp(Buffer.from(await res.arrayBuffer()))
+          .png()
+          .toBuffer()
+        imgSrc = `data:image/png;base64,${pngBuf.toString('base64')}`
+      }
+    } catch (e) {
+      console.error('[og] Failed to load CMS upload image', e)
+    }
+  }
   const hasImage = !!imgSrc?.length
 
   const parsedDate = date ? new Date(date) : null
@@ -128,12 +188,8 @@ export default async function handler(
   const subtitleGap = isArticle && hasImage ? '16px' : '24px'
   const subtitleMargin = isArticle && hasImage ? '24px' : '40px'
 
-  // Wrap ImageResponse in try-catch: the underlying WASM renderer (@resvg/resvg-wasm
-  // used by @vercel/og outside Vercel's Edge network) can throw RuntimeError:
-  // unreachable on malformed input or OOM. Without this guard the error
-  // propagates uncaught, corrupts the WASM module state, and leaks memory on
-  // every subsequent request.
   let imageResponse: ImageResponse
+
   try {
     imageResponse = new ImageResponse(
       // Article with image: use full-bleed image background and overlay text
@@ -451,9 +507,22 @@ export default async function handler(
   try {
     // ImageResponse is a Web API Response. Pipe its body into NextApiResponse.
     const arrayBuffer = await imageResponse.arrayBuffer()
+    const pngBuffer = Buffer.from(arrayBuffer)
+
+    if (asJpeg) {
+      // Strapi's lifecycle hook calls this path to store a JPEG in the CMS media library
+      const jpegBuffer = await sharp(pngBuffer)
+        .jpeg({ quality: 75, progressive: true, mozjpeg: true })
+        .toBuffer()
+      res.setHeader('Content-Type', 'image/jpeg')
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+      res.status(200).send(jpegBuffer)
+      return
+    }
+
     res.setHeader('Content-Type', 'image/png')
     res.setHeader('Cache-Control', 'public, max-age=3600, immutable')
-    res.status(200).send(Buffer.from(arrayBuffer))
+    res.status(200).send(pngBuffer)
   } catch (e) {
     console.error('[og] Failed to pipe image response', e)
     res.status(500).send('Failed to send OG image')
