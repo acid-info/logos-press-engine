@@ -19,6 +19,7 @@ import logger from '../lib/logger'
 import { Enum_Post_Type } from '../lib/strapi/strapi.generated'
 import { strapiApi } from '../services/strapi'
 import { CalendarEvent } from '../types/data.types'
+import { LPE } from '../types/lpe.types'
 
 type PageProps = Pick<
   HomePageProps,
@@ -45,6 +46,32 @@ async function isFileOlderThan(
     // If file doesn't exist or can't be read, treat as stale
     return true
   }
+}
+
+// Batch size per Strapi request when paginating through all highlighted posts.
+// Matches Strapi v4's default maxLimit; the helper loops via `hasMore` until exhausted.
+const HIGHLIGHTED_PAGE_SIZE = 100
+
+async function fetchAllHighlightedPosts(type: Enum_Post_Type) {
+  const all: LPE.Post.Document[] = []
+  let skip = 0
+
+  while (true) {
+    const { data: response } = await strapiApi.getPosts({
+      highlighted: 'only',
+      skip,
+      limit: HIGHLIGHTED_PAGE_SIZE,
+      filters: { type: { eq: type } },
+    })
+
+    const page = response?.data ?? []
+    all.push(...page)
+
+    if (!response?.hasMore || page.length === 0) break
+    skip += page.length
+  }
+
+  return all
 }
 
 const Page: CustomNextPage<PageProps> = (props) => {
@@ -76,16 +103,9 @@ Page.getLayout = function getLayout(page: ReactNode) {
 }
 
 export const getStaticProps: GetStaticProps<PageProps> = async () => {
-  const { data: allHighlightedArticlesResponse } = await strapiApi.getPosts({
-    highlighted: 'only',
-    filters: {
-      type: {
-        eq: 'Article' as Enum_Post_Type,
-      },
-    },
-  })
-
-  const allHighlightedArticles = allHighlightedArticlesResponse?.data || []
+  const allHighlightedArticles = await fetchAllHighlightedPosts(
+    'Article' as Enum_Post_Type,
+  )
 
   const initialHighlightedArticles = allHighlightedArticles.slice(
     0,
@@ -119,16 +139,9 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     ...nonHighlightedArticles,
   ]
 
-  const { data: allHighlightedEpisodesResponse } = await strapiApi.getPosts({
-    highlighted: 'only',
-    filters: {
-      type: {
-        eq: 'Episode' as Enum_Post_Type,
-      },
-    },
-  })
-
-  const allHighlightedEpisodes = allHighlightedEpisodesResponse?.data || []
+  const allHighlightedEpisodes = await fetchAllHighlightedPosts(
+    'Episode' as Enum_Post_Type,
+  )
 
   const initialHighlightedEpisodes = allHighlightedEpisodes.slice(
     0,
