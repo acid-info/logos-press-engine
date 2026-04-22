@@ -232,7 +232,9 @@ const darkModeReadabilityStyle = `
 const DocumentRoot = styled.div`
   width: 100%;
   border: 0;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   overflow-x: hidden;
 `
 

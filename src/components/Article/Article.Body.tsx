@@ -56,9 +56,9 @@ const ArticleContainer = styled.article<{ hasHtmlDocument: boolean }>`
   }
 
   // p tag does not include strong tag as a child
-  h3 + span + p {
+  /* h3 + span + p {
     margin-top: 16px;
-  }
+  } */
 
   h3 + span + p:has(strong) {
     margin-top: unset;
@@ -68,9 +68,9 @@ const ArticleContainer = styled.article<{ hasHtmlDocument: boolean }>`
     margin-top: 16px;
   } */
 
-  h2 + span + p {
+  /* h2 + span + p {
     margin-top: 16px;
-  }
+  } */
 
   h2 + span + p:has(strong) {
     margin-top: unset;
