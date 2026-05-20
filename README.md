@@ -21,7 +21,6 @@ Please check the environment values in `.env` located in the root directory.
 ```
 SIMPLECAST_ACCESS_TOKEN=
 REVALIDATE_WEBHOOK_TOKEN=
-NEXT_PUBLIC_SITE_URL=https://blog.logos.co
 NODE_ENV=
 LOG_LEVEL=
 ```
