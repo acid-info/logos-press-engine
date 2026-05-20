@@ -144,8 +144,7 @@ export default async function handler(
   const image = sanitizeImageUrl(searchParams.get('image') || '')
   const imagePath = sanitizeCmsUploadPath(searchParams.get('imagePath') || '')
   const alt = sanitizeText(searchParams.get('alt') || '') || ''
-  const pagePath =
-    sanitizeText(searchParams.get('pagePath')) || 'press.logos.co'
+  const pagePath = sanitizeText(searchParams.get('pagePath')) || 'blog.logos.co'
   const date = searchParams.get('date')
   const authors = sanitizeText(searchParams.get('authors'))
 

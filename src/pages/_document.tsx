@@ -35,7 +35,7 @@ export default function Document() {
           strategy="afterInteractive"
           src="https://umami.bi.status.im/script.js"
           data-website-id="6f59ea55-4079-4093-bfa2-a56eee2ff1ac"
-          data-domains="press.logos.co"
+          data-domains="blog.logos.co"
           data-exclude-hash="true"
         />
         <Main />
