@@ -1,3 +1,4 @@
+import { siteConfigs } from '@/configs/site.configs'
 import { LPE } from '../types/lpe.types'
 
 export type PostLinkData = {
@@ -91,8 +92,7 @@ export const parsePostUrl = (url: string): PostLinkData | null => {
 }
 
 export const getWebsiteUrl = () => {
-  if (typeof window === 'undefined')
-    return process.env.NEXT_PUBLIC_SITE_URL || 'https://blog.logos.co'
+  if (typeof window === 'undefined') return siteConfigs.url
 
   const url = new URL(window.location.href)
   return url.origin

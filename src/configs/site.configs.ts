@@ -19,6 +19,7 @@ export const siteConfigs = {
     'update',
     'whistleblower',
   ],
+  url: 'https://blog.logos.co',
   xHandle: 'logos_network',
   youtubeHandle: '@LogosNetwork',
   githubHandle: 'logos-co',
