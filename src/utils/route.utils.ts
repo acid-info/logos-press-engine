@@ -92,7 +92,7 @@ export const parsePostUrl = (url: string): PostLinkData | null => {
 
 export const getWebsiteUrl = () => {
   if (typeof window === 'undefined')
-    return process.env.NEXT_PUBLIC_SITE_URL || 'https://press.logos.co'
+    return process.env.NEXT_PUBLIC_SITE_URL || 'https://blog.logos.co'
 
   const url = new URL(window.location.href)
   return url.origin

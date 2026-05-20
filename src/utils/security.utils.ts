@@ -17,7 +17,7 @@ export const validateOrigin = (req: NextApiRequest): boolean => {
   if (
     originUrl.hostname === 'localhost' ||
     originUrl.hostname === '127.0.0.1' ||
-    originUrl.hostname === 'dev-press.logos.co'
+    originUrl.hostname === 'dev-blog.logos.co'
   ) {
     return true
   }
