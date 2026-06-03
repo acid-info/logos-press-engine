@@ -92,3 +92,26 @@ export const parseHtmlDocument = (html: string): LPE.Post.HtmlDocument => {
 
   return cleanObject(doc) as LPE.Post.HtmlDocument
 }
+
+/**
+ * Compute reading time (in minutes) from a raw HTML document.
+ *
+ * Used only for articles whose body lives in an external html_file, where the
+ * Strapi transformer has no text to measure and would otherwise return 1 min.
+ * Kept independent from calcReadingTime so existing (body/markdown) articles
+ * keep their exact reading-time values.
+ */
+const WORDS_PER_MINUTE = 200
+
+export const calcHtmlReadingTime = (html: string): number => {
+  const root = parse(html)
+  root.querySelectorAll('script').forEach((script) => script.remove())
+  root.querySelectorAll('style').forEach((style) => style.remove())
+  const body = root.querySelector('body') || root
+  const numberOfWords = (body.text || '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length
+  if (numberOfWords === 0) return 0
+  return Math.max(1, Math.ceil(numberOfWords / WORDS_PER_MINUTE))
+}
