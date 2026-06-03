@@ -1,6 +1,9 @@
 import { SEO } from '@/components/SEO'
 import ArticleContainer from '@/containers/ArticleContainer'
-import { parseHtmlDocument } from '@/utils/html-document.utils'
+import {
+  calcHtmlReadingTime,
+  parseHtmlDocument,
+} from '@/utils/html-document.utils'
 import { GetStaticPropsContext } from 'next'
 import { strapiApi } from '../../services/strapi'
 import { LPE } from '../../types/lpe.types'
@@ -147,6 +150,9 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
         if (response.ok) {
           const html = await response.text()
           article.htmlDocument = parseHtmlDocument(html)
+          // The transformer has no body text for html_file articles, so it
+          // defaults reading time to 1 min. Recompute it from the fetched HTML.
+          article.readingTime = calcHtmlReadingTime(html)
         } else {
           console.warn('[ArticlePage] Failed to fetch html document', {
             rawUrl,
