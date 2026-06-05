@@ -1,6 +1,6 @@
 export const siteConfigs = {
-  title: 'Logos Press Engine',
-  heroTitle: ['Logos Press Engine'],
+  title: 'The Logos Blog',
+  heroTitle: ['The Logos Blog'],
   description:
     'Your Guide to Network States and the Technology Driving Sovereign Communities',
   keywords: [
