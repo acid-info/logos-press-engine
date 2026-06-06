@@ -120,7 +120,7 @@ pipeline {
     always { script {
       def result  = currentBuild.result.toLowerCase() ?: 'unknown'
       discord.send(
-        header: "Logos Press Engine Docker image build ${result}!",
+        header: "The Logos Blog Docker image build ${result}!",
         descPrefix: "Image: [`${env.IMAGE_NAME}:${params.IMAGE_TAG}`](https://harbor.status.im/${params.IMAGE_NAME}/tags?name=${params.IMAGE_TAG})",
         cred: 'logos-press-engine-discord-webhook-url',
       )
