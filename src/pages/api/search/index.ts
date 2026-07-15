@@ -57,6 +57,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>,
 ) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+
   try {
     const validated = searchQuerySchema.parse({
       q: req.query.q,
