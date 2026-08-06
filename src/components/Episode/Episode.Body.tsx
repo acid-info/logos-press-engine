@@ -20,16 +20,9 @@ export default function EpisodeBody({ episode, relatedEpisodes }: Props) {
   const simplecast = episode?.channels.find(
     (channel) => channel?.name === LPE.Podcast.ChannelNames.Simplecast,
   )
-  const spotify = episode?.channels.find(
-    (channel) => channel?.name === LPE.Podcast.ChannelNames.Spotify,
-  )
-  const applePodcasts = episode?.channels.find(
-    (channel) => channel?.name === LPE.Podcast.ChannelNames.ApplePodcasts,
-  )
-
   // Fall back to a third-party embed when the episode has no natively playable
-  // channel. Spotify is preferred over Apple Podcasts.
-  const embeddable = [spotify, applePodcasts].find(isEmbeddableChannel)
+  // channel.
+  const embeddable = episode?.channels.find(isEmbeddableChannel)
 
   const channel = youtube ?? simplecast ?? embeddable ?? null
 
