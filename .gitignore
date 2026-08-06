@@ -43,3 +43,4 @@ public/images/placeholders/*
 
 public/rss/*.xml
 public/sitemap.xml
+.env*
