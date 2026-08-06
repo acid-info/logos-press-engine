@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import { useHookstate } from '@hookstate/core'
 import { LPE } from '../../types/lpe.types'
 import { lsdUtils } from '../../utils/lsd.utils'
+import { isEmbeddableChannel } from '../../utils/podcastEmbed.utils'
 import { playerState } from '../GlobalAudioPlayer/globalAudioPlayer.state'
 import EpisodeTranscript from './Episode.Transcript'
 import EpisodeFooter from './Footer/Episode.Footer'
@@ -19,8 +20,18 @@ export default function EpisodeBody({ episode, relatedEpisodes }: Props) {
   const simplecast = episode?.channels.find(
     (channel) => channel?.name === LPE.Podcast.ChannelNames.Simplecast,
   )
+  const spotify = episode?.channels.find(
+    (channel) => channel?.name === LPE.Podcast.ChannelNames.Spotify,
+  )
+  const applePodcasts = episode?.channels.find(
+    (channel) => channel?.name === LPE.Podcast.ChannelNames.ApplePodcasts,
+  )
 
-  const channel = youtube ?? simplecast ?? null
+  // Fall back to a third-party embed when the episode has no natively playable
+  // channel. Spotify is preferred over Apple Podcasts.
+  const embeddable = [spotify, applePodcasts].find(isEmbeddableChannel)
+
+  const channel = youtube ?? simplecast ?? embeddable ?? null
 
   const state = useHookstate(playerState)
   const duration = Math.round(state.value.duration / 60)

@@ -6,9 +6,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { LPE } from '../../../types/lpe.types'
 import { lsdUtils } from '../../../utils/lsd.utils'
+import { getPodcastEmbed } from '../../../utils/podcastEmbed.utils'
 import { getPostLink } from '../../../utils/route.utils'
 import EpisodeStats from '../Episode.Stats'
 import EpisodeChannels from './Episode.Channels'
+import EpisodeEmbedPlayer from './Episode.EmbedPlayer'
 import EpisodePlayer from './Episode.Player'
 
 export type EpisodeHeaderProps = LPE.Podcast.Document & {
@@ -29,16 +31,21 @@ const EpisodeHeader = ({
   coverImage,
 }: EpisodeHeaderProps) => {
   const date = new Date(publishedAt)
+  const embed = getPodcastEmbed(channel)
 
   return (
     <EpisodeHeaderContainer>
-      {channel && (
-        <EpisodePlayer
-          title={title}
-          showTitle={show?.title ?? ''}
-          channel={channel}
-          coverImage={coverImage}
-        />
+      {embed ? (
+        <EpisodeEmbedPlayer embed={embed} />
+      ) : (
+        channel && (
+          <EpisodePlayer
+            title={title}
+            showTitle={show?.title ?? ''}
+            channel={channel}
+            coverImage={coverImage}
+          />
+        )
       )}
       <EpisodeStats date={date} duration={duration ?? 0} />
       <EpisodeTitle variant="h2" genericFontFamily="serif" component="h1">
