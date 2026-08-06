@@ -35,7 +35,9 @@ const EpisodePlayer = ({
   const [volume, setVolume] = useState(state.value.volume)
   const [loading, setLoading] = useState(true)
 
-  const isSimplecast = channel?.name === LPE.Podcast.ChannelNames.Simplecast
+  const isSimplecast =
+    channel?.name === LPE.Podcast.ChannelNames.Simplecast ||
+    channel?.name === LPE.Podcast.ChannelNames.Audio
 
   const url =
     channel?.name === LPE.Podcast.ChannelNames.Youtube
@@ -43,7 +45,7 @@ const EpisodePlayer = ({
       : (
           channel as Extract<
             LPE.Podcast.Channel,
-            { name: typeof LPE.Podcast.ChannelNames.Simplecast }
+            { name: LPE.Podcast.AudioChannelName }
           >
         ).data.audioFileUrl
 

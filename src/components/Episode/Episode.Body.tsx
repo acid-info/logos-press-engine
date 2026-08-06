@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import { useHookstate } from '@hookstate/core'
 import { LPE } from '../../types/lpe.types'
 import { lsdUtils } from '../../utils/lsd.utils'
+import { isEmbeddableChannel } from '../../utils/podcastEmbed.utils'
 import { playerState } from '../GlobalAudioPlayer/globalAudioPlayer.state'
 import EpisodeTranscript from './Episode.Transcript'
 import EpisodeFooter from './Footer/Episode.Footer'
@@ -19,8 +20,15 @@ export default function EpisodeBody({ episode, relatedEpisodes }: Props) {
   const simplecast = episode?.channels.find(
     (channel) => channel?.name === LPE.Podcast.ChannelNames.Simplecast,
   )
+  // The provider's own iframe player.
+  const embeddable = episode?.channels.find(isEmbeddableChannel)
+  // Last resort: an audio file resolved from the show's feed, for episodes
+  // distributed only through channels the site can neither play nor embed.
+  const audio = episode?.channels.find(
+    (channel) => channel?.name === LPE.Podcast.ChannelNames.Audio,
+  )
 
-  const channel = youtube ?? simplecast ?? null
+  const channel = youtube ?? simplecast ?? embeddable ?? audio ?? null
 
   const state = useHookstate(playerState)
   const duration = Math.round(state.value.duration / 60)

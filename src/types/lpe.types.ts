@@ -284,14 +284,21 @@ export namespace LPE {
       Spotify: 'spotify',
       Youtube: 'youtube',
       Simplecast: 'simplecast',
+      // Not a distribution channel of its own: a playable audio file resolved
+      // from the show's public feed, used when no other channel can be played.
+      Audio: 'audio',
     } as const
 
     export type ChannelName = DictValues<typeof ChannelNames>
 
-    export type SimplecastChannelData = {
+    export type AudioChannelData = {
       duration: number
       audioFileUrl: string
     }
+
+    export type AudioChannelName =
+      | typeof ChannelNames.Simplecast
+      | typeof ChannelNames.Audio
 
     export type Channel =
       | {
@@ -299,9 +306,9 @@ export namespace LPE {
           url: string
         }
       | {
-          name: typeof ChannelNames.Simplecast
+          name: AudioChannelName
           url: string
-          data: SimplecastChannelData
+          data: AudioChannelData
         }
 
     export type Metadata = {

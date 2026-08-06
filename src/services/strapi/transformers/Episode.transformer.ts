@@ -1,7 +1,9 @@
 import { Transformer } from '../../../lib/TransformPipeline/types'
 import logger from '../../../lib/logger'
 import { LPE } from '../../../types/lpe.types'
+import { isEmbeddableChannel } from '../../../utils/podcastEmbed.utils'
 import { settle } from '../../../utils/promise.utils'
+import { resolveAudioFromApplePodcasts } from '../../podcastFeed.service'
 import { simplecastApi } from '../../simplecast.service'
 import { StrapiPostData } from '../strapi.types'
 import { transformStrapiHtmlContent } from './utils'
@@ -24,14 +26,67 @@ export const episodeTransformer: Transformer<
         html: original.attributes.credits || '',
       }).then((c) => c.blocks as LPE.Post.TextBlock[]),
       channels: original.attributes.channel
-        ? await transformChannels(original.attributes.channel)
+        ? await transformChannels(
+            original.attributes.channel,
+            original.attributes.title ?? '',
+          )
         : [],
     }
   },
 }
 
+const PLAYABLE_CHANNEL_NAMES: LPE.Podcast.ChannelName[] = [
+  LPE.Podcast.ChannelNames.Youtube,
+  LPE.Podcast.ChannelNames.Simplecast,
+]
+
+/**
+ * An Apple Podcasts only episode would have no player at all: the site cannot
+ * play Apple itself, and Apple's iframe embed renders an empty placeholder.
+ * Resolve the underlying audio file from the show's feed and expose it as an
+ * audio channel, which the player treats like Simplecast.
+ *
+ * Only episodes that have no other way to render a player are resolved, so
+ * this costs no lookup for the common Youtube or Spotify episode.
+ */
+const withResolvedAudio = async (
+  channels: LPE.Podcast.Content['channels'],
+  episodeTitle: string,
+) => {
+  const hasPlayableChannel = channels.some(
+    (channel) =>
+      PLAYABLE_CHANNEL_NAMES.includes(channel.name) ||
+      isEmbeddableChannel(channel),
+  )
+
+  if (hasPlayableChannel) return channels
+
+  const applePodcasts = channels.find(
+    (channel) => channel.name === LPE.Podcast.ChannelNames.ApplePodcasts,
+  )
+
+  if (!applePodcasts) return channels
+
+  const data = await resolveAudioFromApplePodcasts(
+    applePodcasts.url,
+    episodeTitle,
+  )
+
+  if (!data) return channels
+
+  return [
+    ...channels,
+    {
+      name: LPE.Podcast.ChannelNames.Audio,
+      url: data.audioFileUrl,
+      data,
+    } as const,
+  ]
+}
+
 const transformChannels = async (
   channels: StrapiPostData['attributes']['channel'] = [],
+  episodeTitle = '',
 ) => {
   const transformed: LPE.Podcast.Content['channels'] = []
 
@@ -115,5 +170,5 @@ const transformChannels = async (
     }
   }
 
-  return transformed
+  return withResolvedAudio(transformed, episodeTitle)
 }

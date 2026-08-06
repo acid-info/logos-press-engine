@@ -10,10 +10,14 @@ const EpisodeStats = ({
   duration: number
 }) => (
   <Row>
-    <Typography variant="body3" genericFontFamily="sans-serif">
-      {duration ? duration : ' '} minutes
-    </Typography>
-    <Typography variant="body3">•</Typography>
+    {duration > 0 && (
+      <>
+        <Typography variant="body3" genericFontFamily="sans-serif">
+          {duration} minutes
+        </Typography>
+        <Typography variant="body3">•</Typography>
+      </>
+    )}
     <Typography variant="body3" genericFontFamily="sans-serif">
       {date &&
         date.toLocaleString('en-GB', {
