@@ -20,15 +20,15 @@ export default function EpisodeBody({ episode, relatedEpisodes }: Props) {
   const simplecast = episode?.channels.find(
     (channel) => channel?.name === LPE.Podcast.ChannelNames.Simplecast,
   )
-  // An audio file resolved from the show's feed, for episodes distributed only
-  // through channels the site cannot play itself.
+  // The provider's own iframe player.
+  const embeddable = episode?.channels.find(isEmbeddableChannel)
+  // Last resort: an audio file resolved from the show's feed, for episodes
+  // distributed only through channels the site can neither play nor embed.
   const audio = episode?.channels.find(
     (channel) => channel?.name === LPE.Podcast.ChannelNames.Audio,
   )
-  // Last resort: the provider's own iframe player.
-  const embeddable = episode?.channels.find(isEmbeddableChannel)
 
-  const channel = youtube ?? simplecast ?? audio ?? embeddable ?? null
+  const channel = youtube ?? simplecast ?? embeddable ?? audio ?? null
 
   const state = useHookstate(playerState)
   const duration = Math.round(state.value.duration / 60)

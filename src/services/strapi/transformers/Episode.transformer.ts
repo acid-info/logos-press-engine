@@ -1,6 +1,7 @@
 import { Transformer } from '../../../lib/TransformPipeline/types'
 import logger from '../../../lib/logger'
 import { LPE } from '../../../types/lpe.types'
+import { isEmbeddableChannel } from '../../../utils/podcastEmbed.utils'
 import { settle } from '../../../utils/promise.utils'
 import { resolveAudioFromApplePodcasts } from '../../podcastFeed.service'
 import { simplecastApi } from '../../simplecast.service'
@@ -40,17 +41,22 @@ const PLAYABLE_CHANNEL_NAMES: LPE.Podcast.ChannelName[] = [
 ]
 
 /**
- * Apple Podcasts and Spotify cannot be played by the site itself, so an
- * episode distributed only through them would have no player. Resolve the
- * underlying audio file from the show's feed and expose it as an audio
- * channel, which the player treats like Simplecast.
+ * An Apple Podcasts only episode would have no player at all: the site cannot
+ * play Apple itself, and Apple's iframe embed renders an empty placeholder.
+ * Resolve the underlying audio file from the show's feed and expose it as an
+ * audio channel, which the player treats like Simplecast.
+ *
+ * Only episodes that have no other way to render a player are resolved, so
+ * this costs no lookup for the common Youtube or Spotify episode.
  */
 const withResolvedAudio = async (
   channels: LPE.Podcast.Content['channels'],
   episodeTitle: string,
 ) => {
-  const hasPlayableChannel = channels.some((channel) =>
-    PLAYABLE_CHANNEL_NAMES.includes(channel.name),
+  const hasPlayableChannel = channels.some(
+    (channel) =>
+      PLAYABLE_CHANNEL_NAMES.includes(channel.name) ||
+      isEmbeddableChannel(channel),
   )
 
   if (hasPlayableChannel) return channels
