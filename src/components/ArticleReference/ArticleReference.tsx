@@ -2,6 +2,7 @@ import { Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import Link from 'next/link'
 import { LPE } from '../../types/lpe.types'
+import { formatDate } from '../../utils/date.utils'
 import { Authors } from '../Authors'
 
 type Props = {
@@ -12,13 +13,7 @@ export default function ArticleReference({
   data: { title, modifiedAt, authors, slug },
   ...props
 }: Props) {
-  const localDate =
-    modifiedAt &&
-    new Date(modifiedAt).toLocaleString('en-GB', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    })
+  const localDate = modifiedAt && formatDate(new Date(modifiedAt))
 
   return (
     <Container {...props}>

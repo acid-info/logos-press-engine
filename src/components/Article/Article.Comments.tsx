@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import { useCallback, useEffect, useState } from 'react'
 import { discourseApi } from '../../services/discourse.service'
 import { LPE } from '../../types/lpe.types'
+import { formatDate } from '../../utils/date.utils'
 import { lsdUtils } from '../../utils/lsd.utils'
 import { ArrowUpRightIcon } from '../Icons/ArrowUpRightIcon'
 import { DotIcon } from '../Icons/DotIcon'
@@ -169,7 +170,7 @@ const ArticleComments = ({ article }: ArticleCommentsProps) => {
                         {post.display_username || post.username}
                       </AuthorName>
                       <PostDate>
-                        {new Date(post.created_at).toLocaleDateString()}
+                        {formatDate(new Date(post.created_at))}
                       </PostDate>
                     </AuthorInfo>
                   </Author>

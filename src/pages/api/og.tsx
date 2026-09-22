@@ -1,5 +1,6 @@
 import { siteConfigs } from '@/configs/site.configs'
 import { LPE } from '@/types/lpe.types'
+import { formatDate } from '@/utils/date.utils'
 import fs from 'fs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { ImageResponse } from 'next/og'
@@ -175,9 +176,7 @@ export default async function handler(
   const parsedDate = date ? new Date(date) : null
   const validDate =
     parsedDate && !isNaN(parsedDate.getTime()) ? parsedDate : null
-  const day = validDate?.getUTCDate() ?? null
-  const month = validDate?.toLocaleString('default', { month: 'short' }) ?? null
-  const year = validDate?.getUTCFullYear() ?? null
+  const formattedDate = validDate ? formatDate(validDate) : null
 
   const titleMaxLength = 66
 
@@ -335,7 +334,7 @@ export default async function handler(
                     : pagePath.replace(/^\/+/, '').replace(/\/+/, ' | ')}
                 </span>
                 {validDate && <span>∙</span>}
-                {validDate && <span>{`${day} ${month} ${year}`}</span>}
+                {formattedDate && <span>{formattedDate}</span>}
               </div>
             </div>
           </div>
@@ -474,7 +473,7 @@ export default async function handler(
                       pagePath.replace(/^\/+/, '').replace(/\/+/, ' | ')}
                 </span>
                 {validDate && <span>∙</span>}
-                {validDate && <span>{`${day} ${month} ${year}`}</span>}
+                {formattedDate && <span>{formattedDate}</span>}
               </div>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import { Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
+import { formatDate } from '../../utils/date.utils'
 import { DotIcon } from '../Icons/DotIcon'
 
 const ArticleStats = ({
@@ -17,10 +18,7 @@ const ArticleStats = ({
       <>
         <DotIcon color="primary" />
         <Date variant="body3" genericFontFamily="sans-serif">
-          {date &&
-            `${date.getDate()} ${date
-              .toLocaleString('en-GB', { month: 'short' })
-              .toUpperCase()} ${date.getFullYear()}`}
+          {formatDate(date)}
         </Date>
       </>
     )}

@@ -1,4 +1,5 @@
 import { LPE } from '@/types/lpe.types'
+import { formatDate } from '@/utils/date.utils'
 import { Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
 import React, { FC } from 'react'
@@ -30,15 +31,7 @@ export const PostCardLabel: FC<Props> = ({
         <>
           <DotIcon color="primary" />
           <Date variant="subtitle2" genericFontFamily="sans-serif">
-            {date.toLocaleString('en-GB', {
-              day: 'numeric',
-              month: 'short',
-              ...(displayYear
-                ? {
-                    year: 'numeric',
-                  }
-                : {}),
-            })}
+            {formatDate(date, { withYear: displayYear })}
           </Date>
         </>
       )}

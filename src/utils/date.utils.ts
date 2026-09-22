@@ -2,6 +2,42 @@ import { isValid, parse } from 'date-fns'
 
 const EVENT_TIME_FORMATS = ['HH:mm', 'H:mm', 'h:mm a', 'hh:mm a'] as const
 
+const MONTH_ABBREVIATIONS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+] as const
+
+type FormatDateOptions = {
+  withYear?: boolean
+}
+
+// Formats as "03 Sep 2026". Reads UTC parts so date-only CMS values
+// ("2026-09-03" parses to UTC midnight) render the same day in every
+// timezone, and uses a fixed month table instead of Intl so the output
+// doesn't depend on the runtime's locale data (en-GB now yields "Sept").
+export const formatDate = (
+  date: Date,
+  { withYear = true }: FormatDateOptions = {},
+): string => {
+  if (Number.isNaN(date.getTime())) return ''
+
+  const day = String(date.getUTCDate()).padStart(2, '0')
+  const month = MONTH_ABBREVIATIONS[date.getUTCMonth()]
+  const dayMonth = `${day} ${month}`
+
+  return withYear ? `${dayMonth} ${date.getUTCFullYear()}` : dayMonth
+}
+
 type CalendarDateTimeSource = {
   date: string
   time?: string

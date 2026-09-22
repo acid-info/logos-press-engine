@@ -1,5 +1,6 @@
 import { Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
+import { formatDate } from '../../utils/date.utils'
 import { lsdUtils } from '../../utils/lsd.utils'
 
 const EpisodeStats = ({
@@ -19,12 +20,7 @@ const EpisodeStats = ({
       </>
     )}
     <Typography variant="body3" genericFontFamily="sans-serif">
-      {date &&
-        date.toLocaleString('en-GB', {
-          day: 'numeric',
-          month: 'long', // TODO: Should be uppercase
-          year: 'numeric',
-        })}
+      {date && formatDate(date)}
     </Typography>
   </Row>
 )
