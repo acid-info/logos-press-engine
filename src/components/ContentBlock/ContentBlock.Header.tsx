@@ -1,5 +1,6 @@
 import { Typography } from '@acid-info/lsd-react'
 import styled from '@emotion/styled'
+import { formatDate } from '../../utils/date.utils'
 
 export enum BlockType {
   TEXT = 'text',
@@ -19,12 +20,7 @@ const ContentBlockHeader = ({ type, date }: Props) => {
       </Typography>
       <Typography variant="body3">•</Typography>
       <Typography variant="body3" genericFontFamily="sans-serif">
-        {date &&
-          date.toLocaleString('en-GB', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric',
-          })}
+        {date && formatDate(date)}
       </Typography>
     </ContentBlockInfo>
   )
