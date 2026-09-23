@@ -23,7 +23,7 @@ type Metadata = {
   authors?: string[]
 }
 
-const SITE_URL = getWebsiteUrl()
+const CANONICAL_URL = siteConfigs.canonicalUrl
 
 export default function SEO({
   title: _title,
@@ -73,17 +73,23 @@ export default function SEO({
       <meta property="og:locale" content={locale ?? 'en-US'} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content={type ?? 'website'} />
-      <meta property="og:url" content={pageURL ?? `${SITE_URL}${pagePath}`} />
+      <meta
+        property="og:url"
+        content={pageURL ?? `${CANONICAL_URL}${pagePath}`}
+      />
       <meta property="keywords" content={tags.join(', ')} />
       <meta property="og:site_name" content={site_name ?? siteConfigs.title} />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta property="og:image" content={ogImageUrl} />
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:url" content={pageURL ?? `${SITE_URL}${pagePath}`} />
+      <meta
+        name="twitter:url"
+        content={pageURL ?? `${CANONICAL_URL}${pagePath}`}
+      />
       <meta name="twitter:site" content={`@${siteConfigs.xHandle}`} />
       <meta property="twitter:image" content={ogImageUrl} />
-      <link rel="canonical" href={`${SITE_URL}${pagePath}`} />
+      <link rel="canonical" href={`${CANONICAL_URL}${pagePath}`} />
       <link
         rel="alternate"
         type="application/rss+xml"

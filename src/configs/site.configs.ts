@@ -20,6 +20,8 @@ export const siteConfigs = {
     'whistleblower',
   ],
   url: 'https://blog.logos.co',
+  // Content now lives under logos.co/media; point search engines there.
+  canonicalUrl: 'https://logos.co/media',
   xHandle: 'logos_network',
   youtubeHandle: '@LogosNetwork',
   githubHandle: 'logos-co',
